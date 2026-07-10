@@ -99,11 +99,13 @@ export const Route = createFileRoute("/api/public/zernio")({
                 event === "post.published" ? "published" :
                 event === "post.cancelled" ? "cancelled" : "failed";
 
-              const patch: Record<string, unknown> = { status: targetStatus };
-              if (externalId) patch.external_post_id = externalId;
-              if (data.external_url) patch.external_url = String(data.external_url);
-              if (event === "post.published") patch.published_at = new Date().toISOString();
-              if (data.message) patch.error_message = String(data.message);
+              const patch = {
+                status: targetStatus as "published" | "failed" | "cancelled",
+                external_post_id: externalId || null,
+                external_url: data.external_url ? String(data.external_url) : null,
+                published_at: event === "post.published" ? new Date().toISOString() : null,
+                error_message: data.message ? String(data.message) : null,
+              };
 
               // Prefer matching an existing pending/publishing target for this account
               const { data: targets } = await supabaseAdmin.from("post_targets")
