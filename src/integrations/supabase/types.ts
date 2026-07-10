@@ -175,6 +175,7 @@ export type Database = {
           name: string
           slug: string
           updated_at: string
+          watermark: Json
         }
         Insert: {
           created_at?: string
@@ -183,6 +184,7 @@ export type Database = {
           name: string
           slug: string
           updated_at?: string
+          watermark?: Json
         }
         Update: {
           created_at?: string
@@ -191,6 +193,7 @@ export type Database = {
           name?: string
           slug?: string
           updated_at?: string
+          watermark?: Json
         }
         Relationships: []
       }
