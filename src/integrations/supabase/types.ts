@@ -14,6 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
+      connected_accounts: {
+        Row: {
+          avatar_url: string | null
+          connected_by: string | null
+          created_at: string
+          display_name: string | null
+          error_message: string | null
+          external_id: string | null
+          handle: string | null
+          id: string
+          last_synced_at: string | null
+          metadata: Json
+          platform: Database["public"]["Enums"]["social_platform"]
+          status: Database["public"]["Enums"]["account_status"]
+          updated_at: string
+          workspace_id: string
+          zernio_account_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          connected_by?: string | null
+          created_at?: string
+          display_name?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          handle?: string | null
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json
+          platform: Database["public"]["Enums"]["social_platform"]
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+          workspace_id: string
+          zernio_account_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          connected_by?: string | null
+          created_at?: string
+          display_name?: string | null
+          error_message?: string | null
+          external_id?: string | null
+          handle?: string | null
+          id?: string
+          last_synced_at?: string | null
+          metadata?: Json
+          platform?: Database["public"]["Enums"]["social_platform"]
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+          workspace_id?: string
+          zernio_account_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connected_accounts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -154,7 +216,20 @@ export type Database = {
       }
     }
     Enums: {
+      account_status: "connected" | "disconnected" | "error" | "pending"
       app_role: "admin" | "user"
+      social_platform:
+        | "youtube"
+        | "x"
+        | "instagram"
+        | "facebook"
+        | "pinterest"
+        | "linkedin"
+        | "tiktok"
+        | "threads"
+        | "bluesky"
+        | "reddit"
+        | "google_business"
       workspace_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
@@ -283,7 +358,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      account_status: ["connected", "disconnected", "error", "pending"],
       app_role: ["admin", "user"],
+      social_platform: [
+        "youtube",
+        "x",
+        "instagram",
+        "facebook",
+        "pinterest",
+        "linkedin",
+        "tiktok",
+        "threads",
+        "bluesky",
+        "reddit",
+        "google_business",
+      ],
       workspace_role: ["owner", "admin", "member"],
     },
   },
