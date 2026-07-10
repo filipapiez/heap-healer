@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
+import { WatermarkSelector } from "@/components/WatermarkSelector";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — SocialFlow" }] }),
@@ -21,6 +22,7 @@ function SettingsPage() {
             slug: {data?.workspace.slug ?? "—"} · your role: {data?.role ?? "—"}
           </div>
         </div>
+        <WatermarkSelector />
         <div className="card p-5">
           <div className="text-sm font-semibold">Security</div>
           <ul className="mt-2 space-y-1 text-xs text-[var(--color-ink-700)]/60">
