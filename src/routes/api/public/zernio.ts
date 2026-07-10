@@ -20,7 +20,7 @@ export const Route = createFileRoute("/api/public/zernio")({
         const signature = request.headers.get("x-zernio-signature");
 
         const { verifyWebhookSignature } = await import("@/lib/zernio.server");
-        if (!verifyWebhookSignature(rawBody, signature)) {
+        if (!(await verifyWebhookSignature(rawBody, signature))) {
           return new Response("invalid signature", { status: 401 });
         }
 

@@ -79,14 +79,11 @@ export async function disconnectZernioAccount(zernioAccountId: string): Promise<
   });
 }
 
-export function verifyWebhookSignature(rawBody: string, signature: string | null): boolean {
+export async function verifyWebhookSignature(rawBody: string, signature: string | null): Promise<boolean> {
   const secret = process.env.ZERNIO_WEBHOOK_SECRET;
   if (!secret || !signature) return false;
-  // Compute HMAC-SHA256 hex.
-  const enc = new TextEncoder();
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createHmac, timingSafeEqual } = require("crypto") as typeof import("crypto");
-  const expected = createHmac("sha256", secret).update(enc.encode(rawBody)).digest("hex");
+  const { createHmac, timingSafeEqual } = await import("crypto");
+  const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
   const a = Buffer.from(signature);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
