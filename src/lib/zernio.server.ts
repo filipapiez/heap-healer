@@ -79,6 +79,27 @@ export async function disconnectZernioAccount(zernioAccountId: string): Promise<
   });
 }
 
+/**
+ * Publish a post to a single connected account via Zernio.
+ * Returns the external post id/url when Zernio provides them.
+ */
+export async function publishToZernio(input: {
+  zernioAccountId: string;
+  platform: SocialPlatform;
+  caption: string;
+  mediaUrls: string[];
+}): Promise<{ external_post_id?: string; external_url?: string }> {
+  return zernio<{ external_post_id?: string; external_url?: string }>("/v1/posts", {
+    method: "POST",
+    body: JSON.stringify({
+      account_id: input.zernioAccountId,
+      platform: input.platform,
+      caption: input.caption,
+      media: input.mediaUrls,
+    }),
+  });
+}
+
 export async function verifyWebhookSignature(rawBody: string, signature: string | null): Promise<boolean> {
   const secret = process.env.ZERNIO_WEBHOOK_SECRET;
   if (!secret || !signature) return false;

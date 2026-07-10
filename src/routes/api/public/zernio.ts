@@ -82,8 +82,67 @@ export const Route = createFileRoute("/api/public/zernio")({
               if (error) throw error;
               break;
             }
+            case "post.published":
+            case "post.partial":
+            case "post.failed":
+            case "post.cancelled": {
+              // Zernio sends: { post_id (external), zernio_account_id, external_url, status, message }
+              const zid = String(data.zernio_account_id ?? "");
+              const externalId = String(data.post_id ?? data.external_post_id ?? "");
+              if (!zid) return new Response("missing zernio_account_id", { status: 400 });
+
+              const { data: account } = await supabaseAdmin
+                .from("connected_accounts").select("id").eq("zernio_account_id", zid).maybeSingle();
+              if (!account) break;
+
+              const targetStatus =
+                event === "post.published" ? "published" :
+                event === "post.cancelled" ? "cancelled" : "failed";
+
+              const patch = {
+                status: targetStatus as "published" | "failed" | "cancelled",
+                external_post_id: externalId || null,
+                external_url: data.external_url ? String(data.external_url) : null,
+                published_at: event === "post.published" ? new Date().toISOString() : null,
+                error_message: data.message ? String(data.message) : null,
+              };
+
+              // Prefer matching an existing pending/publishing target for this account
+              const { data: targets } = await supabaseAdmin.from("post_targets")
+                .select("id, post_id")
+                .eq("connected_account_id", account.id)
+                .in("status", ["pending", "publishing"])
+                .order("created_at", { ascending: false })
+                .limit(1);
+              const target = targets?.[0];
+              if (target) {
+                await supabaseAdmin.from("post_targets").update(patch).eq("id", target.id);
+                await supabaseAdmin.from("publish_attempts").insert({
+                  post_target_id: target.id,
+                  status: targetStatus,
+                  response_payload: data as never,
+                  error_message: data.message ? String(data.message) : null,
+                });
+                // Roll up post status
+                const { data: siblings } = await supabaseAdmin.from("post_targets")
+                  .select("status").eq("post_id", target.post_id);
+                const statuses = (siblings ?? []).map((s) => s.status);
+                const anyPending = statuses.some((s) => s === "pending" || s === "publishing");
+                if (!anyPending) {
+                  const published = statuses.filter((s) => s === "published").length;
+                  const failed = statuses.filter((s) => s === "failed").length;
+                  const finalStatus =
+                    failed === 0 && published > 0 ? "published" :
+                    published === 0 ? "failed" : "partial";
+                  await supabaseAdmin.from("posts").update({
+                    status: finalStatus,
+                    published_at: finalStatus !== "failed" ? new Date().toISOString() : null,
+                  }).eq("id", target.post_id);
+                }
+              }
+              break;
+            }
             default:
-              // Slice 3 events (post.*) get their handlers when publishing lands.
               console.log("[zernio webhook] ignored event", event);
           }
           return Response.json({ ok: true });

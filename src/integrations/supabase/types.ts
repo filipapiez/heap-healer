@@ -76,6 +76,175 @@ export type Database = {
           },
         ]
       }
+      media_assets: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          height: number | null
+          id: string
+          kind: Database["public"]["Enums"]["media_kind"]
+          mime_type: string | null
+          original_name: string | null
+          size_bytes: number | null
+          storage_path: string
+          updated_at: string
+          uploaded_by: string | null
+          width: number | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
+          id?: string
+          kind: Database["public"]["Enums"]["media_kind"]
+          mime_type?: string | null
+          original_name?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          updated_at?: string
+          uploaded_by?: string | null
+          width?: number | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
+          id?: string
+          kind?: Database["public"]["Enums"]["media_kind"]
+          mime_type?: string | null
+          original_name?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          width?: number | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_assets_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_targets: {
+        Row: {
+          connected_account_id: string
+          created_at: string
+          error_message: string | null
+          external_post_id: string | null
+          external_url: string | null
+          id: string
+          platform: Database["public"]["Enums"]["social_platform"]
+          post_id: string
+          published_at: string | null
+          status: Database["public"]["Enums"]["target_status"]
+          updated_at: string
+        }
+        Insert: {
+          connected_account_id: string
+          created_at?: string
+          error_message?: string | null
+          external_post_id?: string | null
+          external_url?: string | null
+          id?: string
+          platform: Database["public"]["Enums"]["social_platform"]
+          post_id: string
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["target_status"]
+          updated_at?: string
+        }
+        Update: {
+          connected_account_id?: string
+          created_at?: string
+          error_message?: string | null
+          external_post_id?: string | null
+          external_url?: string | null
+          id?: string
+          platform?: Database["public"]["Enums"]["social_platform"]
+          post_id?: string
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["target_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_targets_connected_account_id_fkey"
+            columns: ["connected_account_id"]
+            isOneToOne: false
+            referencedRelation: "connected_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_targets_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          caption: string
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          id: string
+          media_asset_ids: string[]
+          per_platform_overrides: Json
+          published_at: string | null
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["post_status"]
+          updated_at: string
+          workspace_id: string
+          zernio_post_id: string | null
+        }
+        Insert: {
+          caption?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          media_asset_ids?: string[]
+          per_platform_overrides?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["post_status"]
+          updated_at?: string
+          workspace_id: string
+          zernio_post_id?: string | null
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          media_asset_ids?: string[]
+          per_platform_overrides?: Json
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["post_status"]
+          updated_at?: string
+          workspace_id?: string
+          zernio_post_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -110,6 +279,44 @@ export type Database = {
             columns: ["current_workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      publish_attempts: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          post_target_id: string
+          request_payload: Json | null
+          response_payload: Json | null
+          status: Database["public"]["Enums"]["target_status"]
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          post_target_id: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status: Database["public"]["Enums"]["target_status"]
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          post_target_id?: string
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: Database["public"]["Enums"]["target_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "publish_attempts_post_target_id_fkey"
+            columns: ["post_target_id"]
+            isOneToOne: false
+            referencedRelation: "post_targets"
             referencedColumns: ["id"]
           },
         ]
@@ -221,6 +428,15 @@ export type Database = {
     Enums: {
       account_status: "connected" | "disconnected" | "error" | "pending"
       app_role: "admin" | "user"
+      media_kind: "image" | "video"
+      post_status:
+        | "draft"
+        | "scheduled"
+        | "publishing"
+        | "published"
+        | "partial"
+        | "failed"
+        | "cancelled"
       social_platform:
         | "youtube"
         | "x"
@@ -233,6 +449,12 @@ export type Database = {
         | "bluesky"
         | "reddit"
         | "google_business"
+      target_status:
+        | "pending"
+        | "publishing"
+        | "published"
+        | "failed"
+        | "cancelled"
       workspace_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
@@ -363,6 +585,16 @@ export const Constants = {
     Enums: {
       account_status: ["connected", "disconnected", "error", "pending"],
       app_role: ["admin", "user"],
+      media_kind: ["image", "video"],
+      post_status: [
+        "draft",
+        "scheduled",
+        "publishing",
+        "published",
+        "partial",
+        "failed",
+        "cancelled",
+      ],
       social_platform: [
         "youtube",
         "x",
@@ -375,6 +607,13 @@ export const Constants = {
         "bluesky",
         "reddit",
         "google_business",
+      ],
+      target_status: [
+        "pending",
+        "publishing",
+        "published",
+        "failed",
+        "cancelled",
       ],
       workspace_role: ["owner", "admin", "member"],
     },
