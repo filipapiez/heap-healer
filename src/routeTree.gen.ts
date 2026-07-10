@@ -22,6 +22,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as ApiPublicZernioRouteImport } from './routes/api/public/zernio'
+import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -87,6 +88,11 @@ const ApiPublicZernioRoute = ApiPublicZernioRouteImport.update({
   path: '/api/public/zernio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
+  id: '/api/public/run-scheduled',
+  path: '/api/public/run-scheduled',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
 export interface FileRoutesByTo {
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
 export interface FileRoutesById {
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/_authenticated/new-post': typeof AuthenticatedNewPostRoute
   '/_authenticated/scheduled': typeof AuthenticatedScheduledRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
 export interface FileRouteTypes {
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/new-post'
     | '/scheduled'
     | '/settings'
+    | '/api/public/run-scheduled'
     | '/api/public/zernio'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/new-post'
     | '/scheduled'
     | '/settings'
+    | '/api/public/run-scheduled'
     | '/api/public/zernio'
   id:
     | '__root__'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/_authenticated/new-post'
     | '/_authenticated/scheduled'
     | '/_authenticated/settings'
+    | '/api/public/run-scheduled'
     | '/api/public/zernio'
   fileRoutesById: FileRoutesById
 }
@@ -182,6 +194,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicZernioRoute: typeof ApiPublicZernioRoute
 }
 
@@ -278,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicZernioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/run-scheduled': {
+      id: '/api/public/run-scheduled'
+      path: '/api/public/run-scheduled'
+      fullPath: '/api/public/run-scheduled'
+      preLoaderRoute: typeof ApiPublicRunScheduledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -312,6 +332,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicZernioRoute: ApiPublicZernioRoute,
 }
 export const routeTree = rootRouteImport
