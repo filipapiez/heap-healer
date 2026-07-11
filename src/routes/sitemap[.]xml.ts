@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { TRUST_PAGE_REFS } from "@/legal/pages";
 import { SEO_LAST_UPDATED, seoPages, SITE_URL } from "@/seo/pages";
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const urls = [
           { loc: SITE_URL, priority: "1.0" },
           { loc: `${SITE_URL}/resources`, priority: "0.9" },
+          ...TRUST_PAGE_REFS.map((page) => ({ loc: page.absoluteUrl, priority: "0.6" })),
           ...seoPages.map((page) => ({ loc: page.canonicalUrl, priority: "0.7" })),
         ];
 

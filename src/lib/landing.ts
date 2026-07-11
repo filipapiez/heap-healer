@@ -199,6 +199,7 @@ export const LANDING_HTML = `
       <a href="#engagement">Engagement</a>
       <a href="#seo">SEO audit</a>
       <a href="/resources">Resources</a>
+      <a href="/about">About</a>
       <a href="#brands">For agencies</a>
     </div>
     <div class="nav-cta">
@@ -472,7 +473,7 @@ export const LANDING_HTML = `
 <footer>
   <div class="wrap foot">
     <span>© 2026 MentionMyApp · Compose once. Publish everywhere.</span>
-    <span>We never ask for your social media passwords — connections use each platform's official sign-in.</span>
+    <span><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · <a href="/contact">Contact</a> · We never ask for your social media passwords — connections use each platform's official sign-in.</span>
   </div>
 </footer>
 `;

@@ -2,24 +2,27 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { featuredSeoPages, pagesByIntent, seoPages, SITE_NAME, SITE_URL } from "@/seo/pages";
 
 export const Route = createFileRoute("/resources")({
-  head: () => ({
-    meta: [
-      { title: `${SITE_NAME} SEO Audit Library - 1,000 specific audit pages` },
-      {
-        name: "description",
-        content:
-          "Browse 1,000 specific SEO audit, indexing, GBP, AEO/GEO, and technical SEO cleanup pages for Lovable, Vercel, Shopify, WordPress, Wix, and more.",
-      },
-      { name: "robots", content: "index,follow" },
-      { property: "og:title", content: `${SITE_NAME} SEO audit resource library` },
-      {
-        property: "og:description",
-        content:
-          "Specific URLs for high-intent SEO audit searches, built with a long-form golden template.",
-      },
-    ],
-    links: [{ rel: "canonical", href: `${SITE_URL}/resources` }],
-  }),
+  head: ({ matches }) =>
+    matches.at(-1)?.routeId === "/resources"
+      ? {
+          meta: [
+            { title: `${SITE_NAME} SEO Audit Library - 1,000 specific audit pages` },
+            {
+              name: "description",
+              content:
+                "Browse 1,000 specific SEO audit, indexing, GBP, AEO/GEO, and technical SEO cleanup pages for Lovable, Vercel, Shopify, WordPress, Wix, and more.",
+            },
+            { name: "robots", content: "index,follow" },
+            { property: "og:title", content: `${SITE_NAME} SEO audit resource library` },
+            {
+              property: "og:description",
+              content:
+                "Specific URLs for high-intent SEO audit searches, written as long-form audit guides.",
+            },
+          ],
+          links: [{ rel: "canonical", href: `${SITE_URL}/resources` }],
+        }
+      : {},
   component: ResourcesIndex,
 });
 
@@ -37,6 +40,18 @@ function ResourcesIndex() {
           <div className="flex items-center gap-4 text-sm">
             <Link to="/resources" className="font-medium text-[var(--color-signal-600)]">
               Resources
+            </Link>
+            <Link
+              to="/how-it-works"
+              className="font-medium text-[var(--color-ink-700)] hover:text-[var(--color-ink-900)]"
+            >
+              How it works
+            </Link>
+            <Link
+              to="/about"
+              className="font-medium text-[var(--color-ink-700)] hover:text-[var(--color-ink-900)]"
+            >
+              About
             </Link>
             <Link
               to="/seo-audit"
@@ -58,16 +73,16 @@ function ResourcesIndex() {
         <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-signal-600)]">
-              Golden-template SEO library
+              SEO audit resource library
             </p>
             <h1 className="mt-3 max-w-4xl font-display text-4xl font-bold leading-tight md:text-6xl">
               1,000 specific URLs for SEO audit, indexing, GBP, and AI visibility searches.
             </h1>
             <p className="mt-5 max-w-3xl text-lg leading-8 text-[var(--color-ink-700)]">
               Each page targets one real search pattern: a stack, an audit problem, and a business
-              type. No more generic “launch playbook” pages. These are long-form audit pages built
-              for searches like Lovable SEO audit for SaaS startups, Vercel indexing fix for AI
-              tools, and Wix Google Business Profile audit for roofers.
+              type. These are long-form audit pages for searches like Lovable SEO audit for SaaS
+              startups, Vercel indexing fix for AI tools, and Wix Google Business Profile audit for
+              roofers.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a className="btn-primary" href="/sitemap.xml">
@@ -92,7 +107,7 @@ function ResourcesIndex() {
               </div>
             </div>
             <div className="mt-4 rounded-xl border border-[var(--color-mist-200)] p-4">
-              <div className="text-sm font-semibold">Golden template per page</div>
+              <div className="text-sm font-semibold">Audit structure per page</div>
               <ul className="mt-3 space-y-2 text-sm text-[var(--color-ink-700)]">
                 <li>Direct answer and search intent</li>
                 <li>Technical, indexing, GBP, and AI visibility sections</li>

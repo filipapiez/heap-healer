@@ -100,6 +100,12 @@ function ResourcePage() {
               Resources
             </Link>
             <Link
+              to="/how-it-works"
+              className="font-medium text-[var(--color-ink-700)] hover:text-[var(--color-ink-900)]"
+            >
+              How it works
+            </Link>
+            <Link
               to="/seo-audit"
               className="font-medium text-[var(--color-ink-700)] hover:text-[var(--color-ink-900)]"
             >
@@ -120,7 +126,7 @@ function ResourcePage() {
           <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[minmax(0,1fr)_520px] lg:items-center">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-signal-600)]">
-                Golden-template audit / {page.builder.name} / {page.vertical.name}
+                Deep audit guide / {page.builder.name} / {page.vertical.name}
               </p>
               <h1 className="mt-3 max-w-4xl font-display text-4xl font-bold leading-tight md:text-6xl">
                 {page.title}
@@ -136,12 +142,12 @@ function ResourcePage() {
                 />
                 <HeroMetric
                   icon={<FileSearch className="h-4 w-4" />}
-                  label="Article depth"
+                  label="Guide depth"
                   value={`${article.wordCount} words`}
                 />
                 <HeroMetric
                   icon={<Search className="h-4 w-4" />}
-                  label="Target keyword"
+                  label="Search target"
                   value={page.keyword}
                 />
               </div>
@@ -196,7 +202,7 @@ function ResourcePage() {
           <aside className="lg:sticky lg:top-6 lg:self-start">
             <div className="rounded-2xl border border-[var(--color-mist-200)] bg-white p-5 shadow-sm">
               <h2 className="font-display text-sm font-bold uppercase tracking-[0.1em]">
-                Golden template
+                Audit sections
               </h2>
               <ol className="mt-4 space-y-2 text-sm leading-6 text-[var(--color-ink-700)]">
                 {toc.map((item: any) => (
@@ -234,7 +240,7 @@ function ResourcePage() {
                 Blunt audit summary
               </p>
               <h2 className="mt-3 font-display text-3xl font-bold">
-                This URL is built for one search, one reader, and one fix path.
+                This guide focuses on one search, one reader, and one fix path.
               </h2>
               <div className="mt-6 grid gap-3 md:grid-cols-3">
                 <DarkMiniStat label="Stack failure" value={page.builder.commonFailure} />
@@ -505,7 +511,7 @@ function buildReportPreviewImage(page: SeoPage, article: SeoArticle) {
       <text x="294" y="488" font-size="30" font-weight="800" fill="#535D72">/10</text>
       <rect x="112" y="532" width="330" height="20" rx="10" fill="#E4E7F2"/>
       <rect x="112" y="532" width="${Math.round(330 * (scorePercent / 100))}" height="20" rx="10" fill="#5B5BD6"/>
-      <text x="112" y="590" font-size="20" font-weight="700" fill="#535D72">${article.wordCount} words / ${issueCount} checks / indexable URL</text>
+      <text x="112" y="590" font-size="20" font-weight="700" fill="#535D72">${article.wordCount} words / ${issueCount} checks / resource URL</text>
 
       <rect x="558" y="348" width="586" height="284" rx="28" fill="#F7F8FC" stroke="#E4E7F2"/>
       <text x="590" y="400" font-size="19" font-weight="800" fill="#535D72">Bad things this page checks</text>
@@ -513,7 +519,7 @@ function buildReportPreviewImage(page: SeoPage, article: SeoArticle) {
 
       <rect x="78" y="662" width="1030" height="28" rx="14" fill="#EEF0F7"/>
       <rect x="78" y="662" width="710" height="28" rx="14" fill="#5B5BD6"/>
-      <text x="92" y="682" font-size="15" font-weight="800" fill="#FFFFFF">Golden template: crawl, index, GBP, AEO/GEO, content, cost, measurement</text>
+      <text x="92" y="682" font-size="15" font-weight="800" fill="#FFFFFF">Audit framework: crawl, index, GBP, AEO/GEO, content, cost, measurement</text>
     </svg>
   `;
 

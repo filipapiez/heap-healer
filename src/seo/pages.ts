@@ -130,7 +130,7 @@ const builders: Builder[] = [
   {
     slug: "nextjs",
     name: "Next.js",
-    stackSignal: "server rendering, app router pages, API routes, and scalable programmatic SEO",
+    stackSignal: "server rendering, app router pages, API routes, and large content libraries",
     commonFailure: "dynamic pages with duplicate templates, stale sitemaps, bad canonicals, and no quality threshold for generated URLs",
     fixFocus: "indexable server pages, unique content modules, sitemap partitioning, schema, and canonical rules by route type",
   },
@@ -367,7 +367,7 @@ function createSeoPages(): SeoPage[] {
         const estimatedScore = 3 + ((index * 7) % 58) / 10;
         const description = [
           `${SITE_NAME} guide to ${keyword}.`,
-          `Use the golden audit template to find indexing issues, GBP gaps, AEO/GEO weaknesses, and fixes that matter for ${vertical.name}.`,
+          `Use the audit framework to find indexing issues, GBP gaps, AEO/GEO weaknesses, and fixes that matter for ${vertical.name}.`,
         ].join(" ");
 
         pages.push({
@@ -418,7 +418,7 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
   const product = SITE_NAME;
   const shortTarget = `${builder.name} ${intent.label} for ${vertical.name}`;
 
-  const summary = `${page.title} is a long-form golden-template guide for teams that need more than a surface-level SEO score. It explains the search intent, the technical failure patterns that show up on ${builder.name} sites, the local and AI visibility signals ${vertical.name} need, and the exact order of fixes that should happen before anyone buys more content or ads.`;
+  const summary = `${page.title} is a long-form audit guide for teams that need more than a surface-level SEO score. It explains the search intent, the technical failure patterns that show up on ${builder.name} sites, the local and AI visibility signals ${vertical.name} need, and the exact order of fixes that should happen before anyone buys more content or ads.`;
 
   const sections: SeoSection[] = [
     {
@@ -426,7 +426,7 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
       heading: `Direct answer for ${shortTarget}`,
       paragraphs: [
         `A proper ${intent.label} should tell ${vertical.name} what is broken, what is already working, and which fixes deserve attention first. The goal is not to produce a pretty PDF full of generic advice. The goal is to turn a messy website into a short operational plan: which pages should be indexed, which URLs should be removed or noindexed, which page templates need better metadata, and which trust signals are missing from the path between search result and conversion.`,
-        `For ${builder.name} sites, that matters because the stack itself creates recognizable patterns. The good news is speed: teams can launch, iterate, and redesign quickly. The bad news is that fast builds often ship with ${builder.commonFailure}. A golden-template audit looks past the visual design and checks whether Google, AI search systems, and local discovery surfaces can understand the site without guessing. If they cannot, more content will only multiply the same weakness.`,
+        `For ${builder.name} sites, that matters because the stack itself creates recognizable patterns. The good news is speed: teams can launch, iterate, and redesign quickly. The bad news is that fast builds often ship with ${builder.commonFailure}. A serious audit looks past the visual design and checks whether Google, AI search systems, and local discovery surfaces can understand the site without guessing. If they cannot, more content will only multiply the same weakness.`,
       ],
       bullets: [
         `Primary target keyword: ${page.keyword}.`,
@@ -454,7 +454,7 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
       heading: `Why ${builder.name} changes the audit`,
       paragraphs: [
         `${builder.name} is useful because it helps teams ship. That speed is exactly why audits need to be stricter. Pages can look finished while the underlying SEO surface is still shallow. A crawler may see the same shell across routes, a sitemap may include pages that should never be indexed, and a beautiful section may have no crawlable copy that explains the offer. The stack does not make SEO impossible, but it changes what should be checked first.`,
-        `The golden template starts with ${builder.stackSignal}, then checks the risk that usually follows: ${builder.commonFailure}. The fix is not to rebuild everything from scratch. The fix is ${builder.fixFocus}. When that foundation is in place, content has a chance to rank because each page is connected to a real URL, a real intent, and a real quality threshold.`,
+        `The audit starts with ${builder.stackSignal}, then checks the risk that usually follows: ${builder.commonFailure}. The fix is not to rebuild everything from scratch. The fix is ${builder.fixFocus}. When that foundation is in place, content has a chance to rank because each page is connected to a real URL, a real intent, and a real quality threshold.`,
       ],
     },
     {
@@ -531,7 +531,7 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
       heading: "AEO and GEO readiness",
       paragraphs: [
         `Search is no longer only ten blue links. AI answers, summary engines, and recommendation systems need entity clarity. They need to know what the business is, who it serves, what evidence supports it, and what sources confirm it. AEO and GEO do not replace SEO, but they expose weak SEO faster. If a site has no methodology page, no FAQs, no structured data, no source pages, and no clear comparisons, AI systems have little to cite.`,
-        `For ${vertical.name}, the audit should check Organization, LocalBusiness, Product, Service, FAQ, Article, and Review schema where appropriate. It should also look for llms.txt or a similar AI context file, but that file is only a supplement. The stronger signal is crawlable, factual content that answers real questions. The golden template builds those answers into every important page so AI systems do not have to infer the basics.`,
+        `For ${vertical.name}, the audit should check Organization, LocalBusiness, Product, Service, FAQ, Article, and Review schema where appropriate. It should also look for llms.txt or a similar AI context file, but that file is only a supplement. The stronger signal is crawlable, factual content that answers real questions. A strong audit builds those answers into every important page so AI systems do not have to infer the basics.`,
       ],
       bullets: [
         "Add structured data that matches the actual business model.",
@@ -556,10 +556,10 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
     },
     {
       eyebrow: "Step 11",
-      heading: "The golden audit template",
+      heading: "The audit framework",
       paragraphs: [
-        `The golden template is simple but strict: direct answer, search intent, stack diagnosis, trust layer, technical crawl checks, indexing plan, on-page fixes, GBP proof, AEO/GEO readiness, content plan, implementation roadmap, cost range, measurement plan, and FAQs. Each section exists because it answers a real objection. If a page cannot fill one of those sections with useful detail, the business probably needs more proof before scaling SEO.`,
-        `This template also keeps the report honest. It separates what is actually broken from what would be nice to have. It does not pretend that a tool can guarantee rankings. It shows the customer why they may need a developer, an SEO specialist, a content person, or a GBP operator. That is why it works well for sales: it makes the problem visible without hiding the effort required to fix it.`,
+        `The framework is simple but strict: direct answer, search intent, stack diagnosis, trust layer, technical crawl checks, indexing plan, on-page fixes, GBP proof, AEO/GEO readiness, content plan, implementation roadmap, cost range, measurement plan, and FAQs. Each section exists because it answers a real objection. If a page cannot fill one of those sections with useful detail, the business probably needs more proof before scaling SEO.`,
+        `This structure also keeps the report honest. It separates what is actually broken from what would be nice to have. It does not pretend that a tool can guarantee rankings. It shows the customer why they may need a developer, an SEO specialist, a content person, or a GBP operator. That is why it works well for sales: it makes the problem visible without hiding the effort required to fix it.`,
       ],
       bullets: [
         "Start with the blunt diagnosis.",
@@ -614,7 +614,7 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
       eyebrow: "Step 15",
       heading: "Final checklist",
       paragraphs: [
-        `Before publishing or sending the audit, read it like the customer. Does it explain the problem in plain language? Does it show enough good things to feel fair? Does it list enough bad things to be useful? Does it separate technical fixes from content work? Does it mention GBP and AI visibility when they matter? Does it give a cost range and an order of operations? If not, it is not the golden template yet.`,
+        `Before publishing or sending the audit, read it like the customer. Does it explain the problem in plain language? Does it show enough good things to feel fair? Does it list enough bad things to be useful? Does it separate technical fixes from content work? Does it mention GBP and AI visibility when they matter? Does it give a cost range and an order of operations? If not, it is not useful enough yet.`,
         `The final version should feel specific to ${builder.name}, specific to ${vertical.name}, and specific to ${intent.searchIntent}. That specificity is what makes the URL worth indexing. It is also what makes the page useful as a sales asset. The customer should be able to read it, recognize their situation, and understand why fixing the foundation now is cheaper than guessing for another six months.`,
       ],
       bullets: [
