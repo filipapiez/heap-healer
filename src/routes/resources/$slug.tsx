@@ -78,7 +78,7 @@ export const Route = createFileRoute("/resources/$slug")({
 
 function ResourcePage() {
   const { page, article, related, reportImage } = Route.useLoaderData();
-  const toc = article.sections.map((section) => ({
+  const toc = article.sections.map((section: any) => ({
     id: slugify(section.heading),
     heading: section.heading,
     eyebrow: section.eyebrow,
@@ -250,13 +250,13 @@ function ResourcePage() {
             </section>
 
             <section className="mt-8 grid gap-4 lg:grid-cols-3">
-              {prioritySections.map((section) => (
+              {prioritySections.map((section: any) => (
                 <PriorityCard key={section.heading} section={section} />
               ))}
             </section>
 
             <div className="mt-10 space-y-8">
-              {article.sections.map((section) => (
+              {article.sections.map((section: any) => (
                 <ArticleSection key={section.heading} section={section} />
               ))}
             </div>
@@ -271,7 +271,7 @@ function ResourcePage() {
                 </h2>
               </div>
               <div className="mt-6 grid gap-4">
-                {article.faqs.map((faq) => (
+                {article.faqs.map((faq: any) => (
                   <div
                     key={faq.question}
                     className="rounded-xl border border-[var(--color-mist-200)] bg-white p-5"
@@ -298,7 +298,7 @@ function ResourcePage() {
                 </Link>
               </div>
               <div className="mt-6 grid gap-3 md:grid-cols-2">
-                {related.map((relatedPage) => (
+                {related.map((relatedPage: any) => (
                   <Link
                     key={relatedPage.slug}
                     to="/resources/$slug"
