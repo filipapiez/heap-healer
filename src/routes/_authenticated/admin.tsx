@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { getAdminStatus } from "@/lib/engagement.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Admin — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Admin — MentionMyApp" }] }),
   component: AdminPage,
 });
 

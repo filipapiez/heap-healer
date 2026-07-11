@@ -5,7 +5,7 @@ import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { getEngagementStats } from "@/lib/engagement.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Overview — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Overview — MentionMyApp" }] }),
   component: Overview,
 });
 

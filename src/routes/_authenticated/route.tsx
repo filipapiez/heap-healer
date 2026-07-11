@@ -49,7 +49,7 @@ function DashboardLayout() {
     <div className="flex min-h-screen bg-[var(--color-mist-50)] font-body text-[var(--color-ink-900)]">
       <aside className="flex w-64 shrink-0 flex-col bg-[var(--color-ink-900)] text-white">
         <div className="px-5 pb-2 pt-6">
-          <div className="font-display text-xl font-bold">SocialFlow</div>
+          <div className="font-display text-xl font-bold">MentionMyApp</div>
           <div className="text-[11px] text-white/40">Compose once. Publish everywhere.</div>
         </div>
         <WorkspaceSwitcher />

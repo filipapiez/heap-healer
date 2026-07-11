@@ -23,7 +23,7 @@ const PLATFORMS: { id: Platform; label: string; icon: string }[] = [
 ];
 
 export const Route = createFileRoute("/_authenticated/accounts")({
-  head: () => ({ meta: [{ title: "Connected accounts — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Connected accounts — MentionMyApp" }] }),
   component: AccountsPage,
 });
 
@@ -57,7 +57,7 @@ function AccountsPage() {
     <div>
       <PageHeader
         title="Connected accounts"
-        subtitle="Link a platform once — SocialFlow publishes to it from every post."
+        subtitle="Link a platform once — MentionMyApp publishes to it from every post."
       />
 
       {error && (

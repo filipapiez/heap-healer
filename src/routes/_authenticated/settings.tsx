@@ -5,7 +5,7 @@ import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { WatermarkSelector } from "@/components/WatermarkSelector";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Settings — MentionMyApp" }] }),
   component: SettingsPage,
 });
 
