@@ -19,11 +19,11 @@ export const YOUTUBE_SCOPES = [
 ].join(" ");
 
 export function requireGoogleEnv() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
     throw new Error(
-      "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not configured. Add them via Lovable secrets.",
+      "GOOGLE_OAUTH_CLIENT_ID / GOOGLE_OAUTH_CLIENT_SECRET are not configured.",
     );
   }
   return { clientId, clientSecret };
