@@ -23,10 +23,27 @@ export const PLATFORM_LABELS: Record<SocialPlatform, string> = {
   google_business: "Google Business",
 };
 
+// Map our internal enum to Zernio's platform slugs.
+const ZERNIO_PLATFORM: Record<SocialPlatform, string> = {
+  youtube: "youtube",
+  x: "twitter",
+  instagram: "instagram",
+  facebook: "facebook",
+  pinterest: "pinterest",
+  linkedin: "linkedin",
+  tiktok: "tiktok",
+  threads: "threads",
+  bluesky: "bluesky",
+  reddit: "reddit",
+  google_business: "googlebusiness",
+};
+
 function baseUrl() {
-  const url = process.env.ZERNIO_API_URL;
-  if (!url) throw new Error("ZERNIO_API_URL is not configured");
-  return url.replace(/\/$/, "");
+  const raw = process.env.ZERNIO_API_URL;
+  if (!raw) throw new Error("ZERNIO_API_URL is not configured");
+  // Accept "https://zernio.com", "https://zernio.com/", or "https://zernio.com/api".
+  const trimmed = raw.replace(/\/+$/, "");
+  return /\/api$/.test(trimmed) ? trimmed : `${trimmed}/api`;
 }
 
 function apiKey() {
@@ -59,30 +76,57 @@ async function zernio<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 /**
- * Ask Zernio for a hosted connect URL. The user is sent there; Zernio then
- * calls our webhook (account.connected) with the new external account.
+ * Find or create a Zernio profile for a given workspace. Profiles are the
+ * account containers in Zernio's model; we use one per workspace and match by
+ * the workspace name we stored on Zernio's side.
+ */
+export async function ensureZernioProfileId(workspaceName: string, workspaceId: string): Promise<string> {
+  const nameTag = `mma:${workspaceId}`; // stable, unique per workspace
+  const list = await zernio<{ profiles?: Array<{ _id: string; name: string; description?: string }> }>(
+    "/v1/profiles",
+    { method: "GET" },
+  );
+  const existing = (list.profiles ?? []).find(
+    (p) => p.description === nameTag || p.name === nameTag,
+  );
+  if (existing) return existing._id;
+  const created = await zernio<{ profile: { _id: string } }>("/v1/profiles", {
+    method: "POST",
+    body: JSON.stringify({
+      name: workspaceName.slice(0, 60) || "Workspace",
+      description: nameTag,
+    }),
+  });
+  return created.profile._id;
+}
+
+/**
+ * Ask Zernio for a hosted connect URL. The user is redirected there; Zernio
+ * completes OAuth and then redirects back to our redirectUri and also fires
+ * an account.connected webhook we ingest in /api/public/zernio.
  */
 export async function createConnectLink(input: {
   platform: SocialPlatform;
-  workspaceId: string;
-  userId: string;
+  profileId: string;
   redirectUri: string;
-  webhookUrl: string;
 }): Promise<{ url: string }> {
-  return zernio<{ url: string }>("/v1/connect-link", {
-    method: "POST",
-    body: JSON.stringify({
-      platform: input.platform,
-      state: `${input.workspaceId}:${input.userId}`,
-      redirect_uri: input.redirectUri,
-      webhook_url: input.webhookUrl,
-    }),
-  });
+  const platform = ZERNIO_PLATFORM[input.platform];
+  const qs = new URLSearchParams({
+    profileId: input.profileId,
+    redirect_url: input.redirectUri,
+  }).toString();
+  const res = await zernio<{ authUrl: string }>(
+    `/v1/connect/${encodeURIComponent(platform)}?${qs}`,
+    { method: "GET" },
+  );
+  return { url: res.authUrl };
 }
 
 export async function disconnectZernioAccount(zernioAccountId: string): Promise<void> {
-  await zernio(`/v1/accounts/${encodeURIComponent(zernioAccountId)}`, {
+  // Zernio's account resource lives at DELETE /v1/accounts/{accountId}.
+  await fetch(`${baseUrl()}/v1/accounts/${encodeURIComponent(zernioAccountId)}`, {
     method: "DELETE",
+    headers: { Authorization: `Bearer ${apiKey()}` },
   });
 }
 
@@ -96,15 +140,15 @@ export async function publishToZernio(input: {
   caption: string;
   mediaUrls: string[];
 }): Promise<{ external_post_id?: string; external_url?: string }> {
-  return zernio<{ external_post_id?: string; external_url?: string }>("/v1/posts", {
+  const res = await zernio<{ postId?: string; publicUrl?: string }>("/v1/posts", {
     method: "POST",
     body: JSON.stringify({
-      account_id: input.zernioAccountId,
-      platform: input.platform,
-      caption: input.caption,
-      media: input.mediaUrls,
+      accounts: [input.zernioAccountId],
+      content: input.caption,
+      mediaUrls: input.mediaUrls,
     }),
   });
+  return { external_post_id: res.postId, external_url: res.publicUrl };
 }
 
 export async function verifyWebhookSignature(rawBody: string, signature: string | null): Promise<boolean> {
