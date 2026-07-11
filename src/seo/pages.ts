@@ -4,34 +4,31 @@ export const SITE_URL = "https://mentionmyapp.com";
 export const SEO_PAGE_COUNT = 1000;
 export const SEO_LAST_UPDATED = "2026-07-10";
 
-type Platform = {
+type Builder = {
   slug: string;
   name: string;
-  audienceSignal: string;
-  editorialRisk: string;
-  proofStyle: string;
+  stackSignal: string;
+  commonFailure: string;
+  fixFocus: string;
 };
 
-type Audience = {
+type Vertical = {
   slug: string;
   name: string;
-  buyingMoment: string;
-  pain: string;
-  proof: string;
+  buyerMoment: string;
+  trustSignal: string;
+  localSignal: string;
+  contentNeed: string;
 };
 
 type Intent = {
   slug: string;
   label: string;
+  titleNoun: string;
   h1Prefix: string;
   searchIntent: string;
-  articleAngle: string;
-};
-
-type Competitor = {
-  name: string;
-  strength: string;
-  gap: string;
+  outcome: string;
+  auditFocus: string;
 };
 
 export type SeoPage = {
@@ -40,15 +37,15 @@ export type SeoPage = {
   title: string;
   description: string;
   canonicalUrl: string;
-  platform: Platform;
-  audience: Audience;
+  builder: Builder;
+  vertical: Vertical;
   intent: Intent;
-  primaryCompetitor: Competitor;
-  secondaryCompetitors: Competitor[];
   keyword: string;
+  estimatedScore: number;
 };
 
 export type SeoSection = {
+  eyebrow: string;
   heading: string;
   paragraphs: string[];
   bullets?: string[];
@@ -66,346 +63,311 @@ export type SeoArticle = {
   wordCount: number;
 };
 
-const platforms: Platform[] = [
+const builders: Builder[] = [
   {
-    slug: "linkedin",
-    name: "LinkedIn",
-    audienceSignal: "operator credibility, hiring momentum, founder expertise, and practical proof",
-    editorialRisk: "generic thought leadership that sounds polished but says nothing specific",
-    proofStyle: "screenshots, shipped examples, customer language, and a clear point of view",
+    slug: "lovable",
+    name: "Lovable",
+    stackSignal: "AI-generated React apps, SPA routing, app shells, and fast visual iteration",
+    commonFailure: "soft 404s, duplicate app shells, thin metadata, and auth routes that look indexable",
+    fixFocus: "hard indexability rules, route-level metadata, canonical discipline, and a sitemap that only includes pages worth indexing",
   },
   {
-    slug: "reddit",
-    name: "Reddit",
-    audienceSignal: "specific pain, transparent tradeoffs, useful replies, and community fit",
-    editorialRisk: "drive-by promotion, vague launch posts, and comments that ignore the room",
-    proofStyle:
-      "context-rich posts, honest lessons, comparison notes, and helpful follow-up answers",
+    slug: "vercel",
+    name: "Vercel",
+    stackSignal: "Next.js, React, edge deployments, serverless functions, and fast preview URLs",
+    commonFailure: "preview-domain leakage, duplicate host versions, missing noindex rules, and programmatic pages without enough unique value",
+    fixFocus: "production-domain canonicals, clean redirects, metadata templates, and server-rendered pages for important search paths",
   },
   {
-    slug: "forbes",
-    name: "Forbes",
-    audienceSignal:
-      "credible founder story, market timing, expert commentary, and category relevance",
-    editorialRisk: "claiming authority before the story has evidence or a broader business hook",
-    proofStyle:
-      "data points, customer outcomes, original analysis, and quotable executive perspective",
+    slug: "webflow",
+    name: "Webflow",
+    stackSignal: "visual CMS pages, marketing sites, collections, and designer-owned landing pages",
+    commonFailure: "beautiful pages with weak heading hierarchy, bloated scripts, duplicate collection templates, and missing service intent",
+    fixFocus: "collection-level SEO templates, internal links, schema, service pages, and conversion proof above the fold",
   },
   {
-    slug: "yahoo-finance",
-    name: "Yahoo Finance",
-    audienceSignal:
-      "business impact, funding context, market traction, partnerships, and financial relevance",
-    editorialRisk:
-      "publishing a thin company announcement without news value or investor-facing clarity",
-    proofStyle:
-      "milestones, revenue context, growth metrics, launch dates, and sober market framing",
+    slug: "wordpress",
+    name: "WordPress",
+    stackSignal: "themes, plugins, content-heavy sites, local service pages, and blog archives",
+    commonFailure: "plugin conflicts, tag/archive bloat, slow pages, duplicate URLs, and old content competing with new landing pages",
+    fixFocus: "index pruning, Core Web Vitals, structured data, canonical cleanup, and better topical clusters",
   },
   {
-    slug: "techcrunch",
-    name: "TechCrunch",
-    audienceSignal:
-      "venture-scale novelty, technical differentiation, funding, and fast-moving markets",
-    editorialRisk: "pitching a feature release as if it were a category shift",
-    proofStyle: "founder background, market contrast, product screenshots, and user traction",
+    slug: "shopify",
+    name: "Shopify",
+    stackSignal: "collections, products, variants, ecommerce filters, reviews, and merchandising pages",
+    commonFailure: "thin collection copy, duplicate product variants, faceted URL bloat, and missing comparison/category content",
+    fixFocus: "collection intent, canonical filters, product schema, review proof, and category pages that answer buying questions",
   },
   {
-    slug: "product-hunt",
-    name: "Product Hunt",
-    audienceSignal:
-      "launch energy, maker clarity, early adopter fit, and an obvious first use case",
-    editorialRisk: "launching without a crisp demo, maker story, or post-launch follow-up plan",
-    proofStyle: "short demos, maker notes, changelog proof, and prompt replies",
+    slug: "framer",
+    name: "Framer",
+    stackSignal: "polished visual landing pages, animation, templates, and startup marketing sites",
+    commonFailure: "thin body copy, vague H1s, missing trust pages, and one-page sites trying to rank for too many queries",
+    fixFocus: "clear search pages, crawlable copy, canonical setup, trust pages, and use-case pages that go beyond the homepage",
   },
   {
-    slug: "hacker-news",
-    name: "Hacker News",
-    audienceSignal: "technical novelty, implementation depth, open tradeoffs, and founder candor",
-    editorialRisk:
-      "marketing copy that hides the engineering decisions readers actually care about",
-    proofStyle: "architecture notes, benchmarks, failure modes, and clear technical constraints",
+    slug: "wix",
+    name: "Wix",
+    stackSignal: "small business websites, local pages, visual builders, and owner-managed content",
+    commonFailure: "weak local intent, inconsistent page titles, missing GBP alignment, and service pages with little unique proof",
+    fixFocus: "local landing pages, GBP consistency, service schema, trust signals, and practical internal linking",
   },
   {
-    slug: "quora",
-    name: "Quora",
-    audienceSignal: "search-aligned answers, durable explanation, and topic authority",
-    editorialRisk: "answers that read like ads instead of useful expertise",
-    proofStyle: "step-by-step responses, examples, screenshots, and balanced recommendations",
+    slug: "squarespace",
+    name: "Squarespace",
+    stackSignal: "portfolio sites, service businesses, creative brands, and brochure-style pages",
+    commonFailure: "pretty pages with vague copy, missing service depth, weak local signals, and no content moat",
+    fixFocus: "service-specific URLs, better copy depth, local trust, image alt text, and FAQ sections that match search behavior",
   },
   {
-    slug: "x-twitter",
-    name: "X",
-    audienceSignal: "timely commentary, founder voice, memorable framing, and distribution loops",
-    editorialRisk: "threads that overpromise, chase trends, or lack a concrete takeaway",
-    proofStyle: "before-and-after examples, concise lessons, metrics, and repeatable frameworks",
+    slug: "react",
+    name: "React",
+    stackSignal: "custom SPAs, dashboards, client-side routing, component systems, and authenticated apps",
+    commonFailure: "Google seeing the same shell on many URLs, client-only metadata, blank initial HTML, and crawl traps",
+    fixFocus: "SSR or prerendering, route-aware metadata, noindex boundaries, real 404s, and clear public/app separation",
   },
   {
-    slug: "tiktok",
-    name: "TikTok",
-    audienceSignal: "clear hooks, fast proof, visible product moments, and creator-native pacing",
-    editorialRisk: "corporate explainer videos that ignore how discovery actually works",
-    proofStyle: "screen recordings, creator walkthroughs, use-case demos, and outcome clips",
-  },
-  {
-    slug: "youtube",
-    name: "YouTube",
-    audienceSignal:
-      "searchable tutorials, product walkthroughs, founder explainers, and durable education",
-    editorialRisk: "videos with broad titles, weak chapters, and no reason to keep watching",
-    proofStyle: "structured demos, chaptered guides, real workflows, and comparison walkthroughs",
-  },
-  {
-    slug: "instagram",
-    name: "Instagram",
-    audienceSignal:
-      "visual proof, creator trust, product transformation, and consistent brand memory",
-    editorialRisk: "aesthetic posts that never make the app's practical value obvious",
-    proofStyle: "reels, carousel breakdowns, founder clips, and customer visuals",
-  },
-  {
-    slug: "facebook",
-    name: "Facebook",
-    audienceSignal:
-      "community trust, local or niche group relevance, and useful conversation starters",
-    editorialRisk: "broadcasting announcements into groups that expect discussion",
-    proofStyle: "group-specific context, founder replies, practical examples, and case notes",
-  },
-  {
-    slug: "substack",
-    name: "Substack",
-    audienceSignal: "thoughtful narrative, category insight, and a reason to subscribe for updates",
-    editorialRisk: "newsletter posts that are too promotional to be saved or forwarded",
-    proofStyle: "founder essays, field notes, teardown posts, and reader-friendly frameworks",
-  },
-  {
-    slug: "medium",
-    name: "Medium",
-    audienceSignal: "evergreen education, personal experience, and clear search-friendly structure",
-    editorialRisk: "generic how-to content that repeats what every competitor already says",
-    proofStyle: "original examples, workflow screenshots, and specific lessons learned",
-  },
-  {
-    slug: "indie-hackers",
-    name: "Indie Hackers",
-    audienceSignal:
-      "transparent building lessons, revenue experiments, and founder-to-founder usefulness",
-    editorialRisk: "growth claims without numbers, failures, or concrete process detail",
-    proofStyle: "monthly updates, experiment logs, honest retrospectives, and revenue context",
-  },
-  {
-    slug: "google-news",
-    name: "Google News",
-    audienceSignal:
-      "timely announcements, entity clarity, authoritative source pages, and clean metadata",
-    editorialRisk: "publishing a page that looks like news but lacks a factual event",
-    proofStyle: "dates, quotes, product facts, structured data, and a clear company boilerplate",
-  },
-  {
-    slug: "apple-app-store",
-    name: "the Apple App Store",
-    audienceSignal: "ratings, screenshots, category language, and conversion-focused release notes",
-    editorialRisk: "optimizing only keywords while ignoring trust, visuals, and review quality",
-    proofStyle: "feature screenshots, update notes, rating snippets, and use-case clarity",
-  },
-  {
-    slug: "g2",
-    name: "G2",
-    audienceSignal: "verified reviews, category fit, comparison intent, and buyer-ready proof",
-    editorialRisk: "treating review presence as a badge instead of a conversion asset",
-    proofStyle: "review themes, implementation notes, competitor contrast, and buyer FAQs",
-  },
-  {
-    slug: "capterra",
-    name: "Capterra",
-    audienceSignal: "software category intent, buyer checklists, pricing clarity, and use-case fit",
-    editorialRisk: "listing features without explaining who should choose the product and why",
-    proofStyle: "category pages, review takeaways, pricing context, and implementation examples",
+    slug: "nextjs",
+    name: "Next.js",
+    stackSignal: "server rendering, app router pages, API routes, and scalable programmatic SEO",
+    commonFailure: "dynamic pages with duplicate templates, stale sitemaps, bad canonicals, and no quality threshold for generated URLs",
+    fixFocus: "indexable server pages, unique content modules, sitemap partitioning, schema, and canonical rules by route type",
   },
 ];
 
-const audiences: Audience[] = [
+const verticals: Vertical[] = [
   {
-    slug: "saas-founders",
-    name: "SaaS founders",
-    buyingMoment: "launching a new feature, raising a round, or trying to prove category demand",
-    pain: "they need attention without turning every post into a sales pitch",
-    proof: "MRR movement, shipped features, customer quotes, and clear product positioning",
+    slug: "saas-startups",
+    name: "SaaS startups",
+    buyerMoment: "trying to turn a launch, feature release, or funding story into search demand",
+    trustSignal: "clear product positioning, security basics, founder proof, comparison pages, and customer outcomes",
+    localSignal: "usually lighter than product/entity signals unless the product serves a local market",
+    contentNeed: "use-case pages, competitor pages, integration pages, docs, and proof-led blog posts",
   },
   {
-    slug: "mobile-app-teams",
-    name: "mobile app teams",
-    buyingMoment: "preparing an App Store update, retention push, or cross-channel launch",
-    pain: "they need downloads from people who understand the use case before they install",
-    proof: "ratings, screenshots, retention notes, release updates, and user stories",
+    slug: "ai-tools",
+    name: "AI tools",
+    buyerMoment: "needing to prove the product is more than a generic wrapper or vague automation claim",
+    trustSignal: "workflow examples, data/privacy notes, before-and-after output, citations, and methodology",
+    localSignal: "less important than entity clarity, source mentions, and AI answer readiness",
+    contentNeed: "AEO/GEO pages, comparison pages, prompts/workflows, methodology, and transparent limitations",
   },
   {
-    slug: "ai-startups",
-    name: "AI startups",
-    buyingMoment: "turning a demo into trust while the market is crowded with similar claims",
-    pain: "they need to explain what the model or workflow changes in plain language",
-    proof: "benchmarks, workflow examples, privacy posture, and before-and-after output",
+    slug: "mobile-apps",
+    name: "mobile apps",
+    buyerMoment: "trying to convert searchers into installs before paid acquisition gets too expensive",
+    trustSignal: "ratings, screenshots, use cases, release notes, privacy policy, and support pages",
+    localSignal: "important when the app serves cities, venues, services, or local communities",
+    contentNeed: "feature pages, app store support pages, comparisons, problem pages, and review-led content",
   },
   {
-    slug: "b2b-saas",
-    name: "B2B SaaS teams",
-    buyingMoment: "entering a category where buyers compare tools before booking a demo",
-    pain: "they need credibility before sales ever joins the conversation",
-    proof: "integration lists, security notes, customer outcomes, and buyer objections",
+    slug: "local-service-businesses",
+    name: "local service businesses",
+    buyerMoment: "needing calls, quote requests, reviews, and map-pack visibility in a specific service area",
+    trustSignal: "reviews, service proof, license/insurance notes, photos, team pages, and clear contact paths",
+    localSignal: "GBP consistency, service-area pages, NAP accuracy, review velocity, and local citations",
+    contentNeed: "service pages, city pages, pricing explainers, FAQs, before/after examples, and review responses",
   },
   {
-    slug: "consumer-apps",
-    name: "consumer app marketers",
-    buyingMoment: "looking for repeatable discovery outside paid acquisition spikes",
-    pain: "they need memorable stories that travel beyond one ad campaign",
-    proof: "creator examples, retention hooks, app screenshots, and audience language",
+    slug: "roofers",
+    name: "roofers",
+    buyerMoment: "homeowners comparing emergency repair, replacement, inspection, and storm-damage options",
+    trustSignal: "project photos, service area, warranties, insurance help, reviews, and crew credibility",
+    localSignal: "GBP services, photos, review recency, service areas, and neighborhood landing pages",
+    contentNeed: "roof repair pages, replacement guides, storm pages, financing pages, and city-level service URLs",
   },
   {
-    slug: "developer-tools",
-    name: "developer tool teams",
-    buyingMoment: "earning trust from technical users who test claims quickly",
-    pain: "they need attention that survives scrutiny from engineers and power users",
-    proof: "docs, API examples, benchmarks, GitHub activity, and implementation notes",
+    slug: "dentists",
+    name: "dentists",
+    buyerMoment: "patients comparing nearby providers, insurance fit, emergency care, and cosmetic treatments",
+    trustSignal: "provider bios, reviews, accepted insurance, treatment pages, safety standards, and appointment clarity",
+    localSignal: "GBP categories, reviews, service listings, location pages, photos, and local medical trust signals",
+    contentNeed: "treatment pages, insurance pages, emergency pages, location pages, and patient FAQs",
   },
   {
-    slug: "fintech-apps",
-    name: "fintech app teams",
-    buyingMoment: "building trust in a market where compliance, clarity, and confidence matter",
-    pain: "they need credibility without making unsupported financial promises",
-    proof: "security posture, transparent fees, customer education, and risk-aware messaging",
+    slug: "restaurants",
+    name: "restaurants",
+    buyerMoment: "diners looking for a nearby place, menu proof, hours, photos, and reservation confidence",
+    trustSignal: "menu pages, photos, reviews, hours, location details, dietary notes, and reservation links",
+    localSignal: "GBP photos, menu sync, review replies, opening hours, posts, and map-pack consistency",
+    contentNeed: "menu pages, event pages, neighborhood pages, catering pages, and best-of local pages",
   },
   {
-    slug: "healthtech-apps",
-    name: "healthtech app teams",
-    buyingMoment: "explaining sensitive outcomes with care, accuracy, and trust",
-    pain: "they need visibility without sounding casual about regulated or personal topics",
-    proof: "clinical context, privacy language, user safeguards, and careful disclaimers",
+    slug: "gyms",
+    name: "gyms",
+    buyerMoment: "people comparing memberships, trainers, class schedules, location, and motivation fit",
+    trustSignal: "class pages, trainer bios, photos, reviews, pricing clarity, and transformation proof",
+    localSignal: "GBP reviews, photos, services, class posts, local landing pages, and consistent hours",
+    contentNeed: "class pages, trainer pages, pricing pages, beginner guides, and neighborhood workout pages",
   },
   {
-    slug: "productivity-apps",
-    name: "productivity app teams",
-    buyingMoment: "showing why another workflow tool deserves a place in someone's day",
-    pain: "they need practical proof that the product saves time instead of adding process",
-    proof: "workflow clips, time-saved examples, templates, and habit-building cues",
+    slug: "med-spas",
+    name: "med spas",
+    buyerMoment: "clients comparing treatments, safety, provider credibility, pricing, and before/after proof",
+    trustSignal: "treatment pages, provider credentials, before/after galleries, reviews, and safety language",
+    localSignal: "GBP services, treatment photos, location trust, review replies, and category consistency",
+    contentNeed: "treatment pages, contraindication FAQs, provider bios, pricing ranges, and local service pages",
   },
   {
-    slug: "ecommerce-apps",
-    name: "ecommerce app teams",
-    buyingMoment: "connecting product value to revenue, retention, or merchant operations",
-    pain: "they need buyer intent from merchants who are evaluating stack changes",
-    proof: "store examples, revenue lift notes, integration details, and merchant quotes",
+    slug: "law-firms",
+    name: "law firms",
+    buyerMoment: "people comparing legal help during a stressful, high-intent decision",
+    trustSignal: "practice-area pages, attorney bios, case context, disclaimers, reviews, and consultation paths",
+    localSignal: "GBP categories, practice area alignment, reviews, office pages, and local citations",
+    contentNeed: "practice-area pages, city pages, FAQ pages, attorney pages, and case-type explainers",
+  },
+  {
+    slug: "real-estate-agents",
+    name: "real estate agents",
+    buyerMoment: "buyers and sellers comparing local expertise, listings, neighborhoods, and trust",
+    trustSignal: "neighborhood knowledge, reviews, transaction proof, listings, bios, and market updates",
+    localSignal: "GBP reviews, office/service-area consistency, local photos, and neighborhood page depth",
+    contentNeed: "neighborhood pages, seller guides, buyer guides, market reports, and listing explainers",
+  },
+  {
+    slug: "ecommerce-stores",
+    name: "ecommerce stores",
+    buyerMoment: "shoppers comparing product categories, brands, reviews, shipping, and alternatives",
+    trustSignal: "reviews, product schema, shipping/returns clarity, collection copy, and comparison content",
+    localSignal: "important when stores have pickup, showrooms, or local inventory",
+    contentNeed: "collection pages, product guides, comparison pages, gift guides, and buying guides",
+  },
+  {
+    slug: "shopify-brands",
+    name: "Shopify brands",
+    buyerMoment: "trying to grow organic revenue without relying only on paid social or marketplaces",
+    trustSignal: "collection depth, reviews, product schema, return policy, delivery proof, and category authority",
+    localSignal: "depends on retail locations, local pickup, and region-specific delivery",
+    contentNeed: "collection hubs, comparison pages, product education, gift guides, and review-led content",
+  },
+  {
+    slug: "agencies",
+    name: "agencies",
+    buyerMoment: "needing a repeatable audit, reporting, and fulfillment process for clients",
+    trustSignal: "case studies, process pages, deliverables, pricing clarity, reviews, and reporting examples",
+    localSignal: "important for local agencies selling city-specific marketing services",
+    contentNeed: "service pages, industry pages, case studies, audit templates, and comparison pages",
+  },
+  {
+    slug: "coaches",
+    name: "coaches",
+    buyerMoment: "prospects comparing expertise, proof, fit, pricing, and transformation claims",
+    trustSignal: "bio proof, testimonials, program pages, FAQs, outcomes, and ethical disclaimers",
+    localSignal: "important for in-person coaches, gyms, clinics, and local workshops",
+    contentNeed: "program pages, niche pages, testimonials, method pages, and answer-led blog posts",
+  },
+  {
+    slug: "contractors",
+    name: "contractors",
+    buyerMoment: "property owners comparing price, availability, trust, examples, and service area",
+    trustSignal: "project photos, reviews, licensing, insurance, warranties, and fast contact options",
+    localSignal: "GBP services, service areas, photos, review responses, and city pages",
+    contentNeed: "service pages, project pages, city pages, cost guides, and maintenance FAQs",
+  },
+  {
+    slug: "clinics",
+    name: "clinics",
+    buyerMoment: "patients comparing treatment availability, safety, location, insurance, and provider trust",
+    trustSignal: "provider bios, treatment pages, reviews, insurance details, accessibility, and compliance language",
+    localSignal: "GBP categories, services, reviews, hours, appointment links, and local healthcare citations",
+    contentNeed: "condition pages, treatment pages, provider pages, location pages, and patient FAQs",
+  },
+  {
+    slug: "salons",
+    name: "salons",
+    buyerMoment: "clients comparing nearby stylists, services, prices, photos, availability, and reviews",
+    trustSignal: "service pages, stylist bios, before/after photos, reviews, booking links, and price ranges",
+    localSignal: "GBP photos, service menu, review replies, local categories, and opening hours",
+    contentNeed: "service pages, stylist pages, gallery pages, neighborhood pages, and trend guides",
+  },
+  {
+    slug: "travel-businesses",
+    name: "travel businesses",
+    buyerMoment: "travelers comparing itineraries, local expertise, safety, reviews, and booking confidence",
+    trustSignal: "itinerary pages, destination proof, reviews, policies, photos, and local expertise",
+    localSignal: "GBP matters for tour operators, agencies, attractions, and local travel services",
+    contentNeed: "destination pages, itinerary pages, travel guides, comparison pages, and seasonal content",
+  },
+  {
+    slug: "home-services",
+    name: "home services",
+    buyerMoment: "homeowners searching for urgent help, quote confidence, service proof, and nearby availability",
+    trustSignal: "reviews, before/after photos, service guarantees, technician proof, and easy contact paths",
+    localSignal: "GBP categories, service areas, reviews, photos, posts, and citation consistency",
+    contentNeed: "service pages, emergency pages, cost guides, city pages, and maintenance explainers",
   },
 ];
 
 const intents: Intent[] = [
   {
-    slug: "get-mentioned-on",
-    label: "get mentioned on",
-    h1Prefix: "How to get mentioned on",
-    searchIntent:
-      "founders searching for credible ways to earn a mention without pretending it is guaranteed",
-    articleAngle: "earned mention planning",
+    slug: "seo-audit",
+    label: "SEO audit",
+    titleNoun: "SEO Audit",
+    h1Prefix: "SEO audit for",
+    searchIntent: "someone wants a plain-English report showing what is broken, what is working, and what it will cost to fix",
+    outcome: "a prioritized technical and content roadmap that can be handed to a developer, agency, or founder",
+    auditFocus: "metadata, canonicals, headings, trust pages, internal links, sitemap quality, soft 404s, and search-intent coverage",
   },
   {
-    slug: "launch-playbook-for",
-    label: "launch playbook for",
-    h1Prefix: "Launch playbook for",
-    searchIntent: "teams planning a launch page, outreach sequence, and channel-specific proof",
-    articleAngle: "launch execution",
+    slug: "indexing-fix",
+    label: "indexing fix",
+    titleNoun: "Indexing Fix",
+    h1Prefix: "Indexing fix for",
+    searchIntent: "someone has pages that are discovered but not indexed, crawled but ignored, or shown as duplicate/soft 404",
+    outcome: "a cleaner sitemap, real status codes, noindex boundaries, canonical cleanup, and pages that deserve indexing",
+    auditFocus: "robots, sitemap URLs, app shells, route status codes, duplicate hosts, noindex tags, canonical targets, and thin pages",
   },
   {
-    slug: "organic-growth-on",
-    label: "organic growth on",
-    h1Prefix: "Organic growth on",
-    searchIntent: "marketers comparing sustainable discovery with paid acquisition",
-    articleAngle: "organic acquisition",
+    slug: "google-business-profile-audit",
+    label: "Google Business Profile audit",
+    titleNoun: "Google Business Profile Audit",
+    h1Prefix: "Google Business Profile audit for",
+    searchIntent: "someone wants better local visibility from GBP, reviews, posts, calls, directions, and map-pack trust",
+    outcome: "a GBP-to-website alignment plan that improves local proof and connects profile activity to crawlable pages",
+    auditFocus: "GBP categories, reviews, posts, services, profile links, local pages, NAP consistency, and service-area proof",
   },
   {
-    slug: "pr-outreach-for",
-    label: "PR outreach for",
-    h1Prefix: "PR outreach for",
-    searchIntent: "operators preparing pitches, founder commentary, and source assets",
-    articleAngle: "outreach readiness",
+    slug: "ai-visibility-audit",
+    label: "AI visibility audit",
+    titleNoun: "AI Visibility Audit",
+    h1Prefix: "AI visibility audit for",
+    searchIntent: "someone wants to know whether ChatGPT, Gemini, Claude, Perplexity, and AI search systems can understand the brand",
+    outcome: "clear entity signals, citation-friendly pages, structured data, source pages, FAQs, and answer-ready summaries",
+    auditFocus: "schema, llms.txt, source clarity, methodology pages, FAQs, comparison pages, author/entity signals, and citations",
   },
   {
-    slug: "alternatives-to-ads-on",
-    label: "alternatives to ads on",
-    h1Prefix: "Alternatives to ads on",
-    searchIntent: "teams trying to reduce acquisition risk with mention-led distribution",
-    articleAngle: "paid acquisition alternatives",
+    slug: "technical-seo-cleanup",
+    label: "technical SEO cleanup",
+    titleNoun: "Technical SEO Cleanup",
+    h1Prefix: "Technical SEO cleanup for",
+    searchIntent: "someone knows the site has messy implementation details and wants the obvious problems fixed before content work",
+    outcome: "a stable technical foundation with fewer crawl traps, cleaner page templates, and better search quality signals",
+    auditFocus: "server responses, redirects, page speed, duplicate URLs, metadata templates, structured data, crawl depth, and route hygiene",
   },
 ];
 
-const competitors: Competitor[] = [
-  {
-    name: "Buffer",
-    strength: "simple social publishing, analytics, collaboration, and a creator-friendly workflow",
-    gap: "mention-led search pages, publication-specific positioning, and indexed channel playbooks",
-  },
-  {
-    name: "Hootsuite",
-    strength: "broad scheduling, analytics, inbox, social listening, and enterprise integrations",
-    gap: "lighter founder-led mention planning for teams that need search pages before a big suite",
-  },
-  {
-    name: "Sprout Social",
-    strength: "enterprise social management, engagement, analytics, and social intelligence",
-    gap: "fast public content operations for small teams that need long-tail discovery pages",
-  },
-  {
-    name: "Later",
-    strength: "visual planning, social scheduling, creator workflows, and link-in-bio execution",
-    gap: "cross-channel earned mention strategy beyond visual calendar management",
-  },
-  {
-    name: "SocialPilot",
-    strength: "agency-friendly scheduling, approvals, and multi-account publishing",
-    gap: "publication-aware resource pages that answer search intent before a buyer signs in",
-  },
-  {
-    name: "Metricool",
-    strength: "social analytics, planning, reporting, and ad performance visibility",
-    gap: "SEO-first mention pages that convert platform research into founder-ready copy",
-  },
-  {
-    name: "Planable",
-    strength: "content collaboration, approval workflows, and calendar review",
-    gap: "public, indexable comparison and mention assets rather than only internal planning",
-  },
-  {
-    name: "Loomly",
-    strength: "content calendars, post ideas, approval flows, and scheduling",
-    gap: "search-targeted launch narratives for founders who need mentions, not just calendar slots",
-  },
-  {
-    name: "Sendible",
-    strength: "agency social media management, scheduling, reporting, and client workflows",
-    gap: "app-specific mention pages that speak to product category and acquisition intent",
-  },
-  {
-    name: "Agorapulse",
-    strength: "social inbox, publishing, monitoring, and ROI-focused reporting",
-    gap: "long-tail public pages built around earned attention, channel fit, and founder proof",
-  },
-];
+function titleCase(value: string) {
+  return value
+    .split(" ")
+    .map((word) => (word.length <= 3 ? word : `${word[0]?.toUpperCase()}${word.slice(1)}`))
+    .join(" ");
+}
 
 function createSeoPages(): SeoPage[] {
   const pages: SeoPage[] = [];
 
   for (const intent of intents) {
-    for (const platform of platforms) {
-      for (const audience of audiences) {
+    for (const builder of builders) {
+      for (const vertical of verticals) {
         const index = pages.length;
-        const primaryCompetitor = competitors[index % competitors.length];
-        const secondaryCompetitors = [
-          competitors[(index + 3) % competitors.length],
-          competitors[(index + 7) % competitors.length],
-        ];
-        const slug = `${intent.slug}-${platform.slug}-${audience.slug}`;
-        const title = `${intent.h1Prefix} ${platform.name}: ${audience.name} guide`;
-        const keyword = `${intent.label} ${platform.name} for ${audience.name}`;
+        const slug = `${builder.slug}-${intent.slug}-for-${vertical.slug}`;
+        const title = `${builder.name} ${intent.titleNoun} for ${titleCase(vertical.name)}`;
+        const keyword = `${builder.name} ${intent.label} for ${vertical.name}`;
+        const estimatedScore = 3 + ((index * 7) % 58) / 10;
         const description = [
           `${SITE_NAME} guide to ${keyword}.`,
-          `Build an indexable page, a stronger pitch, and a cleaner competitor angle against ${primaryCompetitor.name}.`,
+          `Use the golden audit template to find indexing issues, GBP gaps, AEO/GEO weaknesses, and fixes that matter for ${vertical.name}.`,
         ].join(" ");
 
         pages.push({
@@ -414,12 +376,11 @@ function createSeoPages(): SeoPage[] {
           title,
           description,
           canonicalUrl: `${SITE_URL}/resources/${slug}`,
-          platform,
-          audience,
+          builder,
+          vertical,
           intent,
-          primaryCompetitor,
-          secondaryCompetitors,
           keyword,
+          estimatedScore: Number(estimatedScore.toFixed(1)),
         });
       }
     }
@@ -443,7 +404,7 @@ function countArticleWords(article: Omit<SeoArticle, "wordCount">) {
   const sectionWords = article.sections.reduce((total, section) => {
     const paragraphWords = section.paragraphs.reduce((sum, paragraph) => sum + words(paragraph), 0);
     const bulletWords = (section.bullets ?? []).reduce((sum, bullet) => sum + words(bullet), 0);
-    return total + words(section.heading) + paragraphWords + bulletWords;
+    return total + words(section.heading) + words(section.eyebrow) + paragraphWords + bulletWords;
   }, 0);
   const faqWords = article.faqs.reduce(
     (total, faq) => total + words(faq.question) + words(faq.answer),
@@ -452,190 +413,243 @@ function countArticleWords(article: Omit<SeoArticle, "wordCount">) {
   return words(article.summary) + sectionWords + faqWords;
 }
 
-function competitorNames(page: SeoPage) {
-  return [page.primaryCompetitor, ...page.secondaryCompetitors].map(
-    (competitor) => competitor.name,
-  );
-}
-
 export function buildSeoArticle(page: SeoPage): SeoArticle {
-  const { platform, audience, intent, primaryCompetitor } = page;
-  const otherCompetitors = competitorNames(page).slice(1).join(" and ");
-  const shortKeyword = `${platform.name} for ${audience.name}`;
+  const { builder, vertical, intent } = page;
+  const product = SITE_NAME;
+  const shortTarget = `${builder.name} ${intent.label} for ${vertical.name}`;
 
-  const summary = `${page.title} is a practical ${intent.articleAngle} plan for teams that want credible visibility on ${platform.name}. It explains what to publish, what to avoid, how to frame proof, and how ${SITE_NAME} should position the page against tools such as ${primaryCompetitor.name}.`;
+  const summary = `${page.title} is a long-form golden-template guide for teams that need more than a surface-level SEO score. It explains the search intent, the technical failure patterns that show up on ${builder.name} sites, the local and AI visibility signals ${vertical.name} need, and the exact order of fixes that should happen before anyone buys more content or ads.`;
 
   const sections: SeoSection[] = [
     {
-      heading: `Search intent for ${shortKeyword}`,
+      eyebrow: "Step 1",
+      heading: `Direct answer for ${shortTarget}`,
       paragraphs: [
-        `Someone searching for ${page.keyword} is not asking for a generic social media calendar. They are usually trying to decide whether ${platform.name} can create trust before a demo, install, signup, or pitch reply. For ${audience.name}, the useful page answers the actual job: what story earns attention, what proof makes the claim believable, and what next step turns attention into measurable demand.`,
-        `The page should make the intent obvious in the first screen. Use the exact channel language, mention ${audience.buyingMoment}, and state the constraint that makes the work hard: ${audience.pain}. That gives the reader a reason to stay, and it gives search engines a clear entity relationship between ${SITE_NAME}, ${platform.name}, the audience, and the outcome.`,
+        `A proper ${intent.label} should tell ${vertical.name} what is broken, what is already working, and which fixes deserve attention first. The goal is not to produce a pretty PDF full of generic advice. The goal is to turn a messy website into a short operational plan: which pages should be indexed, which URLs should be removed or noindexed, which page templates need better metadata, and which trust signals are missing from the path between search result and conversion.`,
+        `For ${builder.name} sites, that matters because the stack itself creates recognizable patterns. The good news is speed: teams can launch, iterate, and redesign quickly. The bad news is that fast builds often ship with ${builder.commonFailure}. A golden-template audit looks past the visual design and checks whether Google, AI search systems, and local discovery surfaces can understand the site without guessing. If they cannot, more content will only multiply the same weakness.`,
       ],
       bullets: [
-        `Primary keyword: ${page.keyword}.`,
-        `Audience trigger: ${audience.buyingMoment}.`,
-        `Channel signal: ${platform.audienceSignal}.`,
+        `Primary target keyword: ${page.keyword}.`,
+        `Audience: ${vertical.name}.`,
+        `Core outcome: ${intent.outcome}.`,
+        `Stack risk: ${builder.commonFailure}.`,
       ],
     },
     {
-      heading: "The golden template",
+      eyebrow: "Step 2",
+      heading: "What the searcher actually wants",
       paragraphs: [
-        `The golden template starts with a direct answer, then moves into proof, channel fit, competitor contrast, execution steps, examples, and FAQs. Every section should be useful even if a reader lands from search with no context. That means the page cannot be a thin doorway page. It needs a point of view about ${platform.name}, a concrete path for ${audience.name}, and a sober explanation of what ${SITE_NAME} can and cannot control.`,
-        `A strong page also avoids pretending that mentions are guaranteed. Forbes, Yahoo Finance, Reddit, LinkedIn, and other venues have their own editorial or community rules. The honest promise is preparation: better positioning, better source material, better distribution, and better follow-up. That is still valuable because most teams lose before outreach begins. They pitch a feature, not a story; they publish a page, not a reason to care.`,
+        `The searcher behind this page is usually not looking for a textbook explanation of SEO. They are trying to solve a practical problem. Maybe Search Console says pages are discovered but not indexed. Maybe the homepage ranks for the brand but no service page ranks for buyer intent. Maybe a Google Business Profile gets impressions but not calls. Maybe an AI answer mentions competitors and ignores the brand. In each case, the searcher wants a diagnosis they can act on immediately.`,
+        `The page should therefore answer the decision before it sells the product. Explain what a serious audit should include, why ${builder.name} changes the checklist, and how ${vertical.name} should judge whether the fix is worth paying for. The reader should leave with a clear sense of whether they have a technical problem, a content-depth problem, a local trust problem, an entity problem, or all of them at once.`,
       ],
       bullets: [
-        "Answer the searcher first, before describing the product.",
-        "Name the channel risk clearly so the page feels credible.",
-        "Add a comparison section so competitor searches have a useful landing point.",
-        "End with a checklist and FAQs that match buyer objections.",
+        "Name the likely symptom in the first screen.",
+        "Explain the business impact before listing technical terms.",
+        "Separate must-fix crawl issues from nice-to-have content improvements.",
+        "Give the reader a cost range and a practical order of operations.",
       ],
     },
     {
-      heading: `Why ${platform.name} is different`,
+      eyebrow: "Step 3",
+      heading: `Why ${builder.name} changes the audit`,
       paragraphs: [
-        `${platform.name} rewards a different kind of proof than a normal product landing page. The reader is looking for ${platform.audienceSignal}. If the page ignores that signal, the copy may look polished while still failing the channel. ${audience.name} should build the page around evidence that feels native to ${platform.name}, then connect that evidence back to a single product value proposition.`,
-        `The common mistake is ${platform.editorialRisk}. That mistake is expensive because it trains both readers and algorithms to ignore the brand. A better ${SITE_NAME} page treats ${platform.name} as a distribution environment with its own expectations. It gives founders, marketers, and operators a page they can reference during outreach, social replies, community posts, and sales conversations.`,
+        `${builder.name} is useful because it helps teams ship. That speed is exactly why audits need to be stricter. Pages can look finished while the underlying SEO surface is still shallow. A crawler may see the same shell across routes, a sitemap may include pages that should never be indexed, and a beautiful section may have no crawlable copy that explains the offer. The stack does not make SEO impossible, but it changes what should be checked first.`,
+        `The golden template starts with ${builder.stackSignal}, then checks the risk that usually follows: ${builder.commonFailure}. The fix is not to rebuild everything from scratch. The fix is ${builder.fixFocus}. When that foundation is in place, content has a chance to rank because each page is connected to a real URL, a real intent, and a real quality threshold.`,
       ],
     },
     {
-      heading: `Positioning for ${audience.name}`,
+      eyebrow: "Step 4",
+      heading: `The ${vertical.name} trust layer`,
       paragraphs: [
-        `${audience.name} do not need more vague visibility. They need attention that connects to the buying moment: ${audience.buyingMoment}. The positioning should name the shift in the market, the old way people solved the problem, the cost of waiting, and the small proof point that makes the new approach feel believable. That is how an earned mention becomes a business asset instead of a temporary spike.`,
-        `The best proof for this audience is ${audience.proof}. Each proof point should be written so it can travel. A reporter can quote it, a Reddit commenter can challenge it, a LinkedIn reader can save it, and a buyer can repeat it internally. ${SITE_NAME} pages should be built with those second-order uses in mind because mentions rarely convert from one isolated impression.`,
-      ],
-    },
-    {
-      heading: `Competitor comparison: ${SITE_NAME} vs ${primaryCompetitor.name}`,
-      paragraphs: [
-        `${primaryCompetitor.name} is strong at ${primaryCompetitor.strength}. That makes it a real competitor in the broader social media and content operations category. The comparison should acknowledge that strength directly, because serious buyers can tell when a page is dodging the obvious. A fair comparison earns trust faster than a one-sided takedown.`,
-        `${SITE_NAME} should differentiate around ${primaryCompetitor.gap}. In practical terms, that means building public, indexable resources for searches like ${page.keyword}, then connecting those resources to a repeatable publishing and mention workflow. The pitch is not that every team should replace its calendar. The pitch is that teams need pages that make earned attention easier to understand, evaluate, and act on.`,
+        `${vertical.name} need trust before they need scale. The exact proof depends on the market, but the pattern is consistent: the page must show why the business is real, why the offer is credible, and why the visitor should choose this provider instead of returning to search. For this audience, the buying moment is ${vertical.buyerMoment}. A generic homepage rarely covers that moment with enough specificity to rank or convert.`,
+        `The audit should look for ${vertical.trustSignal}. If those signals are missing, the site may still get impressions, but the click will be fragile. Google can see weak engagement, AI systems have fewer facts to cite, and visitors have fewer reasons to believe the brand. Trust content is not fluff. It is part of the ranking and conversion system because it makes the business easier to evaluate.`,
       ],
       bullets: [
-        `${primaryCompetitor.name} angle: ${primaryCompetitor.strength}.`,
-        `${SITE_NAME} angle: ${primaryCompetitor.gap}.`,
-        `Also compare against ${otherCompetitors} when buyers want a broader shortlist.`,
+        `Buyer moment: ${vertical.buyerMoment}.`,
+        `Trust proof: ${vertical.trustSignal}.`,
+        `Content need: ${vertical.contentNeed}.`,
       ],
     },
     {
-      heading: "URL strategy",
+      eyebrow: "Step 5",
+      heading: "Technical crawl and status-code checks",
       paragraphs: [
-        `The URL should be readable, specific, and honest. A slug such as /resources/${page.slug} tells the reader exactly what the page covers without pretending to be ${platform.name} or any publication. It also gives the sitemap a clean set of long-tail URLs. That matters because search crawlers discover intent clusters more reliably when the information architecture is stable and internally linked.`,
-        `Use publication and platform names in URLs only as nominative references. A page can explain how to prepare for a Yahoo Finance mention, a Forbes pitch, a Reddit launch, or a LinkedIn founder post. It should not imply endorsement, partnership, paid placement, or guaranteed coverage. That distinction protects the brand while still capturing the search language people actually use.`,
-      ],
-    },
-    {
-      heading: "Page structure that can rank",
-      paragraphs: [
-        `A page built to compete should include an H1 that matches intent, a short summary, a table of contents, scannable sections, original examples, FAQs, canonical metadata, and structured data. The copy should be long enough to satisfy a serious searcher but not padded with filler. For this page family, the target band is 2,500 to 3,500 words so each URL can cover search intent, execution, comparison, and objections in one place.`,
-        `Length alone will not outrank competitors. The reason the format can compete is that it focuses on overlooked long-tail searches. Large tools often rank for broad terms such as social media management, scheduling, analytics, or content calendar software. ${SITE_NAME} can win narrower searches by answering channel-specific questions for ${audience.name}, then linking those answers into a coherent resource hub.`,
-      ],
-    },
-    {
-      heading: `Content plan for ${platform.name}`,
-      paragraphs: [
-        `Start with a plain-language narrative: who the app helps, what changed in the market, and why ${platform.name} is the right place to tell the story. Then add the evidence that fits ${platform.proofStyle}. This gives the page something more useful than a list of features. It becomes a source document that can power social posts, outreach emails, founder replies, community comments, and sales follow-up.`,
-        `For ${audience.name}, the first article should not try to say everything. It should make one argument well: the app deserves attention because it solves a specific problem at a specific moment. The supporting sections can then show how to adapt that argument across ${platform.name}, search snippets, outreach copy, and comparison pages. That is the difference between content production and content leverage.`,
+        `The first hard check is whether the website returns the right status for the right URL. A real page should return 200. A missing page should return 404. A moved page should redirect once to the final canonical version. This sounds basic, but many modern sites fail here. Random fake URLs return the homepage with a 200 status. App routes return public shells. HTTP, HTTPS, www, and non-www versions compete with each other. Those mistakes create noise before content quality is even considered.`,
+        `For ${shortTarget}, the audit should test fake URLs, host variants, sitemap URLs, app and login paths, canonical targets, robots directives, and noindex boundaries. If the site is using ${builder.name}, pay special attention to public route behavior. The visual router can make every path appear valid to a browser while search systems treat those paths as duplicates, soft 404s, or low-value pages. Fix that before building hundreds of new URLs.`,
       ],
       bullets: [
-        `Lead with the ${audience.name} problem, not the feature list.`,
-        `Use ${platform.proofStyle} as the evidence layer.`,
-        `Connect every CTA to one measurable next step.`,
+        "Check www/non-www and HTTP/HTTPS consolidation.",
+        "Check random fake URLs for hard 404 behavior.",
+        "Check app, login, dashboard, account, and admin routes.",
+        "Check whether sitemap URLs resolve cleanly without redirects.",
       ],
     },
     {
-      heading: "Outreach assets",
+      eyebrow: "Step 6",
+      heading: "Indexing and sitemap quality",
       paragraphs: [
-        `A mention-ready page should make outreach easier for the person receiving the pitch. Include a concise company description, founder quote, product facts, launch timing, screenshots, and the most useful data point. If the target is a community or social platform, include context that helps moderators and readers understand why the post belongs there. If the target is media, include facts that reduce follow-up friction.`,
-        `The page should also prepare for objections. Some readers will ask whether this is just another scheduler, whether the team has proof, whether the audience is real, or whether the story is newsworthy. Answer those objections in public. When the page handles doubt with specifics, the outreach email can be shorter and more human because the proof already exists in one reliable place.`,
-      ],
-    },
-    {
-      heading: "Internal linking plan",
-      paragraphs: [
-        `A thousand pages only help if they behave like a library, not a pile. Link every resource page back to the resource index, the homepage, and related pages for the same platform or audience. The related links should use descriptive anchor text such as ${platform.name} launch playbook for ${audience.name} or PR outreach for ${audience.name}. That gives crawlers a map and gives readers a path to keep learning.`,
-        `The hub page should group URLs by platform, audience, and intent. That structure makes it easier to submit a sitemap, inspect crawl behavior, and decide which clusters deserve deeper editorial work. If search data later shows that ${platform.name} pages convert better than other clusters, the team can add original screenshots, case studies, and examples to those pages first.`,
-      ],
-    },
-    {
-      heading: "Measurement",
-      paragraphs: [
-        `Measure the page as a search asset and as a mention asset. Search metrics include impressions, indexed status, average position, clicks, and queries. Mention metrics include reply rate, saves, shares, referral traffic, branded search lift, and demo or signup contribution. A page that ranks but never supports outreach is incomplete. A page that earns replies but never gets indexed is also leaving value behind.`,
-        `For ${audience.name}, useful reporting should connect ${platform.name} activity to a pipeline moment. Did the page help a founder get a reply, help a buyer understand the category, or give a customer a reason to share the app? These questions matter more than vanity traffic because mention-led growth depends on compounding trust across many small interactions.`,
+        `A sitemap is not a wishlist. It should only list URLs that deserve discovery and indexing. For ${vertical.name}, that means pages with a clear purpose: service pages, location pages, treatment pages, product category pages, comparison pages, methodology pages, or specific problem pages. If the sitemap is tiny, Google may not discover enough surface area. If the sitemap is huge and low quality, Google may crawl more but trust less.`,
+        `The audit should sample sitemap URLs and ask four questions. Do they return 200? Are they canonical to themselves? Do they have unique titles and descriptions? Do they contain enough crawlable text to satisfy intent? If the answer is no, the fix is not simply resubmitting the sitemap. The fix is to remove junk, strengthen weak pages, and submit a smaller set of URLs that can survive manual inspection.`,
       ],
       bullets: [
-        "Track indexation and sitemap discovery.",
-        "Track query clusters by platform and audience.",
-        "Track assisted conversions from resource pages.",
-        "Track outreach reply quality, not only reply volume.",
+        "Remove auth, dashboard, payment, and duplicate utility URLs from sitemaps.",
+        "Keep only canonical, indexable, useful pages.",
+        "Sample sitemap pages for missing titles, noindex tags, and duplicate content.",
+        "Use Search Console to compare submitted, discovered, indexed, and excluded URLs.",
       ],
     },
     {
-      heading: "Editorial safeguards",
+      eyebrow: "Step 7",
+      heading: "On-page quality and the first-screen test",
       paragraphs: [
-        `The fastest way to damage a mention strategy is to overclaim. Do not promise coverage on ${platform.name}. Do not imply that ${SITE_NAME} is endorsed by a platform, publication, or competitor. Do not invent quotes, awards, logos, placements, or financial outcomes. The page can still be persuasive by showing process, preparation, examples, and decision criteria. Credibility is an SEO advantage when competitors rely on hype.`,
-        `This matters especially for searches involving Forbes, Yahoo Finance, review sites, and social communities. Readers know the difference between a preparation guide and a fake authority page. The safe approach is also the stronger approach: use the names people search for, explain how to prepare, and keep the claims grounded in what the product and team can actually do.`,
-      ],
-    },
-    {
-      heading: "Execution checklist",
-      paragraphs: [
-        `Before publishing a ${shortKeyword} page, review it like a buyer, a search crawler, and a skeptical editor. The buyer wants clarity. The crawler wants structure. The editor wants evidence. If the page satisfies all three, it has a better chance of becoming an asset that supports organic search, social distribution, and outreach at the same time.`,
-        `After publishing, do not leave the URL alone for months. Add examples as campaigns ship, update claims as the product changes, and link to new related pages. Programmatic SEO works best when the template creates a strong first version and the team improves the winners with original evidence. That is how the library avoids becoming stale.`,
+        `The first screen should make the page topic obvious. A visitor should know what the business does, who it helps, where it operates if location matters, and what action to take. Search systems need the same clarity. A vague H1, a short meta description, missing H2 structure, and low word count are not small details when every competitor is also fighting for attention. They are signs that the page may not deserve to rank yet.`,
+        `For ${shortTarget}, inspect title length, meta description length, H1 specificity, H2 structure, image alt text, internal links, and body copy depth. A strong page does not need to be bloated, but it should have enough substance to answer the query. For ${vertical.name}, that usually means a clear offer, proof, FAQs, trust sections, and links to related service or support pages.`,
       ],
       bullets: [
-        "Confirm the title and description match the slug.",
-        "Confirm the canonical URL uses MentionMyApp.com.",
-        "Confirm the page answers one clear search intent.",
-        "Confirm competitor names are used fairly and accurately.",
-        "Confirm the CTA points to a real next step.",
+        "Use one specific H1, not a generic welcome line.",
+        "Write a meta description that explains the offer and audience.",
+        "Use H2s for problems, proof, process, pricing, and FAQs.",
+        "Add internal links to pages that help the visitor decide.",
       ],
     },
     {
-      heading: "Example brief",
+      eyebrow: "Step 8",
+      heading: "Google Business Profile and local proof",
       paragraphs: [
-        `Brief title: ${page.title}. Primary reader: ${audience.name}. Channel: ${platform.name}. Core promise: prepare a credible mention campaign with public proof, channel-native copy, and a comparison angle against ${primaryCompetitor.name}. Required proof: ${audience.proof}. Required caution: avoid ${platform.editorialRisk}.`,
-        `Opening thesis: ${audience.name} can earn better attention on ${platform.name} when they stop asking for generic exposure and start publishing proof that fits the channel. The page should help them understand what to say, why it matters now, and how to turn a mention into a repeatable acquisition asset for ${SITE_NAME}.`,
-      ],
-    },
-    {
-      heading: "How to improve this page over time",
-      paragraphs: [
-        `The first version should be complete enough to index, but the winning version should become more specific. Add screenshots from real campaigns, anonymized outreach examples, search query learnings, and summaries of what changed after publication. Add a comparison table when buyers ask about ${primaryCompetitor.name}. Add a short video when the workflow is easier to understand visually.`,
-        `The update cadence can be simple: inspect Search Console monthly, improve pages with impressions but low clicks, expand pages with conversions, and prune pages that never earn discovery. The 1,000-page inventory creates coverage, but editorial attention should follow evidence. That balance gives ${SITE_NAME} a durable SEO system instead of a one-time content dump.`,
-      ],
-    },
-    {
-      heading: "Distribution workflow",
-      paragraphs: [
-        `Publishing the page is only the midpoint. The next step is to turn the article into channel-native assets: a founder post for ${platform.name}, a short outreach email, a comparison snippet for buyers evaluating ${primaryCompetitor.name}, and a saved answer for repeated questions. Each asset should point back to the canonical URL so attention consolidates instead of scattering across disconnected posts.`,
-        `The workflow should feel repeatable for ${audience.name}. Start with the resource page, pull out three proof points, adapt those proof points to the channel format, publish the strongest one first, and use replies to improve the page. This loop makes the page more useful every time the team learns what readers question, save, share, or ignore.`,
-        `The best signal is not just traffic. It is whether the page helps a team explain the product faster the next time a prospect, journalist, community member, or partner asks why the app matters now. When the same URL can support search, outreach, social replies, and sales follow-up, it becomes a compounding distribution asset rather than another isolated blog post.`,
+        `For many ${vertical.name}, Google Business Profile is not optional. It is where calls, directions, reviews, photos, services, and local trust signals collect. The website and GBP should reinforce each other. If the profile says one thing and the website says another, local visibility weakens. If the website has no service pages that match the profile, the business gives Google fewer reasons to connect map intent with organic intent.`,
+        `The local layer should check ${vertical.localSignal}. The audit should also inspect whether the website links to the profile, whether profile services match crawlable pages, whether reviews are answered, whether posts are active, and whether photos prove the business is alive. GBP metrics such as views, calls, directions, website clicks, reviews, and unanswered questions should sit next to technical SEO metrics because local discovery is not only a website problem.`,
       ],
       bullets: [
-        `Repurpose the page into a ${platform.name} post, an outreach note, and a buyer-facing comparison answer.`,
-        `Route every mention back to ${page.canonicalUrl}.`,
-        `Use replies and search queries to decide which sections need more proof.`,
+        "Map GBP services to real website pages.",
+        "Track calls, website clicks, direction requests, reviews, and profile views.",
+        "Use posts and photos to keep the profile active.",
+        "Answer reviews and questions with language that reinforces services and location.",
+      ],
+    },
+    {
+      eyebrow: "Step 9",
+      heading: "AEO and GEO readiness",
+      paragraphs: [
+        `Search is no longer only ten blue links. AI answers, summary engines, and recommendation systems need entity clarity. They need to know what the business is, who it serves, what evidence supports it, and what sources confirm it. AEO and GEO do not replace SEO, but they expose weak SEO faster. If a site has no methodology page, no FAQs, no structured data, no source pages, and no clear comparisons, AI systems have little to cite.`,
+        `For ${vertical.name}, the audit should check Organization, LocalBusiness, Product, Service, FAQ, Article, and Review schema where appropriate. It should also look for llms.txt or a similar AI context file, but that file is only a supplement. The stronger signal is crawlable, factual content that answers real questions. The golden template builds those answers into every important page so AI systems do not have to infer the basics.`,
+      ],
+      bullets: [
+        "Add structured data that matches the actual business model.",
+        "Create FAQs that answer buying objections, not filler questions.",
+        "Publish methodology, process, pricing, or comparison pages where useful.",
+        "Make the brand/entity easy to summarize in one paragraph.",
+      ],
+    },
+    {
+      eyebrow: "Step 10",
+      heading: "Content depth and internal linking",
+      paragraphs: [
+        `Content depth does not mean publishing random blog posts. It means building pages that match the decisions people make before contacting, buying, booking, or installing. For ${vertical.name}, the content plan should prioritize ${vertical.contentNeed}. Each page should answer a specific query and link to the next logical step. If the homepage is the only meaningful URL, the site is asking one page to rank for every intent, which rarely works.`,
+        `Internal links are how the site explains its own importance. A page about ${page.keyword} should link to the audit tool, GBP connection flow, examples, related pages, and any service pages that support the claim. Related pages should link back using descriptive anchors. This helps crawlers discover the structure and helps users move through the decision without bouncing back to Google.`,
+      ],
+      bullets: [
+        "Build service, use-case, problem, comparison, and FAQ pages.",
+        "Link related pages together by intent and audience.",
+        "Use descriptive anchors instead of generic “learn more” links everywhere.",
+        "Improve pages with impressions but low CTR before writing unrelated posts.",
+      ],
+    },
+    {
+      eyebrow: "Step 11",
+      heading: "The golden audit template",
+      paragraphs: [
+        `The golden template is simple but strict: direct answer, search intent, stack diagnosis, trust layer, technical crawl checks, indexing plan, on-page fixes, GBP proof, AEO/GEO readiness, content plan, implementation roadmap, cost range, measurement plan, and FAQs. Each section exists because it answers a real objection. If a page cannot fill one of those sections with useful detail, the business probably needs more proof before scaling SEO.`,
+        `This template also keeps the report honest. It separates what is actually broken from what would be nice to have. It does not pretend that a tool can guarantee rankings. It shows the customer why they may need a developer, an SEO specialist, a content person, or a GBP operator. That is why it works well for sales: it makes the problem visible without hiding the effort required to fix it.`,
+      ],
+      bullets: [
+        "Start with the blunt diagnosis.",
+        "Show what is good before listing what is broken.",
+        "Group fixes by technical, content, local, and AI visibility.",
+        "End with priority, owner, and estimated cost.",
+      ],
+    },
+    {
+      eyebrow: "Step 12",
+      heading: "Implementation roadmap",
+      paragraphs: [
+        `The first week should focus on crawl hygiene: redirects, canonicals, fake URL behavior, robots, sitemap cleanup, noindex boundaries, and app route separation. The second phase should improve the highest-intent pages: homepage, service pages, pricing, about, contact, privacy, terms, FAQs, and any local or product category pages. The third phase should expand content only after the technical foundation is stable.`,
+        `For ${builder.name}, implementation should be practical. Some fixes belong in hosting, some in route configuration, some in metadata templates, and some in content. If the platform cannot return true 404s or server-rendered metadata, the plan should say so. Pretending a limitation does not exist wastes money. The roadmap should recommend the cleanest fix available on the current stack, then explain when moving hosting or framework is worth it.`,
+      ],
+      bullets: [
+        "Week 1: crawl, status, canonical, sitemap, robots, and noindex cleanup.",
+        "Week 2: homepage, trust pages, service pages, GBP alignment, and schema.",
+        "Week 3: content clusters, internal links, FAQs, and comparison pages.",
+        "Month 2+: improve pages with impressions, conversions, or local proof gaps.",
+      ],
+    },
+    {
+      eyebrow: "Step 13",
+      heading: "Cost and owner clarity",
+      paragraphs: [
+        `A useful audit should say who needs to do the work. Some fixes are developer tasks: routing, status codes, sitemap generation, metadata components, and server rendering. Some are SEO tasks: query mapping, title rewrites, internal links, schema, and Search Console validation. Some are operator tasks: GBP posts, review replies, photos, service updates, and proof collection. Blending all of that into one vague recommendation makes the report harder to act on.`,
+        `For a typical ${shortTarget}, a small cleanup may cost a few hundred dollars. A deeper technical and content pass may cost $800 to $2,500. A full local/AEO/GEO system with content, GBP operations, and developer fixes can cost more. The important part is not the exact price. The important part is sequencing. Do not buy 50 blog posts while fake URLs return 200, trust pages are missing, and the sitemap is full of junk.`,
+      ],
+      bullets: [
+        "Assign every fix to developer, SEO, content, GBP, or founder/operator.",
+        "Fix crawl/indexing issues before scaling content.",
+        "Pay for quality cleanup before paying for volume.",
+        "Keep a visible cost range so the customer understands the work.",
+      ],
+    },
+    {
+      eyebrow: "Step 14",
+      heading: "Measurement and reporting",
+      paragraphs: [
+        `The report should not end when fixes are shipped. It should define what to watch next: indexed pages, impressions, clicks, average position, CTR, brand queries, non-brand queries, local actions, GBP calls, direction requests, website clicks, reviews, and conversions. Without measurement, the team cannot tell whether the fix improved visibility or only made the site feel cleaner.`,
+        `For ${vertical.name}, reporting should connect technical health with business outcomes. If GBP impressions rise but calls do not, the profile may need better photos, reviews, services, or offers. If impressions rise but CTR stays weak, titles and meta descriptions may need stronger positioning. If pages are indexed but do not rank, the content may need more proof, links, or specificity. Measurement turns the audit into a loop.`,
+      ],
+      bullets: [
+        "Track Search Console coverage, impressions, clicks, CTR, and query changes.",
+        "Track GBP views, calls, directions, website clicks, reviews, and unanswered questions.",
+        "Track which fixes were shipped and when.",
+        "Review winners monthly and add proof to pages already getting impressions.",
+      ],
+    },
+    {
+      eyebrow: "Step 15",
+      heading: "Final checklist",
+      paragraphs: [
+        `Before publishing or sending the audit, read it like the customer. Does it explain the problem in plain language? Does it show enough good things to feel fair? Does it list enough bad things to be useful? Does it separate technical fixes from content work? Does it mention GBP and AI visibility when they matter? Does it give a cost range and an order of operations? If not, it is not the golden template yet.`,
+        `The final version should feel specific to ${builder.name}, specific to ${vertical.name}, and specific to ${intent.searchIntent}. That specificity is what makes the URL worth indexing. It is also what makes the page useful as a sales asset. The customer should be able to read it, recognize their situation, and understand why fixing the foundation now is cheaper than guessing for another six months.`,
+      ],
+      bullets: [
+        "Confirm one specific URL, one specific audience, and one specific audit intent.",
+        "Confirm the article is long enough to answer objections without filler.",
+        "Confirm the visual report image matches the page topic.",
+        "Confirm the CTA points to the live SEO audit tool.",
       ],
     },
   ];
 
   const faqs: SeoFaq[] = [
     {
-      question: `Can ${SITE_NAME} guarantee a mention on ${platform.name}?`,
-      answer: `No. The realistic goal is to prepare a stronger page, pitch, and proof package for ${audience.name}. Platforms, publications, communities, and journalists make their own decisions. ${SITE_NAME} should help teams improve clarity and follow-through without implying guaranteed placement.`,
+      question: `What should a ${shortTarget} include?`,
+      answer: `It should include technical crawl checks, metadata review, sitemap sampling, fake URL testing, canonical validation, trust-page review, internal link review, GBP alignment, structured data checks, AEO/GEO readiness, content-depth analysis, priority fixes, and a cost range. The point is to turn scattered SEO advice into a concrete action plan.`,
     },
     {
-      question: `Why include competitors such as ${primaryCompetitor.name}?`,
-      answer: `Competitor names reflect how buyers research the market. A fair comparison helps readers understand whether they need broad scheduling and analytics, mention-led SEO pages, or both. The page should acknowledge competitor strengths while explaining the specific ${SITE_NAME} angle.`,
+      question: `Why does ${builder.name} need a specific audit?`,
+      answer: `${builder.name} sites tend to have their own failure patterns: ${builder.commonFailure}. A generic audit may mention titles and descriptions, but it can miss route behavior, app-shell duplication, sitemap quality, and stack limitations. The audit has to match how the site is actually built.`,
     },
     {
-      question: `Is a long page necessary for ${page.keyword}?`,
-      answer: `The target range of 2,500 to 3,500 words gives the page room to answer intent, explain channel risk, compare alternatives, and provide a checklist. The length should serve the reader. Padding, duplication, and fake authority signals make the page weaker, not stronger.`,
+      question: `How long should this page be to rank?`,
+      answer: `The target range is 2,500 to 3,500 words because the page needs to answer search intent, explain the stack, cover technical SEO, discuss GBP and AI visibility, show a roadmap, and answer objections. The length should serve the reader. Thin doorway pages are not the goal.`,
     },
     {
-      question: `How should this URL be used in outreach?`,
-      answer: `Use it as the source page behind a concise pitch. The email or social message can stay short because the URL already contains the story, proof, comparison, and FAQs. That makes follow-up easier and gives the recipient a stable reference point.`,
+      question: `Should ${vertical.name} focus on blogs or technical SEO first?`,
+      answer: `If the site has soft 404s, missing trust pages, broken canonicals, app routes in the sitemap, or poor GBP alignment, technical and trust cleanup should come first. Blogs help after the site can be crawled, trusted, and internally linked properly. Otherwise new content inherits the same weakness.`,
+    },
+    {
+      question: `How does Google Business Profile fit into the audit?`,
+      answer: `GBP matters because local visibility is driven by more than website pages. Reviews, services, profile views, calls, directions, posts, photos, and review replies all affect how a business is evaluated. The website should reinforce those profile signals with matching service pages and local proof.`,
+    },
+    {
+      question: `Can an audit guarantee rankings?`,
+      answer: `No. A serious audit can identify blockers, prioritize fixes, and improve the odds that search systems understand the site. Rankings still depend on competition, authority, content quality, local proof, user behavior, and execution. The honest promise is clarity and prioritization, not guaranteed placement.`,
     },
   ];
 
@@ -648,25 +662,48 @@ export function buildSeoArticle(page: SeoPage): SeoArticle {
 }
 
 export function relatedSeoPages(page: SeoPage, limit = 6) {
-  const samePlatform = seoPages.filter(
-    (candidate) => candidate.slug !== page.slug && candidate.platform.slug === page.platform.slug,
+  const sameBuilder = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.builder.slug === page.builder.slug,
   );
-  const sameAudience = seoPages.filter(
-    (candidate) => candidate.slug !== page.slug && candidate.audience.slug === page.audience.slug,
+  const sameVertical = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.vertical.slug === page.vertical.slug,
+  );
+  const sameIntent = seoPages.filter(
+    (candidate) => candidate.slug !== page.slug && candidate.intent.slug === page.intent.slug,
   );
   const combined = [
-    ...samePlatform.slice(0, Math.ceil(limit / 2)),
-    ...sameAudience.slice(0, limit),
+    ...sameBuilder.slice(0, 2),
+    ...sameVertical.slice(0, 2),
+    ...sameIntent.slice(0, 4),
   ];
   const unique = new Map(combined.map((candidate) => [candidate.slug, candidate]));
   return [...unique.values()].slice(0, limit);
 }
 
-export function pagesByPlatform() {
-  return platforms.map((platform) => ({
-    platform,
-    pages: seoPages.filter((page) => page.platform.slug === platform.slug),
+export function pagesByIntent() {
+  return intents.map((intent) => ({
+    intent,
+    pages: seoPages.filter((page) => page.intent.slug === intent.slug),
   }));
+}
+
+export function pagesByBuilder() {
+  return builders.map((builder) => ({
+    builder,
+    pages: seoPages.filter((page) => page.builder.slug === builder.slug),
+  }));
+}
+
+export function featuredSeoPages() {
+  const slugs = [
+    "lovable-seo-audit-for-saas-startups",
+    "vercel-indexing-fix-for-ai-tools",
+    "wix-google-business-profile-audit-for-roofers",
+    "shopify-technical-seo-cleanup-for-ecommerce-stores",
+    "react-ai-visibility-audit-for-mobile-apps",
+    "wordpress-seo-audit-for-law-firms",
+  ];
+  return slugs.map((slug) => getSeoPage(slug)).filter((page): page is SeoPage => Boolean(page));
 }
 
 if (seoPages.length !== SEO_PAGE_COUNT) {
