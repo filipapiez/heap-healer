@@ -416,16 +416,8 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_workspace_creator: {
-        Args: { _user_id: string; _workspace_id: string }
-        Returns: boolean
-      }
       is_workspace_member: {
         Args: { _user_id: string; _workspace_id: string }
-        Returns: boolean
-      }
-      workspace_has_no_members: {
-        Args: { _workspace_id: string }
         Returns: boolean
       }
       workspace_role_of: {
