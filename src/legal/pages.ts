@@ -77,50 +77,72 @@ export const TRUST_PAGES: TrustPage[] = [
     path: "/privacy",
     title: "Privacy Policy",
     description:
-      "Privacy overview for MentionMyApp, including account data, website audit inputs, GitHub URLs, Google Business Profile connections, and support requests.",
+      "How MentionMyApp collects, uses, and protects your information — including connected social accounts, Google user data, Meta platform data, and your rights.",
     eyebrow: "Privacy",
     summary:
-      "MentionMyApp handles account, audit, publishing, and integration data so users can run reports and manage marketing workflows. This page explains the practical categories of information involved and how users should think about them.",
+      "Effective July 11, 2026. This policy is provided by MentionMyApp (operated by Visionary Pixel, LLC). It explains what information we collect when you use the Service, how we use it, and the choices you have.",
     sections: [
       {
-        heading: "Information used by the product",
+        heading: "Information we collect",
         paragraphs: [
-          "When someone uses MentionMyApp, they may provide an email address, workspace details, website URL, GitHub URL, Google Business Profile URL, connected social accounts, uploaded media, post drafts, captions, and support messages. These inputs are needed to run the product and produce useful reports.",
-          "Audit inputs can reveal sensitive business context. A website URL may expose pages, technology, metadata, and public trust gaps. A GitHub URL may expose public repository information. A GBP URL may expose local presence, reviews, and profile activity. Users should only submit information they are comfortable using for the requested workflow.",
+          "Account information — your name, email address, and password (stored as a secure hash), or your Google sign-in identity if you use Google to sign in to MentionMyApp.",
+          "Connected social accounts — when you connect a social media account through that platform's official authorization, we receive and store the platform's account identifier, your display name and avatar, and an access token that lets us publish and read engagement on your behalf. Access tokens are encrypted at rest.",
+          "Content you create — videos, images, logos, captions, and posts you upload or compose, plus publishing results (post links, statuses, errors) and engagement data (comments, likes, metrics) retrieved from your connected platforms.",
+          "Usage and technical data — log data such as IP address, browser type, pages viewed, and actions taken, used for security and to improve the Service.",
+          "Payment information — handled entirely by our payment processor (Stripe). We never receive or store full card numbers.",
+          "What we never collect: your social media passwords. Connections are made only through each platform's official sign-in (OAuth or, for Bluesky, a revocable app password you can withdraw at any time). We have no ability to see or store the password to any of your social accounts.",
         ],
       },
       {
-        heading: "Connected accounts",
+        heading: "How we use information",
         paragraphs: [
-          "MentionMyApp uses official connection flows where available. The product should not ask users to hand over platform passwords. Connected accounts are used to publish content, retrieve engagement data, or show local SEO context depending on the integration selected by the user.",
-          "If a user disconnects an account, future sync and publishing actions for that account should stop. Some historical records may remain where they are needed for reporting, security, billing, compliance, or audit logs.",
+          "We use information to operate the Service — publish your content to the platforms you select, retrieve your posts' performance and comments, and show them in your dashboard.",
+          "We also use it to provide support, secure the Service, prevent abuse, and comply with law, and to send service-related emails (receipts, security notices, important product changes). Marketing emails are optional and include an unsubscribe link.",
+          "We do not sell your personal information. We do not use your content or your connected accounts' data for advertising.",
         ],
       },
       {
-        heading: "How data supports SEO audits",
+        heading: "Google user data (Limited Use disclosure)",
         paragraphs: [
-          "The SEO audit workflow uses public crawl data, submitted URLs, optional repository information, and optional Google Business Profile context to produce findings. The report may include technical issues, missing pages, metadata problems, source signals, local proof gaps, and prioritized fixes.",
-          "MentionMyApp should not invent private metrics. If Google Business Profile metrics are not connected, the report should say they are unavailable instead of guessing. That honesty matters because customers need to trust the output before acting on it.",
-        ],
-        bullets: [
-          "Website URLs are used to crawl public pages and technical signals.",
-          "GitHub URLs are optional and used for public source/entity context.",
-          "GBP data requires either a provided profile URL or connected account access.",
-          "Support requests may be used to investigate bugs or clarify reports.",
+          "MentionMyApp's use and transfer of information received from Google APIs adheres to the Google API Services User Data Policy, including the Limited Use requirements. Google account data (such as your YouTube channel identity and upload capability) is used only to provide the features you request — connecting your channel and publishing videos you compose — and is never used for advertising, never sold, and never transferred except as necessary to provide those features, for security, or to comply with law.",
+          "The Service uses YouTube API Services; by connecting YouTube you also agree to the YouTube Terms of Service and the Google Privacy Policy. You can revoke MentionMyApp's access at any time from your Google security settings at https://security.google.com/settings/security/permissions.",
         ],
       },
       {
-        heading: "Third-party services",
+        heading: "Meta and other platform data",
         paragraphs: [
-          "MentionMyApp may rely on infrastructure, authentication, database, storage, analytics, email, platform API, and payment providers to operate the product. Those services may process limited data needed for login, storage, delivery, security, billing, or integration workflows.",
-          "Connected platforms also have their own privacy rules. When a user connects a social account or Google Business Profile, the platform may show its own permissions screen and terms. Users should review those screens carefully because they define what the platform allows MentionMyApp to access.",
+          "When you connect Facebook, Instagram, or Threads, we access only the permissions you grant on Meta's consent screen (such as listing your Pages, publishing to your Page or Instagram professional account, and reading engagement on content we publish).",
+          "Data received from Meta and other platforms (TikTok, Pinterest, LinkedIn, Reddit, X, Bluesky, Google Business Profile) is used solely to provide the Service's publishing and engagement features, is retained only as long as needed for those features or until you disconnect the account, and is deleted as described in our Data Deletion Instructions. You can revoke access at any time from each platform's security settings or by disconnecting the account in MentionMyApp.",
         ],
       },
       {
-        heading: "User controls and safe submissions",
+        heading: "Sharing and service providers",
         paragraphs: [
-          "Users should avoid placing unnecessary private information inside website audit fields, GitHub URL fields, GBP URL fields, captions, media names, or support messages. The product works best with business URLs, public source links, and account connections that are actually needed for the workflow.",
-          "If a user needs account help, privacy review, export, deletion, or correction, they should contact support with the workspace email and the specific request. Some records may need to remain for security, billing, fraud prevention, legal compliance, or backup integrity, but unnecessary data should not be collected just because it is easy to collect.",
+          "We share data only with service providers that help us run the Service, under contracts limiting their use of it: cloud hosting and database infrastructure, media storage, payment processing (Stripe), and the social platforms' own APIs when publishing or retrieving engagement at your direction.",
+          "We may disclose information if required by law or to protect the rights, safety, or property of users or the Service.",
+        ],
+      },
+      {
+        heading: "Data retention and deletion",
+        paragraphs: [
+          "We keep your data while your account is active. You can delete your account at any time in Settings, or by emailing privacy@mentionmyapp.com.",
+          "Deletion removes your account, workspaces, media, drafts, and connected-account records including access tokens within 30 days, except records we must keep for legal, billing, or security purposes. Content already published to social platforms remains on those platforms under your control there. Full details are on the Data Deletion Instructions page.",
+        ],
+      },
+      {
+        heading: "Security",
+        paragraphs: [
+          "We use industry-standard measures including encryption in transit (TLS), encryption of social access tokens at rest, workspace-level access isolation enforced at the database layer, and least-privilege access for our systems.",
+          "No method of storage or transmission is 100% secure, but we work to protect your information and will notify affected users of any breach as required by law.",
+        ],
+      },
+      {
+        heading: "Your rights, children, and changes",
+        paragraphs: [
+          "Depending on where you live, you may have rights to access, correct, export, or delete your personal information, and to object to or restrict certain processing. Contact privacy@mentionmyapp.com to exercise them. We do not discriminate against users who exercise privacy rights.",
+          "The Service is not directed to anyone under 18, and we do not knowingly collect personal information from anyone under 18. If you believe someone under 18 has provided us personal information, contact us and we will delete it.",
+          "We may update this policy. If changes are material we will notify you by email or in the Service before they take effect. The effective date above always shows the current version's date.",
+          "MentionMyApp (operated by Visionary Pixel, LLC) · Illinois, USA · privacy@mentionmyapp.com",
         ],
       },
     ],
@@ -130,50 +152,77 @@ export const TRUST_PAGES: TrustPage[] = [
     path: "/terms",
     title: "Terms of Service",
     description:
-      "Terms for using MentionMyApp, including audits, connected accounts, publishing workflows, reports, integrations, and responsible use.",
+      "Terms for using MentionMyApp — the Service, workspaces, connected social accounts, content, billing, the 90-Day Ranking Guarantee, and dispute resolution.",
     eyebrow: "Terms",
     summary:
-      "MentionMyApp provides software for publishing, engagement management, SEO audits, and visibility reporting. These terms explain the boundaries of the service and the user's responsibility for the sites, accounts, and content they submit.",
+      "Effective July 11, 2026. MentionMyApp is operated by Visionary Pixel, LLC, an Illinois limited liability company (\"we,\" \"us\"). By creating an account or using the Service you agree to these Terms.",
     sections: [
       {
-        heading: "Use of the service",
+        heading: "The Service",
         paragraphs: [
-          "Users are responsible for the websites, repositories, business profiles, accounts, media, and content they submit to MentionMyApp. They should only connect accounts they own or are authorized to manage, and they should follow the rules of each platform where content is published.",
-          "SEO audits are diagnostic reports. They can identify likely blockers, missing trust signals, content gaps, technical risks, and local visibility issues. They do not guarantee rankings, traffic, revenue, approvals, indexation, or specific placement in AI-generated answers.",
+          "MentionMyApp lets you compose content once and publish it to social media platforms you connect, schedule posts, view engagement (comments, messages, metrics) across your connected accounts, and run SEO audits of your website. Features may change as we improve the Service.",
         ],
       },
       {
-        heading: "Reports and recommendations",
+        heading: "Your account and workspaces",
         paragraphs: [
-          "Reports are meant to support decision-making. A customer may still need a developer, SEO specialist, content editor, local SEO operator, or legal advisor before implementing every recommendation. MentionMyApp does not replace professional judgment for regulated industries, legal claims, health claims, financial claims, or platform compliance.",
-          "The quality of a report depends on available inputs. A crawl can only inspect reachable pages. GitHub checks can only inspect public repository data. Google Business Profile details depend on what is provided or connected. If access is incomplete, the report should reflect that limitation.",
+          "You must be at least 18 and provide accurate information. You're responsible for activity under your account and for keeping your credentials secure.",
+          "Workspaces isolate brands or clients; you're responsible for who you add to your workspaces and the roles you grant them.",
         ],
       },
       {
-        heading: "Connected accounts and content",
+        heading: "Connecting social accounts",
         paragraphs: [
-          "Users are responsible for reviewing content before publishing. MentionMyApp may help format, schedule, distribute, or summarize posts, but the user remains responsible for claims, media rights, comments, replies, and compliance with platform terms.",
-          "The service may change integrations as platform APIs, authentication rules, or provider access changes. Some features may require active connections, paid accounts, or third-party availability.",
-        ],
-        bullets: [
-          "Do not connect accounts without permission.",
-          "Do not submit private repositories unless the product explicitly supports that workflow.",
-          "Verify audit recommendations before changing production systems.",
-          "Treat SEO reports as prioritization, not guaranteed ranking promises.",
+          "You connect platforms through their official authorization flows and must only connect accounts you own or are authorized to manage.",
+          "Your use of each connected platform remains subject to that platform's own terms and policies (including, where applicable, the YouTube Terms of Service and Meta Platform Terms). We publish only what you compose and approve.",
+          "Platforms may change or revoke API access, impose limits (for example, Instagram's daily publishing limits), or remove content under their own rules. We are not responsible for platform-side changes, outages, or moderation decisions.",
         ],
       },
       {
-        heading: "Platform and integration limits",
+        heading: "Your content",
         paragraphs: [
-          "MentionMyApp depends on third-party platforms for account connections, posting, profile data, comments, reviews, and metrics. Those platforms can change APIs, rate limits, permissions, review rules, branding rules, or access without notice. When that happens, some features may be delayed, limited, changed, or temporarily unavailable.",
-          "Users should not use the product to spam platforms, scrape data without permission, impersonate others, publish misleading claims, or bypass platform rules. SEO and distribution work should make a business easier to evaluate, not create fake authority.",
+          "You own the content you upload and compose. You grant us a limited license to host, process (including rendering watermarks), and transmit your content to the platforms you select, solely to operate the Service.",
+          "You represent that you have the rights to the content you publish — including music, footage, and logos — and that your content and its distribution comply with applicable law and platform rules.",
         ],
       },
       {
-        heading: "Billing, changes, and responsibility",
+        heading: "Acceptable use",
         paragraphs: [
-          "Paid features, limits, trials, refunds, and billing terms may vary by plan or offer. Users are responsible for reviewing plan details before subscribing and for canceling services they no longer want. MentionMyApp may update features or pricing as the product changes.",
-          "Users remain responsible for implementing recommendations safely. A report may suggest redirect, canonical, indexation, schema, content, or GBP changes, but production changes should be reviewed before launch. A rushed fix can create new crawl or conversion problems if no one checks it.",
+          "You agree not to use the Service to: send spam or engage in coordinated inauthentic behavior; infringe intellectual property; post unlawful, deceptive, or harmful content; attempt to access other customers' data; probe or disrupt the Service; or resell the Service without our written agreement.",
+          "We may suspend accounts that violate these Terms or put the Service or other users at risk.",
+        ],
+      },
+      {
+        heading: "Plans, billing, and cancellation",
+        paragraphs: [
+          "Paid plans bill in advance on a recurring basis through our payment processor until cancelled. You can cancel anytime in Settings; cancellation stops future charges and the plan runs through the paid period.",
+          "Prices and plan limits may change with notice before your next billing cycle. Taxes may apply.",
+        ],
+      },
+      {
+        heading: "The 90-Day Ranking Guarantee",
+        paragraphs: [
+          "The promise: if your website's Google ranking hasn't improved after 90 days of using MentionMyApp on a paid plan, we'll refund the MentionMyApp subscription fees you paid for that 90-day period — and everything already created stays yours: every post published, every backlink earned, every page indexed.",
+          "How it's measured: \"Improved\" means your site's average position in Google Search Console for the connected domain is better (a lower number) when comparing the 28-day period ending on day 90 to the 28-day period ending on day 1 of your paid subscription. The guarantee applies to one website domain per workspace, designated when the subscription starts, with Google Search Console access available to verify.",
+          "Qualifying use: at least 8 posts published per calendar month through MentionMyApp during the 90 days, to at least 3 connected platforms, each including a link to the designated domain.",
+          "To claim: email support@mentionmyapp.com within 14 days after day 90 with your Search Console comparison. Approved refunds are issued to the original payment method within 10 business days.",
+          "The guarantee covers MentionMyApp subscription fees only; it doesn't cover third-party costs, and it doesn't apply where posting activity was primarily removed by platforms for policy violations. One claim per customer.",
+        ],
+      },
+      {
+        heading: "Disclaimers and limitation of liability",
+        paragraphs: [
+          "Except for the 90-Day Ranking Guarantee, the Service is provided \"as is\" without warranties of any kind, express or implied. We don't warrant uninterrupted or error-free operation, and — beyond that specific refund promise — we make no guarantee of specific search rankings, traffic, engagement, follower growth, or revenue, which depend on factors outside our control.",
+          "To the maximum extent permitted by law, we will not be liable for indirect, incidental, special, consequential, or punitive damages, or lost profits, revenues, or data. Our total liability for any claim relating to the Service is limited to the amounts you paid us in the 12 months before the claim.",
+        ],
+      },
+      {
+        heading: "Termination, changes, and contact",
+        paragraphs: [
+          "You may stop using the Service and delete your account at any time (see our Data Deletion Instructions). We may suspend or terminate accounts for violation of these Terms, with notice where practicable. Sections that by their nature should survive termination survive.",
+          "We may update these Terms; material changes will be notified by email or in the Service at least 14 days before taking effect. Continued use after the effective date constitutes acceptance.",
+          "These Terms are governed by the laws of the State of Illinois, USA, without regard to conflict-of-law rules. Disputes will be resolved in the state or federal courts located in Cook County, Illinois, and both parties consent to their jurisdiction.",
+          "MentionMyApp · Illinois, USA · support@mentionmyapp.com",
         ],
       },
     ],
