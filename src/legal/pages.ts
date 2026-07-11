@@ -1,6 +1,6 @@
 import { SITE_NAME, SITE_URL } from "@/seo/pages";
 
-export type TrustPageKey = "about" | "privacy" | "terms" | "contact" | "how-it-works";
+export type TrustPageKey = "about" | "privacy" | "terms" | "contact" | "how-it-works" | "data-deletion";
 
 export type TrustSection = {
   heading: string;
