@@ -1,3 +1,5 @@
+import { buildHighlyUniqueSeoArticle } from "./article-builder";
+
 export const SITE_NAME = "MentionMyApp";
 export const SITE_DOMAIN = "MentionMyApp.com";
 export const SITE_URL = "https://mentionmyapp.com";
@@ -414,6 +416,8 @@ function countArticleWords(article: Omit<SeoArticle, "wordCount">) {
 }
 
 export function buildSeoArticle(page: SeoPage): SeoArticle {
+  return buildHighlyUniqueSeoArticle(page, SITE_NAME);
+
   const { builder, vertical, intent } = page;
   const product = SITE_NAME;
   const shortTarget = `${builder.name} ${intent.label} for ${vertical.name}`;
