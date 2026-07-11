@@ -41,13 +41,13 @@ function AccountsPage() {
       return startConnect({ data: { platform, origin: window.location.origin } });
     },
     onSuccess: (r) => { window.location.href = r.url; },
-    onError: (e) => { setConnecting(null); setError(e instanceof Error ? e.message : String(e)); },
+    onError: (e) => { setConnecting(null); setError(toMessage(e)); console.error("[accounts] connect failed", e); },
   });
 
   const remove = useMutation({
     mutationFn: (accountId: string) => disconnectAccount({ data: { accountId } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["accounts"] }),
-    onError: (e) => setError(e instanceof Error ? e.message : String(e)),
+    onError: (e) => { setError(toMessage(e)); console.error("[accounts] disconnect failed", e); },
   });
 
   const accounts = q.data?.accounts ?? [];
@@ -151,6 +151,19 @@ function AccountsPage() {
 
 function labelFor(p: Platform) {
   return PLATFORMS.find((x) => x.id === p)?.label ?? p;
+}
+
+function toMessage(e: unknown): string {
+  if (!e) return "Something went wrong";
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string") return e;
+  if (typeof e === "object") {
+    const anyE = e as { message?: unknown; error?: unknown };
+    if (typeof anyE.message === "string") return anyE.message;
+    if (typeof anyE.error === "string") return anyE.error;
+    try { return JSON.stringify(e); } catch { return String(e); }
+  }
+  return String(e);
 }
 
 function statusPill(s: string) {
