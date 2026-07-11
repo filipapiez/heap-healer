@@ -82,13 +82,14 @@ export const startConnect = createServerFn({ method: "POST" })
       throw new Error("Only workspace owners and admins can connect accounts");
     }
 
-    const { createConnectLink } = await import("./zernio.server");
+    const { data: ws } = await supabase.from("workspaces")
+      .select("name").eq("id", workspaceId).maybeSingle();
+    const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
+    const profileId = await ensureZernioProfileId(ws?.name ?? "Workspace", workspaceId);
     const link = await createConnectLink({
       platform: data.platform,
-      workspaceId,
-      userId,
+      profileId,
       redirectUri: `${data.origin}/accounts`,
-      webhookUrl: `${data.origin}/api/public/zernio`,
     });
     return { url: link.url };
   });
