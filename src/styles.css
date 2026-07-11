@@ -9,24 +9,27 @@
   --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
 
   /* MentionMyApp brand palette */
-  --color-mist-50: #f8fafc;
-  --color-mist-100: #f1f5f9;
-  --color-mist-200: #e2e8f0;
+  --color-mist-50: #F7F8FC;
+  --color-mist-100: #EEF0F7;
+  --color-mist-200: #E4E7F2;
   --color-mist-300: #cbd5e1;
   --color-ink-700: #334155;
   --color-ink-800: #1e293b;
-  --color-ink-900: #0f172a;
-  --color-ink-950: #020617;
-  --color-signal-400: #38bdf8;
-  --color-signal-500: #0ea5e9;
-  --color-signal-600: #0284c7;
+  --color-ink-900: #0B1020;
+  --color-ink-950: #05070f;
+  --color-signal-400: #7C7CF0;
+  --color-signal-500: #5B5BD6;
+  --color-signal-600: #4747C2;
+  --color-success: #12B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
 }
 
 @utility card {
   background-color: #ffffff;
-  border-radius: 0.75rem;
+  border-radius: 16px;
   border: 1px solid var(--color-mist-200);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 2px 0 rgb(15 16 32 / 0.04);
 }
 @utility btn {
   display: inline-flex;
@@ -43,6 +46,7 @@
   @apply btn;
   background-color: var(--color-signal-500);
   color: #fff;
+  box-shadow: 0 8px 24px rgba(91,91,214,.35);
   &:hover { background-color: var(--color-signal-600); }
 }
 @utility btn-ghost {
