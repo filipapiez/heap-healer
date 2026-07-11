@@ -476,23 +476,7 @@ export const LANDING_HTML = `
 </footer>
 `;
 
-export function runLandingScript(): () => void {
-  const intervals: number[] = [];
-  const timeouts: number[] = [];
-  const originalSetInterval = window.setInterval.bind(window);
-  const originalSetTimeout = window.setTimeout.bind(window);
-  (window as any).__landingSetInterval = (fn: TimerHandler, ms?: number) => {
-    const id = originalSetInterval(fn, ms);
-    intervals.push(id as unknown as number);
-    return id;
-  };
-  (window as any).__landingSetTimeout = (fn: TimerHandler, ms?: number) => {
-    const id = originalSetTimeout(fn, ms);
-    timeouts.push(id as unknown as number);
-    return id;
-  };
-  try {
-    const src = `/* ---------- platform icon paths (simplified monochrome glyphs) ---------- */
+const LANDING_JS = `/* ---------- platform icon paths (simplified monochrome glyphs) ---------- */
 const ICONS = {
   yt:'M23 12s0-3.6-.46-5.2a2.9 2.9 0 0 0-2-2C18.9 4.3 12 4.3 12 4.3s-6.9 0-8.5.5a2.9 2.9 0 0 0-2 2C1 8.4 1 12 1 12s0 3.6.5 5.2a2.9 2.9 0 0 0 2 2c1.6.5 8.5.5 8.5.5s6.9 0 8.5-.5a2.9 2.9 0 0 0 2-2C23 15.6 23 12 23 12ZM9.8 15.5v-7l6 3.5Z',
   tt:'M16.7 2h-3.1v13.6a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9.6a6.1 6.1 0 1 0 5.1 6V8.7a7.8 7.8 0 0 0 4.5 1.4V7a4.8 4.8 0 0 1-4.5-5Z',
@@ -564,16 +548,17 @@ if (reduced) { nodes.forEach(n => n.node.classList.add('done')); ticker.innerHTM
 else { tick(); setInterval(tick, 1500); }
 
 /* mini icons in brand cards */
-document.querySelectorAll('.mini[data-icon]').forEach(el => { el.innerHTML = svgIcon(el.dataset.icon); });`
-      .replace(/setInterval\(/g, '(window as any).__landingSetInterval(')
-      .replace(/setTimeout\(/g, '(window as any).__landingSetTimeout(');
+document.querySelectorAll('.mini[data-icon]').forEach(el => { el.innerHTML = svgIcon(el.dataset.icon); });`;
+
+let landingRan = false;
+export function runLandingScript(): () => void {
+  if (landingRan) return () => {};
+  landingRan = true;
+  try {
     // eslint-disable-next-line no-new-func
-    new Function(src)();
+    new Function(LANDING_JS)();
   } catch (e) {
     console.error('[landing] script failed', e);
   }
-  return () => {
-    intervals.forEach((id) => clearInterval(id));
-    timeouts.forEach((id) => clearTimeout(id));
-  };
+  return () => {};
 }
