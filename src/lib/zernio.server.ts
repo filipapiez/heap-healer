@@ -36,17 +36,24 @@ function apiKey() {
 }
 
 async function zernio<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${baseUrl()}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey()}`,
-      ...(init.headers ?? {}),
-    },
-  });
+  const url = `${baseUrl()}${path}`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey()}`,
+        ...(init.headers ?? {}),
+      },
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    throw new Error(`Zernio fetch failed for ${url}: ${msg}`);
+  }
   if (!res.ok) {
     const body = await res.text().catch(() => "");
-    throw new Error(`Zernio ${res.status}: ${body || res.statusText}`);
+    throw new Error(`Zernio ${res.status} at ${url}: ${body || res.statusText}`);
   }
   return res.json() as Promise<T>;
 }
