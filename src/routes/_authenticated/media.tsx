@@ -5,7 +5,7 @@ import { MediaUploader } from "@/components/MediaUploader";
 import { listMedia, deleteMedia } from "@/lib/media.functions";
 
 export const Route = createFileRoute("/_authenticated/media")({
-  head: () => ({ meta: [{ title: "Media library — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Media library — MentionMyApp" }] }),
   component: MediaPage,
 });
 

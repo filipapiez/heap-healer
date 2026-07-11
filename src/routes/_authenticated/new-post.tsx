@@ -8,7 +8,7 @@ import { listAccounts } from "@/lib/accounts.functions";
 import { createPost } from "@/lib/posts.functions";
 
 export const Route = createFileRoute("/_authenticated/new-post")({
-  head: () => ({ meta: [{ title: "New post — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "New post — MentionMyApp" }] }),
   component: NewPostPage,
 });
 

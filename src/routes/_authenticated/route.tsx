@@ -22,6 +22,7 @@ const NAV = [
   { to: "/accounts", label: "Connected Accounts", icon: "⛓" },
   { to: "/scheduled", label: "Scheduled", icon: "◷" },
   { to: "/engagement", label: "Engagement", icon: "♥" },
+  { to: "/seo-audit", label: "SEO Audit", icon: "★" },
   { to: "/history", label: "History", icon: "≡" },
   { to: "/settings", label: "Settings", icon: "⚙" },
   { to: "/admin", label: "Admin", icon: "▲" },
@@ -47,18 +48,21 @@ function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen bg-[var(--color-mist-50)] font-body text-[var(--color-ink-900)]">
-      <aside className="flex w-64 shrink-0 flex-col bg-[var(--color-ink-900)] text-white">
+      <aside className="flex w-64 shrink-0 flex-col bg-[#0B1020] text-white">
         <div className="px-5 pb-2 pt-6">
-          <div className="font-display text-xl font-bold">SocialFlow</div>
+          <div className="font-display text-xl" style={{ fontWeight: 800 }}>
+            Mention<span style={{ color: "#7C7CF0" }}>My</span>App
+          </div>
           <div className="text-[11px] text-white/40">Compose once. Publish everywhere.</div>
         </div>
         <WorkspaceSwitcher />
         <nav className="mt-2 flex-1 space-y-0.5 px-3">
           {NAV.map((item) => (
             <Link key={item.to} to={item.to}
-              activeProps={{ className: "!bg-white/10 !text-white" }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white">
-              <span className="w-4 text-center opacity-70">{item.icon}</span>
+              activeProps={{ className: "!text-white", style: { background: "rgba(91,91,214,.18)", borderLeft: "3px solid #5B5BD6", paddingLeft: "calc(0.75rem - 3px)" } }}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/5 hover:text-white"
+              style={{ color: "#A9B0CC" }}>
+              <span className="w-4 text-center opacity-80">{item.icon}</span>
               {item.label}
             </Link>
           ))}

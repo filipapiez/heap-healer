@@ -4,7 +4,7 @@ import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { listPosts, cancelScheduled } from "@/lib/posts.functions";
 
 export const Route = createFileRoute("/_authenticated/scheduled")({
-  head: () => ({ meta: [{ title: "Scheduled — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "Scheduled — MentionMyApp" }] }),
   component: ScheduledPage,
 });
 

@@ -4,7 +4,7 @@ import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { listPosts } from "@/lib/posts.functions";
 
 export const Route = createFileRoute("/_authenticated/history")({
-  head: () => ({ meta: [{ title: "History — SocialFlow" }] }),
+  head: () => ({ meta: [{ title: "History — MentionMyApp" }] }),
   component: HistoryPage,
 });
 

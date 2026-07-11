@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
 import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
 import { Route as AuthenticatedNewPostRouteImport } from './routes/_authenticated/new-post'
 import { Route as AuthenticatedMediaRouteImport } from './routes/_authenticated/media'
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSeoAuditRoute = AuthenticatedSeoAuditRouteImport.update({
+  id: '/seo-audit',
+  path: '/seo-audit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedScheduledRoute = AuthenticatedScheduledRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/media': typeof AuthenticatedMediaRoute
   '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
+  '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/media': typeof AuthenticatedMediaRoute
   '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
+  '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/_authenticated/media': typeof AuthenticatedMediaRoute
   '/_authenticated/new-post': typeof AuthenticatedNewPostRoute
   '/_authenticated/scheduled': typeof AuthenticatedScheduledRoute
+  '/_authenticated/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/media'
     | '/new-post'
     | '/scheduled'
+    | '/seo-audit'
     | '/settings'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/media'
     | '/new-post'
     | '/scheduled'
+    | '/seo-audit'
     | '/settings'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authenticated/media'
     | '/_authenticated/new-post'
     | '/_authenticated/scheduled'
+    | '/_authenticated/seo-audit'
     | '/_authenticated/settings'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
@@ -226,6 +238,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/seo-audit': {
+      id: '/_authenticated/seo-audit'
+      path: '/seo-audit'
+      fullPath: '/seo-audit'
+      preLoaderRoute: typeof AuthenticatedSeoAuditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/scheduled': {
@@ -310,6 +329,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMediaRoute: typeof AuthenticatedMediaRoute
   AuthenticatedNewPostRoute: typeof AuthenticatedNewPostRoute
   AuthenticatedScheduledRoute: typeof AuthenticatedScheduledRoute
+  AuthenticatedSeoAuditRoute: typeof AuthenticatedSeoAuditRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
 }
 
@@ -322,6 +342,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMediaRoute: AuthenticatedMediaRoute,
   AuthenticatedNewPostRoute: AuthenticatedNewPostRoute,
   AuthenticatedScheduledRoute: AuthenticatedScheduledRoute,
+  AuthenticatedSeoAuditRoute: AuthenticatedSeoAuditRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
 }
 

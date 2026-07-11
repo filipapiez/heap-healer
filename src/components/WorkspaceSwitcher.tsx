@@ -54,7 +54,7 @@ export default function WorkspaceSwitcher() {
       <button onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between rounded-lg bg-white/5 px-3 py-2 text-left text-sm text-white hover:bg-white/10">
         <span className="min-w-0 flex-1">
-          <span className="block truncate font-semibold">{active?.name ?? "…"}</span>
+          <span className="block truncate font-semibold">{active?.name ?? "My workspace"}</span>
           <span className="block text-[11px] text-white/40">Brand workspace</span>
         </span>
         <span className="ml-2 text-white/40">⇵</span>

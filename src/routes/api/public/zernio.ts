@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Zernio -> SocialFlow webhook.
+ * Zernio -> MentionMyApp webhook.
  * Events (all use HMAC-SHA256 hex of the raw body in x-zernio-signature):
  *   account.connected     { workspace_id, user_id, platform, external_id,
  *                           zernio_account_id, handle, display_name, avatar_url }
