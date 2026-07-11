@@ -63,7 +63,7 @@ export const Route = createFileRoute("/resources/$slug")({
 
 function ResourcePage() {
   const { page, article, related } = Route.useLoaderData();
-  const toc = article.sections.map((section) => ({
+  const toc = article.sections.map((section: any) => ({
     id: section.heading
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
@@ -130,7 +130,7 @@ function ResourcePage() {
                 Template
               </h2>
               <ol className="mt-4 space-y-2 text-sm leading-6 text-[var(--color-ink-700)]">
-                {toc.map((item) => (
+                {toc.map((item: any) => (
                   <li key={item.id}>
                     <a className="hover:text-[var(--color-signal-600)]" href={`#${item.id}`}>
                       {item.heading}
@@ -143,7 +143,7 @@ function ResourcePage() {
 
           <div className="min-w-0">
             <div className="prose max-w-none">
-              {article.sections.map((section) => {
+              {article.sections.map((section: any) => {
                 const id = section.heading
                   .toLowerCase()
                   .replace(/[^a-z0-9]+/g, "-")
@@ -156,13 +156,13 @@ function ResourcePage() {
                   >
                     <h2 className="font-display text-2xl font-bold">{section.heading}</h2>
                     <div className="mt-4 space-y-4 text-base leading-8 text-[var(--color-ink-800)]">
-                      {section.paragraphs.map((paragraph) => (
+                      {section.paragraphs.map((paragraph: any) => (
                         <p key={paragraph}>{paragraph}</p>
                       ))}
                     </div>
                     {section.bullets && (
                       <ul className="mt-5 grid gap-2 text-sm leading-6 text-[var(--color-ink-700)] md:grid-cols-2">
-                        {section.bullets.map((bullet) => (
+                        {section.bullets.map((bullet: any) => (
                           <li
                             key={bullet}
                             className="rounded-lg border border-[var(--color-mist-200)] bg-[var(--color-mist-50)] px-4 py-3"
@@ -179,7 +179,7 @@ function ResourcePage() {
               <section className="py-8">
                 <h2 className="font-display text-2xl font-bold">FAQs</h2>
                 <div className="mt-5 space-y-4">
-                  {article.faqs.map((faq) => (
+                  {article.faqs.map((faq: any) => (
                     <div
                       key={faq.question}
                       className="rounded-lg border border-[var(--color-mist-200)] p-5"
@@ -195,7 +195,7 @@ function ResourcePage() {
             <section className="border-t border-[var(--color-mist-200)] py-8">
               <h2 className="font-display text-2xl font-bold">Related pages</h2>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
-                {related.map((relatedPage) => (
+                {related.map((relatedPage: any) => (
                   <Link
                     key={relatedPage.slug}
                     to="/resources/$slug"
