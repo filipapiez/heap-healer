@@ -198,6 +198,7 @@ export const LANDING_HTML = `
       <a href="#how">How it works</a>
       <a href="#engagement">Engagement</a>
       <a href="#seo">SEO audit</a>
+      <a href="/resources">Resources</a>
       <a href="#brands">For agencies</a>
     </div>
     <div class="nav-cta">

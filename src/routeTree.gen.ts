@@ -9,9 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ResourcesSlugRouteImport } from './routes/resources/$slug'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
 import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
@@ -25,6 +29,21 @@ import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticat
 import { Route as ApiPublicZernioRouteImport } from './routes/api/public/zernio'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -38,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
@@ -103,6 +127,9 @@ const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -113,12 +140,16 @@ export interface FileRoutesByFullPath {
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -129,6 +160,7 @@ export interface FileRoutesByTo {
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
@@ -137,6 +169,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/resources': typeof ResourcesRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -147,6 +182,7 @@ export interface FileRoutesById {
   '/_authenticated/scheduled': typeof AuthenticatedScheduledRoute
   '/_authenticated/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
 }
@@ -155,6 +191,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/accounts'
     | '/admin'
     | '/dashboard'
@@ -165,12 +204,16 @@ export interface FileRouteTypes {
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
+    | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/accounts'
     | '/admin'
     | '/dashboard'
@@ -181,6 +224,7 @@ export interface FileRouteTypes {
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
+    | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
   id:
@@ -188,6 +232,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/resources'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/_authenticated/accounts'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
@@ -198,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scheduled'
     | '/_authenticated/seo-audit'
     | '/_authenticated/settings'
+    | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
   fileRoutesById: FileRoutesById
@@ -206,12 +254,36 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ResourcesRoute: typeof ResourcesRouteWithChildren
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicZernioRoute: typeof ApiPublicZernioRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -232,6 +304,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -349,13 +428,38 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ResourcesRouteChildren {
+  ResourcesSlugRoute: typeof ResourcesSlugRoute
+}
+
+const ResourcesRouteChildren: ResourcesRouteChildren = {
+  ResourcesSlugRoute: ResourcesSlugRoute,
+}
+
+const ResourcesRouteWithChildren = ResourcesRoute._addFileChildren(
+  ResourcesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ResourcesRoute: ResourcesRouteWithChildren,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicZernioRoute: ApiPublicZernioRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
