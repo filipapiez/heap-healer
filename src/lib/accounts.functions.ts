@@ -82,6 +82,33 @@ export const startConnect = createServerFn({ method: "POST" })
       throw new Error("Only workspace owners and admins can connect accounts");
     }
 
+    // ── Native YouTube path (no Zernio) ──────────────────────────────
+    if (data.platform === "youtube") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { buildAuthorizeUrl, requireGoogleEnv } = await import("./youtube.server");
+      const { clientId } = requireGoogleEnv();
+
+      // Generate a cryptographically random state and store it server-side
+      // so the callback can validate + resolve back to this user/workspace.
+      const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
+      const origin = new URL(data.origin).origin;
+      const { error: insErr } = await supabaseAdmin
+        .from("oauth_states" as never)
+        .insert({
+          state,
+          provider: "youtube",
+          workspace_id: workspaceId,
+          user_id: userId,
+          redirect_origin: origin,
+        } as never);
+      if (insErr) throw insErr;
+
+      const redirectUri = `${origin}/api/public/oauth/youtube/callback`;
+      const url = buildAuthorizeUrl({ clientId, redirectUri, state });
+      return { url };
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     const { data: ws } = await supabase.from("workspaces")
       .select("name").eq("id", workspaceId).maybeSingle();
     const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
@@ -100,9 +127,24 @@ export const disconnectAccount = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { data: row, error } = await supabase.from("connected_accounts")
-      .select("id, zernio_account_id").eq("id", data.accountId).maybeSingle();
+      .select("id, platform, zernio_account_id").eq("id", data.accountId).maybeSingle();
     if (error) throw error;
     if (!row) throw new Error("Account not found");
+
+    // Native YouTube: revoke Google tokens then delete via service role.
+    if (row.platform === "youtube") {
+      const { disconnectYoutubeAccount } = await import("./youtube.server");
+      try {
+        await disconnectYoutubeAccount(row.id);
+      } catch (e) {
+        console.warn("[accounts] YouTube revoke failed; deleting locally", e);
+        const { error: delErr } = await supabase.from("connected_accounts")
+          .delete().eq("id", data.accountId);
+        if (delErr) throw delErr;
+      }
+      return { ok: true };
+    }
+
     if (row.zernio_account_id) {
       try {
         const { disconnectZernioAccount } = await import("./zernio.server");

@@ -120,15 +120,22 @@ export const createPost = createServerFn({ method: "POST" })
     // Immediate publish path — fire per-target through Zernio.
     if (!scheduledAt) {
       const { publishToZernio } = await import("./zernio.server");
+      const { publishYoutubeVideo } = await import("./youtube.server");
       // Signed URLs for media (private bucket) so Zernio can fetch
       const mediaUrls: string[] = [];
+      let firstMediaPath: string | null = null;
+      let firstMediaMime: string | null = null;
       if (data.mediaAssetIds.length) {
         const { data: media } = await supabase.from("media_assets")
-          .select("storage_path").in("id", data.mediaAssetIds);
+          .select("storage_path, mime_type").in("id", data.mediaAssetIds);
         for (const m of media ?? []) {
           const { data: url } = await supabase.storage.from("media")
             .createSignedUrl(m.storage_path, 60 * 60 * 6);
           if (url?.signedUrl) mediaUrls.push(url.signedUrl);
+        }
+        if (media && media[0]) {
+          firstMediaPath = (media[0] as { storage_path: string }).storage_path;
+          firstMediaMime = (media[0] as { mime_type?: string }).mime_type ?? "video/mp4";
         }
       }
 
@@ -137,12 +144,31 @@ export const createPost = createServerFn({ method: "POST" })
         const account = accounts.find((a) => a.id === t.connected_account_id)!;
         const caption = (data.overrides?.[t.platform] as { caption?: string } | undefined)?.caption ?? data.caption;
         try {
-          const res = await publishToZernio({
-            zernioAccountId: account.zernio_account_id!,
-            platform: t.platform,
-            caption,
-            mediaUrls,
-          });
+          let res: { external_post_id?: string | null; external_url?: string | null };
+          if (t.platform === "youtube") {
+            // Native YouTube publish path — expects a video media asset.
+            if (!firstMediaPath) throw new Error("YouTube publish requires a video attachment");
+            const { data: dl, error: dlErr } = await supabase.storage.from("media")
+              .download(firstMediaPath);
+            if (dlErr || !dl) throw new Error(`Failed to read video: ${dlErr?.message ?? "unknown"}`);
+            const [title, ...descLines] = caption.split("\n");
+            const yt = await publishYoutubeVideo({
+              connectedAccountId: account.id,
+              title: (title || "Untitled").slice(0, 100),
+              description: descLines.join("\n"),
+              privacyStatus: "public",
+              contentType: firstMediaMime ?? "video/mp4",
+              video: dl,
+            });
+            res = { external_post_id: yt.videoId, external_url: yt.url };
+          } else {
+            res = await publishToZernio({
+              zernioAccountId: account.zernio_account_id!,
+              platform: t.platform,
+              caption,
+              mediaUrls,
+            });
+          }
           await supabase.from("post_targets").update({
             status: "published",
             external_post_id: res.external_post_id ?? null,

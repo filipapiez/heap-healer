@@ -111,6 +111,99 @@ export async function revokeToken(token: string): Promise<void> {
   }).catch(() => {}); // best-effort; ignore network failures on revoke
 }
 
+/**
+ * Get a currently-valid access token for a connected YouTube account,
+ * refreshing via the stored refresh_token when the current one is
+ * expired or within 60s of expiry. Uses supabaseAdmin.
+ */
+export async function getValidAccessToken(connectedAccountId: string): Promise<string> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("youtube_oauth_tokens" as never)
+    .select("access_token, refresh_token, expires_at")
+    .eq("connected_account_id", connectedAccountId)
+    .maybeSingle();
+  if (error || !data) {
+    throw new Error("No YouTube tokens found for this account. Reconnect required.");
+  }
+  const row = data as unknown as {
+    access_token: string;
+    refresh_token: string | null;
+    expires_at: string;
+  };
+  const expiryMs = new Date(row.expires_at).getTime();
+  const skewMs = 60_000;
+  if (Date.now() < expiryMs - skewMs) return row.access_token;
+
+  if (!row.refresh_token) {
+    throw new Error("Access token expired and no refresh token available. Reconnect required.");
+  }
+  const refreshed = await refreshAccessToken(row.refresh_token);
+  const newExpiresAt = new Date(Date.now() + refreshed.expires_in * 1000).toISOString();
+  await supabaseAdmin
+    .from("youtube_oauth_tokens" as never)
+    .update({
+      access_token: refreshed.access_token,
+      // Google may or may not return a new refresh_token; keep old if not.
+      refresh_token: refreshed.refresh_token ?? row.refresh_token,
+      scope: refreshed.scope,
+      token_type: refreshed.token_type ?? "Bearer",
+      expires_at: newExpiresAt,
+    } as never)
+    .eq("connected_account_id", connectedAccountId);
+  return refreshed.access_token;
+}
+
+/**
+ * Full disconnect: revoke tokens with Google (best-effort) and delete the
+ * connected_accounts row (cascade removes youtube_oauth_tokens).
+ */
+export async function disconnectYoutubeAccount(connectedAccountId: string): Promise<void> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("youtube_oauth_tokens" as never)
+    .select("refresh_token, access_token")
+    .eq("connected_account_id", connectedAccountId)
+    .maybeSingle();
+  const tokens = data as unknown as
+    | { refresh_token: string | null; access_token: string | null }
+    | null;
+  if (tokens?.refresh_token) await revokeToken(tokens.refresh_token);
+  else if (tokens?.access_token) await revokeToken(tokens.access_token);
+
+  await supabaseAdmin
+    .from("connected_accounts")
+    .delete()
+    .eq("id", connectedAccountId);
+}
+
+/**
+ * High-level publish helper: given a connected YouTube account id, a title,
+ * a description, and a video Blob/ArrayBuffer, uploads to YouTube using an
+ * auto-refreshed access token.
+ */
+export async function publishYoutubeVideo(opts: {
+  connectedAccountId: string;
+  title: string;
+  description?: string;
+  privacyStatus?: "public" | "unlisted" | "private";
+  tags?: string[];
+  contentType: string;
+  video: Blob | ArrayBuffer;
+}): Promise<{ videoId: string; url: string }> {
+  const accessToken = await getValidAccessToken(opts.connectedAccountId);
+  const { videoId } = await uploadVideo({
+    accessToken,
+    title: opts.title,
+    description: opts.description,
+    privacyStatus: opts.privacyStatus,
+    tags: opts.tags,
+    contentType: opts.contentType,
+    video: opts.video,
+  });
+  return { videoId, url: `https://www.youtube.com/watch?v=${videoId}` };
+}
+
 export interface YouTubeChannelInfo {
   id: string;
   title: string;
