@@ -34,6 +34,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as ApiPublicZernioRouteImport } from './routes/api/public/zernio'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
+import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -159,6 +160,12 @@ const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
   path: '/api/public/run-scheduled',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOauthYoutubeCallbackRoute =
+  ApiPublicOauthYoutubeCallbackRouteImport.update({
+    id: '/api/public/oauth/youtube/callback',
+    path: '/api/public/oauth/youtube/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
+  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -211,6 +219,7 @@ export interface FileRoutesByTo {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
+  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
+  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
+    | '/api/public/oauth/youtube/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
+    | '/api/public/oauth/youtube/callback'
   id:
     | '__root__'
     | '/'
@@ -320,6 +332,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
+    | '/api/public/oauth/youtube/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -337,6 +350,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicZernioRoute: typeof ApiPublicZernioRoute
+  ApiPublicOauthYoutubeCallbackRoute: typeof ApiPublicOauthYoutubeCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -516,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRunScheduledRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/youtube/callback': {
+      id: '/api/public/oauth/youtube/callback'
+      path: '/api/public/oauth/youtube/callback'
+      fullPath: '/api/public/oauth/youtube/callback'
+      preLoaderRoute: typeof ApiPublicOauthYoutubeCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -575,6 +596,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicZernioRoute: ApiPublicZernioRoute,
+  ApiPublicOauthYoutubeCallbackRoute: ApiPublicOauthYoutubeCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
