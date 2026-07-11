@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 import { featuredSeoPages, pagesByIntent, seoPages, SITE_NAME, SITE_URL } from "@/seo/pages";
 
 export const Route = createFileRoute("/resources")({
@@ -23,8 +23,18 @@ export const Route = createFileRoute("/resources")({
           links: [{ rel: "canonical", href: `${SITE_URL}/resources` }],
         }
       : {},
-  component: ResourcesIndex,
+  component: ResourcesRoute,
 });
+
+function ResourcesRoute() {
+  const location = useLocation();
+
+  if (location.pathname !== "/resources") {
+    return <Outlet />;
+  }
+
+  return <ResourcesIndex />;
+}
 
 function ResourcesIndex() {
   const grouped = pagesByIntent();
