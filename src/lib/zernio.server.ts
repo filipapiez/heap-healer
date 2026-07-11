@@ -39,11 +39,12 @@ const ZERNIO_PLATFORM: Record<SocialPlatform, string> = {
 };
 
 function baseUrl() {
-  const raw = process.env.ZERNIO_API_URL;
-  if (!raw) throw new Error("ZERNIO_API_URL is not configured");
-  // Accept "https://zernio.com", "https://zernio.com/", or "https://zernio.com/api".
-  const trimmed = raw.replace(/\/+$/, "");
-  return /\/api$/.test(trimmed) ? trimmed : `${trimmed}/api`;
+  const raw = (process.env.ZERNIO_API_URL || "https://zernio.com").trim().replace(/\/+$/, "");
+  // Extract origin only — users often paste dashboard URLs like
+  // https://zernio.com/dashboard/api-keys, which would 404.
+  let origin = raw;
+  try { origin = new URL(raw).origin; } catch { origin = "https://zernio.com"; }
+  return `${origin}/api`;
 }
 
 function apiKey() {
