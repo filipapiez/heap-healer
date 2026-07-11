@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
-import { PageHeader, EmptyState } from "@/components/PageHeader";
+import { PageHeader } from "@/components/PageHeader";
 import { getEngagementStats } from "@/lib/engagement.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
