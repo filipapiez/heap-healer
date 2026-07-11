@@ -132,6 +132,44 @@ export type Database = {
           },
         ]
       }
+      oauth_states: {
+        Row: {
+          created_at: string
+          expires_at: string
+          provider: string
+          redirect_origin: string
+          state: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          provider: string
+          redirect_origin: string
+          state: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          provider?: string
+          redirect_origin?: string
+          state?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oauth_states_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_targets: {
         Row: {
           connected_account_id: string
@@ -403,6 +441,56 @@ export type Database = {
           watermark?: Json
         }
         Relationships: []
+      }
+      youtube_oauth_tokens: {
+        Row: {
+          access_token: string
+          channel_id: string | null
+          connected_account_id: string
+          created_at: string
+          expires_at: string
+          google_user_id: string | null
+          id: string
+          refresh_token: string | null
+          scope: string | null
+          token_type: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          channel_id?: string | null
+          connected_account_id: string
+          created_at?: string
+          expires_at: string
+          google_user_id?: string | null
+          id?: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          channel_id?: string | null
+          connected_account_id?: string
+          created_at?: string
+          expires_at?: string
+          google_user_id?: string | null
+          id?: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "youtube_oauth_tokens_connected_account_id_fkey"
+            columns: ["connected_account_id"]
+            isOneToOne: true
+            referencedRelation: "connected_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
