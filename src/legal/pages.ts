@@ -333,6 +333,64 @@ export const TRUST_PAGES: TrustPage[] = [
       },
     ],
   },
+  {
+    key: "data-deletion",
+    path: "/data-deletion",
+    title: "Data Deletion Instructions",
+    description:
+      "How to disconnect a connected social account, delete your MentionMyApp account and data, and what we retain for legal or security reasons.",
+    eyebrow: "Data deletion",
+    summary:
+      "This page explains how to disconnect platforms and delete your data from MentionMyApp, what gets deleted, what we may retain, and how Facebook/Instagram deletion requests are handled.",
+    sections: [
+      {
+        heading: "Option 1 — Disconnect a single social account",
+        paragraphs: [
+          "Sign in to MentionMyApp and open Connected Accounts, then click Disconnect next to the account.",
+          "Disconnecting revokes our access and deletes the stored access token for that account. Engagement data already retrieved for your dashboard is deleted with your account, or sooner on request.",
+          "You can also revoke MentionMyApp's access directly from the platform's own settings at any time (for example: Facebook/Instagram → Settings → Apps and Websites; Google → Security → Third-party access; Bluesky → App Passwords).",
+        ],
+      },
+      {
+        heading: "Option 2 — Delete your entire account and data",
+        paragraphs: [
+          "Sign in to MentionMyApp and open Settings, then choose Delete account and confirm.",
+          "Or email privacy@mentionmyapp.com from your account email with the subject \"Delete my data\" — no account access required. We verify the request and confirm completion by email.",
+        ],
+      },
+      {
+        heading: "What gets deleted and what we may retain",
+        paragraphs: [
+          "Within 30 days of your request we delete the items listed below.",
+          "What we may retain: billing records and other information we're legally required to keep, and minimal logs needed for security and fraud prevention, retained no longer than necessary.",
+        ],
+        bullets: [
+          "Your account and profile information",
+          "All workspaces, posts, drafts, schedules, and engagement records",
+          "All uploaded media (videos, logos) and rendered files",
+          "All connected-account records, including encrypted access tokens (revoked and destroyed)",
+        ],
+      },
+      {
+        heading: "Content already published to social platforms",
+        paragraphs: [
+          "Posts that MentionMyApp published to your social accounts live on those platforms under your ownership and are not affected by deleting your MentionMyApp data. Remove them on each platform directly if you wish.",
+        ],
+      },
+      {
+        heading: "Facebook / Instagram data deletion requests",
+        paragraphs: [
+          "If you remove MentionMyApp from your Facebook or Instagram settings, Meta sends us a data deletion request and we delete the data associated with that connection as described above. You can also request deletion using either option on this page.",
+        ],
+      },
+      {
+        heading: "Questions",
+        paragraphs: [
+          "Email privacy@mentionmyapp.com. See also our Privacy Policy and Terms of Service.",
+        ],
+      },
+    ],
+  },
 ];
 
 export const TRUST_PAGE_REFS = TRUST_PAGES.map((page) => ({
