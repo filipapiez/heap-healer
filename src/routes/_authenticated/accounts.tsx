@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { listAccounts, startConnect, disconnectAccount } from "@/lib/accounts.functions";
 
@@ -29,7 +29,28 @@ export const Route = createFileRoute("/_authenticated/accounts")({
 function AccountsPage() {
   const qc = useQueryClient();
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [connecting, setConnecting] = useState<Platform | null>(null);
+
+  // Surface OAuth callback result from URL (?meta=ok|error&msg=...).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const providers = ["meta", "threads", "youtube"] as const;
+    for (const p of providers) {
+      const status = params.get(p);
+      if (!status) continue;
+      const msg = params.get("msg") ?? "";
+      const text = `${p}: ${status}${msg ? ` — ${msg}` : ""}`;
+      if (status === "ok") setNotice(text);
+      else setError(text);
+      params.delete(p);
+      params.delete("msg");
+      const qs = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
+      qc.invalidateQueries({ queryKey: ["accounts"] });
+      break;
+    }
+  }, [qc]);
 
   const q = useQuery({ queryKey: ["accounts"], queryFn: () => listAccounts() });
 
@@ -61,6 +82,9 @@ function AccountsPage() {
 
       {error && (
         <div className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</div>
+      )}
+      {notice && (
+        <div className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{notice}</div>
       )}
 
       <section className="mb-8">
