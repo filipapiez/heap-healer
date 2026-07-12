@@ -132,6 +132,62 @@ export type Database = {
           },
         ]
       }
+      meta_oauth_tokens: {
+        Row: {
+          access_token: string
+          connected_account_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          ig_business_id: string | null
+          kind: string
+          meta_user_id: string | null
+          page_id: string | null
+          refresh_token: string | null
+          scope: string | null
+          token_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          connected_account_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ig_business_id?: string | null
+          kind: string
+          meta_user_id?: string | null
+          page_id?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          connected_account_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          ig_business_id?: string | null
+          kind?: string
+          meta_user_id?: string | null
+          page_id?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meta_oauth_tokens_connected_account_id_fkey"
+            columns: ["connected_account_id"]
+            isOneToOne: true
+            referencedRelation: "connected_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       oauth_states: {
         Row: {
           created_at: string
