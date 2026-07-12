@@ -109,6 +109,51 @@ export const startConnect = createServerFn({ method: "POST" })
     }
     // ─────────────────────────────────────────────────────────────────
 
+    // ── Native Meta path: Facebook + Instagram share one OAuth flow. ──
+    if (data.platform === "facebook" || data.platform === "instagram") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { buildFacebookAuthorizeUrl, requireMetaEnv } = await import("./meta.server");
+      const { appId } = requireMetaEnv();
+      const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
+      const origin = new URL(data.origin).origin;
+      const { error: insErr } = await supabaseAdmin
+        .from("oauth_states" as never)
+        .insert({
+          state,
+          provider: "meta",
+          workspace_id: workspaceId,
+          user_id: userId,
+          redirect_origin: origin,
+        } as never);
+      if (insErr) throw insErr;
+      const redirectUri = `${origin}/api/public/oauth/meta/callback`;
+      const url = buildFacebookAuthorizeUrl({ appId, redirectUri, state });
+      return { url };
+    }
+
+    // ── Native Threads path (same META_APP_ID, separate authorize server). ──
+    if (data.platform === "threads") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { buildThreadsAuthorizeUrl, requireMetaEnv } = await import("./meta.server");
+      const { appId } = requireMetaEnv();
+      const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
+      const origin = new URL(data.origin).origin;
+      const { error: insErr } = await supabaseAdmin
+        .from("oauth_states" as never)
+        .insert({
+          state,
+          provider: "threads",
+          workspace_id: workspaceId,
+          user_id: userId,
+          redirect_origin: origin,
+        } as never);
+      if (insErr) throw insErr;
+      const redirectUri = `${origin}/api/public/oauth/threads/callback`;
+      const url = buildThreadsAuthorizeUrl({ appId, redirectUri, state });
+      return { url };
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     const { data: ws } = await supabase.from("workspaces")
       .select("name").eq("id", workspaceId).maybeSingle();
     const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
@@ -138,6 +183,20 @@ export const disconnectAccount = createServerFn({ method: "POST" })
         await disconnectYoutubeAccount(row.id);
       } catch (e) {
         console.warn("[accounts] YouTube revoke failed; deleting locally", e);
+        const { error: delErr } = await supabase.from("connected_accounts")
+          .delete().eq("id", data.accountId);
+        if (delErr) throw delErr;
+      }
+      return { ok: true };
+    }
+
+    // Native Meta (Facebook, Instagram, Threads): revoke + delete via service role.
+    if (row.platform === "facebook" || row.platform === "instagram" || row.platform === "threads") {
+      const { disconnectMetaAccount } = await import("./meta.server");
+      try {
+        await disconnectMetaAccount(row.id);
+      } catch (e) {
+        console.warn("[accounts] Meta revoke failed; deleting locally", e);
         const { error: delErr } = await supabase.from("connected_accounts")
           .delete().eq("id", data.accountId);
         if (delErr) throw delErr;

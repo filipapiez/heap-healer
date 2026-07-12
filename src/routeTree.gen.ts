@@ -35,6 +35,7 @@ import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticat
 import { Route as ApiPublicZernioRouteImport } from './routes/api/public/zernio'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
+import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
 import { Route as ApiPublicOauthMetaCallbackRouteImport } from './routes/api/public/oauth/meta/callback'
 
 const TermsRoute = TermsRouteImport.update({
@@ -167,6 +168,12 @@ const ApiPublicOauthYoutubeCallbackRoute =
     path: '/api/public/oauth/youtube/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOauthThreadsCallbackRoute =
+  ApiPublicOauthThreadsCallbackRouteImport.update({
+    id: '/api/public/oauth/threads/callback',
+    path: '/api/public/oauth/threads/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOauthMetaCallbackRoute =
   ApiPublicOauthMetaCallbackRouteImport.update({
     id: '/api/public/oauth/meta/callback',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesByTo {
@@ -228,6 +236,7 @@ export interface FileRoutesByTo {
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesById {
@@ -258,6 +267,7 @@ export interface FileRoutesById {
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRouteTypes {
@@ -288,6 +298,7 @@ export interface FileRouteTypes {
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/youtube/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/youtube/callback'
   id:
     | '__root__'
@@ -345,6 +357,7 @@ export interface FileRouteTypes {
     | '/api/public/run-scheduled'
     | '/api/public/zernio'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/youtube/callback'
   fileRoutesById: FileRoutesById
 }
@@ -364,6 +377,7 @@ export interface RootRouteChildren {
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicZernioRoute: typeof ApiPublicZernioRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
+  ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
   ApiPublicOauthYoutubeCallbackRoute: typeof ApiPublicOauthYoutubeCallbackRoute
 }
 
@@ -551,6 +565,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOauthYoutubeCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/threads/callback': {
+      id: '/api/public/oauth/threads/callback'
+      path: '/api/public/oauth/threads/callback'
+      fullPath: '/api/public/oauth/threads/callback'
+      preLoaderRoute: typeof ApiPublicOauthThreadsCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/oauth/meta/callback': {
       id: '/api/public/oauth/meta/callback'
       path: '/api/public/oauth/meta/callback'
@@ -618,6 +639,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicZernioRoute: ApiPublicZernioRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
+  ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,
   ApiPublicOauthYoutubeCallbackRoute: ApiPublicOauthYoutubeCallbackRoute,
 }
 export const routeTree = rootRouteImport
