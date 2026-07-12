@@ -36,6 +36,16 @@ export function requireMetaEnv() {
   return { appId, appSecret };
 }
 
+/** Threads uses its own app credentials when provided; otherwise falls back to Meta. */
+export function requireThreadsEnv() {
+  const appId = process.env.THREADS_APP_ID || process.env.META_APP_ID;
+  const appSecret = process.env.THREADS_APP_SECRET || process.env.META_APP_SECRET;
+  if (!appId || !appSecret) {
+    throw new Error("THREADS_APP_ID / THREADS_APP_SECRET (or META_APP_ID/SECRET) are not configured.");
+  }
+  return { appId, appSecret };
+}
+
 // ── Facebook + Instagram OAuth ─────────────────────────────────────────────
 
 export function buildFacebookAuthorizeUrl(opts: {
@@ -146,7 +156,7 @@ export async function exchangeThreadsCode(opts: {
   code: string;
   redirectUri: string;
 }): Promise<{ access_token: string; user_id: string }> {
-  const { appId, appSecret } = requireMetaEnv();
+  const { appId, appSecret } = requireThreadsEnv();
   const body = new URLSearchParams({
     client_id: appId,
     client_secret: appSecret,
@@ -166,7 +176,7 @@ export async function exchangeThreadsCode(opts: {
 
 /** Trade short-lived Threads token for ~60-day long-lived token. */
 export async function exchangeThreadsLongLived(shortToken: string): Promise<{ access_token: string; expires_in: number; token_type: string }> {
-  const { appSecret } = requireMetaEnv();
+  const { appSecret } = requireThreadsEnv();
   const url = new URL(`${THREADS_GRAPH}/access_token`);
   url.searchParams.set("grant_type", "th_exchange_token");
   url.searchParams.set("client_secret", appSecret);
