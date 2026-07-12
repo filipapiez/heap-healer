@@ -134,8 +134,8 @@ export const startConnect = createServerFn({ method: "POST" })
     // ── Native Threads path (same META_APP_ID, separate authorize server). ──
     if (data.platform === "threads") {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { buildThreadsAuthorizeUrl, requireMetaEnv } = await import("./meta.server");
-      const { appId } = requireMetaEnv();
+      const { buildThreadsAuthorizeUrl, requireThreadsEnv } = await import("./meta.server");
+      const { appId } = requireThreadsEnv();
       const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
       const origin = new URL(data.origin).origin;
       const { error: insErr } = await supabaseAdmin
