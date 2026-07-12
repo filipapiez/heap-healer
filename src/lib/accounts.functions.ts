@@ -115,7 +115,8 @@ export const startConnect = createServerFn({ method: "POST" })
       const { buildFacebookAuthorizeUrl, requireMetaEnv } = await import("./meta.server");
       const { appId } = requireMetaEnv();
       const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
-      const origin = new URL(data.origin).origin;
+      // Force canonical origin so only ONE redirect URI needs registering in Meta.
+      const origin = "https://mentionmyapp.com";
       const { error: insErr } = await supabaseAdmin
         .from("oauth_states" as never)
         .insert({
@@ -137,7 +138,8 @@ export const startConnect = createServerFn({ method: "POST" })
       const { buildThreadsAuthorizeUrl, requireThreadsEnv } = await import("./meta.server");
       const { appId } = requireThreadsEnv();
       const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
-      const origin = new URL(data.origin).origin;
+      // Force canonical origin so only ONE redirect URI needs registering in Meta.
+      const origin = "https://mentionmyapp.com";
       const { error: insErr } = await supabaseAdmin
         .from("oauth_states" as never)
         .insert({
