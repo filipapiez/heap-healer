@@ -149,6 +149,8 @@ function AccountsPage() {
 }
 
 function labelFor(p: Platform) {
+  if (p === "instagram") return "Instagram";
+  if (p === "facebook") return "Facebook Page";
   return PLATFORMS.find((x) => x.id === p)?.label ?? p;
 }
 
