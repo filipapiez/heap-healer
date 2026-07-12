@@ -11,12 +11,11 @@ type Platform =
 const PLATFORMS: { id: Platform; label: string; icon: string }[] = [
   { id: "youtube", label: "YouTube", icon: "▶" },
   { id: "x", label: "X (Twitter)", icon: "𝕏" },
-  { id: "instagram", label: "Instagram", icon: "◉" },
-  { id: "facebook", label: "Facebook", icon: "f" },
+  { id: "facebook", label: "Facebook + Instagram", icon: "f" },
+  { id: "threads", label: "Threads", icon: "@" },
   { id: "pinterest", label: "Pinterest", icon: "P" },
   { id: "linkedin", label: "LinkedIn", icon: "in" },
   { id: "tiktok", label: "TikTok", icon: "♪" },
-  { id: "threads", label: "Threads", icon: "@" },
   { id: "bluesky", label: "Bluesky", icon: "☁" },
   { id: "reddit", label: "Reddit", icon: "r/" },
   { id: "google_business", label: "Google Business", icon: "G" },
@@ -150,6 +149,8 @@ function AccountsPage() {
 }
 
 function labelFor(p: Platform) {
+  if (p === "instagram") return "Instagram";
+  if (p === "facebook") return "Facebook Page";
   return PLATFORMS.find((x) => x.id === p)?.label ?? p;
 }
 
