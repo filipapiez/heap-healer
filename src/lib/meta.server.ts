@@ -12,7 +12,6 @@ const THREADS_GRAPH = "https://graph.threads.net";
 // Scopes for the combined Facebook + Instagram flow.
 export const META_FB_IG_SCOPES = [
   "public_profile",
-  "email",
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
