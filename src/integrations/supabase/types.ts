@@ -76,6 +76,50 @@ export type Database = {
           },
         ]
       }
+      linkedin_oauth_tokens: {
+        Row: {
+          access_token: string
+          connected_account_id: string
+          created_at: string
+          expires_at: string | null
+          linkedin_member_id: string
+          refresh_token: string | null
+          scope: string | null
+          token_type: string
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          connected_account_id: string
+          created_at?: string
+          expires_at?: string | null
+          linkedin_member_id: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          connected_account_id?: string
+          created_at?: string
+          expires_at?: string | null
+          linkedin_member_id?: string
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "linkedin_oauth_tokens_connected_account_id_fkey"
+            columns: ["connected_account_id"]
+            isOneToOne: true
+            referencedRelation: "connected_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_assets: {
         Row: {
           created_at: string
