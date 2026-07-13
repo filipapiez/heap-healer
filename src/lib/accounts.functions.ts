@@ -156,6 +156,30 @@ export const startConnect = createServerFn({ method: "POST" })
     }
     // ─────────────────────────────────────────────────────────────────
 
+    // ── Native LinkedIn path ─────────────────────────────────────────
+    if (data.platform === "linkedin") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { buildLinkedInAuthorizeUrl, requireLinkedInEnv } = await import("./linkedin.server");
+      const { clientId } = requireLinkedInEnv();
+      const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
+      // Force canonical origin so only ONE redirect URI needs registering in LinkedIn.
+      const origin = "https://mentionmyapp.com";
+      const { error: insErr } = await supabaseAdmin
+        .from("oauth_states" as never)
+        .insert({
+          state,
+          provider: "linkedin",
+          workspace_id: workspaceId,
+          user_id: userId,
+          redirect_origin: origin,
+        } as never);
+      if (insErr) throw insErr;
+      const redirectUri = `${origin}/api/public/oauth/linkedin/callback`;
+      const url = buildLinkedInAuthorizeUrl({ clientId, redirectUri, state });
+      return { url };
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     const { data: ws } = await supabase.from("workspaces")
       .select("name").eq("id", workspaceId).maybeSingle();
     const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
@@ -199,6 +223,20 @@ export const disconnectAccount = createServerFn({ method: "POST" })
         await disconnectMetaAccount(row.id);
       } catch (e) {
         console.warn("[accounts] Meta revoke failed; deleting locally", e);
+        const { error: delErr } = await supabase.from("connected_accounts")
+          .delete().eq("id", data.accountId);
+        if (delErr) throw delErr;
+      }
+      return { ok: true };
+    }
+
+    // Native LinkedIn: revoke + delete via service role.
+    if (row.platform === "linkedin") {
+      const { disconnectLinkedInAccount } = await import("./linkedin.server");
+      try {
+        await disconnectLinkedInAccount(row.id);
+      } catch (e) {
+        console.warn("[accounts] LinkedIn revoke failed; deleting locally", e);
         const { error: delErr } = await supabase.from("connected_accounts")
           .delete().eq("id", data.accountId);
         if (delErr) throw delErr;
