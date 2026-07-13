@@ -35,7 +35,7 @@ function AccountsPage() {
   // Surface OAuth callback result from URL (?meta=ok|error&msg=...).
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const providers = ["meta", "threads", "youtube"] as const;
+    const providers = ["meta", "threads", "youtube", "linkedin"] as const;
     for (const p of providers) {
       const status = params.get(p);
       if (!status) continue;
