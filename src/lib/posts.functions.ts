@@ -122,6 +122,13 @@ export const createPost = createServerFn({ method: "POST" })
       const { publishToZernio } = await import("./zernio.server");
       const { publishYoutubeVideo } = await import("./youtube.server");
       const { publishTikTokVideo } = await import("./tiktok.server");
+      const { publishLinkedInPost } = await import("./linkedin.server");
+      const {
+        publishFacebookPagePost,
+        publishInstagramImage,
+        publishThreadsPost,
+        getValidMetaAccessToken,
+      } = await import("./meta.server");
       // Signed URLs for media (private bucket) so Zernio can fetch
       const mediaUrls: string[] = [];
       let firstMediaPath: string | null = null;
@@ -177,6 +184,45 @@ export const createPost = createServerFn({ method: "POST" })
               privacyLevel: "SELF_ONLY",
             });
             res = { external_post_id: tt.publishId, external_url: tt.shareUrl ?? null };
+          } else if (t.platform === "linkedin") {
+            const li = await publishLinkedInPost({
+              connectedAccountId: account.id,
+              text: caption,
+            });
+            res = { external_post_id: li.external_post_id, external_url: li.external_url };
+          } else if (t.platform === "facebook") {
+            const meta = await getValidMetaAccessToken(account.id);
+            if (!meta.pageId) throw new Error("Facebook page ID missing on account");
+            const fb = await publishFacebookPagePost({
+              pageId: meta.pageId,
+              pageAccessToken: meta.accessToken,
+              message: caption,
+            });
+            res = {
+              external_post_id: fb.id,
+              external_url: `https://www.facebook.com/${fb.id}`,
+            };
+          } else if (t.platform === "instagram") {
+            const meta = await getValidMetaAccessToken(account.id);
+            if (!meta.igBusinessId) throw new Error("Instagram business ID missing on account");
+            if (!mediaUrls[0]) throw new Error("Instagram publish requires an image attachment");
+            const ig = await publishInstagramImage({
+              igBusinessId: meta.igBusinessId,
+              pageAccessToken: meta.accessToken,
+              imageUrl: mediaUrls[0],
+              caption,
+            });
+            res = { external_post_id: ig.id, external_url: null };
+          } else if (t.platform === "threads") {
+            const meta = await getValidMetaAccessToken(account.id);
+            if (!meta.metaUserId) throw new Error("Threads user ID missing on account");
+            const th = await publishThreadsPost({
+              threadsUserId: meta.metaUserId,
+              accessToken: meta.accessToken,
+              text: caption,
+              imageUrl: mediaUrls[0],
+            });
+            res = { external_post_id: th.id, external_url: null };
           } else {
             res = await publishToZernio({
               zernioAccountId: account.zernio_account_id!,
