@@ -29,6 +29,13 @@ function NewPostPage() {
     [accountsQ.data],
   );
 
+  const hasVideo = useMemo(() => {
+    const items = media.data?.items ?? [];
+    return selectedMedia.some((id) => items.find((m) => m.id === id)?.kind === "video");
+  }, [selectedMedia, media.data]);
+
+  const requiresVideo = (platform: string) => platform === "tiktok";
+
   const submit = useMutation({
     mutationFn: async () => {
       setError("");
@@ -117,19 +124,24 @@ function NewPostPage() {
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {connected.map((a) => {
               const active = selectedAccounts.includes(a.id);
+              const blocked = requiresVideo(a.platform) && !hasVideo;
               return (
                 <label
                   key={a.id}
-                  className={`flex cursor-pointer items-center gap-3 rounded-lg border p-2 text-sm ${active ? "border-[var(--color-signal-500)] bg-[var(--color-signal-500)]/5" : "border-[var(--color-mist-200)]"}`}
+                  className={`flex items-center gap-3 rounded-lg border p-2 text-sm ${blocked ? "cursor-not-allowed opacity-50" : "cursor-pointer"} ${active ? "border-[var(--color-signal-500)] bg-[var(--color-signal-500)]/5" : "border-[var(--color-mist-200)]"}`}
                 >
                   <input
                     type="checkbox"
-                    checked={active}
+                    checked={active && !blocked}
+                    disabled={blocked}
                     onChange={() => setSelectedAccounts((cur) => toggle(cur, a.id))}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="truncate font-medium">{a.display_name || a.handle || a.platform}</div>
-                    <div className="text-xs text-[var(--color-ink-700)]/60">{a.platform}</div>
+                    <div className="text-xs text-[var(--color-ink-700)]/60">
+                      {a.platform}
+                      {blocked && " · attach a video to enable"}
+                    </div>
                   </div>
                 </label>
               );
