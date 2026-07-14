@@ -7,8 +7,6 @@ const TIKTOK_TOKEN_URL = "https://open.tiktokapis.com/v2/oauth/token/";
 const TIKTOK_REVOKE_URL = "https://open.tiktokapis.com/v2/oauth/revoke/";
 const TIKTOK_USER_INFO_URL =
   "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username";
-const TIKTOK_INBOX_VIDEO_INIT_URL =
-  "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/";
 const TIKTOK_DIRECT_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/video/init/";
 const TIKTOK_CREATOR_INFO_URL =
