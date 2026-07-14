@@ -280,7 +280,13 @@ export async function uploadVideo(opts: {
     body: JSON.stringify(metadata),
   });
   if (!init.ok) {
-    throw new Error(`YouTube resumable init failed (${init.status}): ${await init.text()}`);
+    const initErrorText = await init.text();
+    if (/youtubeSignupRequired/i.test(initErrorText)) {
+      throw new Error(
+        "YouTube publishing requires the connected Google account to have an active YouTube channel. Create/activate a YouTube channel for that account, then reconnect YouTube and try again.",
+      );
+    }
+    throw new Error(`YouTube resumable init failed (${init.status}): ${initErrorText}`);
   }
   const uploadUrl = init.headers.get("location");
   if (!uploadUrl) {

@@ -25,10 +25,23 @@ type PostTarget = {
   error_message: string | null;
 };
 
+function readableTargetError(platform: string | null, message: string) {
+  if (/youtubeSignupRequired/i.test(message)) {
+    return "YouTube: the connected Google account needs an active YouTube channel before uploads can be published.";
+  }
+  if (/Param text must be at most 500 characters/i.test(message)) {
+    return "Threads: the caption was longer than Threads allows, so it was shortened for future posts. Retry this post.";
+  }
+  if (/integration guidelines|content-sharing-guidelines|unaudited_client/i.test(message)) {
+    return "TikTok: Direct Post is blocked until TikTok approves this app for Content Posting API direct publishing.";
+  }
+  return `${platform ?? "Target"}: ${message}`;
+}
+
 function targetErrors(post: { post_targets?: PostTarget[] | null }) {
   return (post.post_targets ?? [])
     .filter((target) => target.status === "failed" && target.error_message)
-    .map((target) => `${target.platform ?? "Target"}: ${target.error_message}`);
+    .map((target) => readableTargetError(target.platform, target.error_message ?? ""));
 }
 
 function HistoryPage() {
