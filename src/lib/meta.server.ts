@@ -8,6 +8,7 @@ const FB_GRAPH = "https://graph.facebook.com/v21.0";
 const FB_OAUTH = "https://www.facebook.com/v21.0/dialog/oauth";
 const THREADS_OAUTH = "https://threads.net/oauth/authorize";
 const THREADS_GRAPH = "https://graph.threads.net";
+const THREADS_TEXT_LIMIT = 500;
 
 // Scopes for the combined Facebook + Instagram flow.
 export const META_FB_IG_SCOPES = [
@@ -275,9 +276,10 @@ export async function publishThreadsPost(opts: {
   text: string;
   imageUrl?: string;
 }): Promise<{ id: string }> {
+  const text = Array.from(opts.text).slice(0, THREADS_TEXT_LIMIT).join("");
   const create = new URLSearchParams({
     media_type: opts.imageUrl ? "IMAGE" : "TEXT",
-    text: opts.text,
+    text,
     access_token: opts.accessToken,
   });
   if (opts.imageUrl) create.set("image_url", opts.imageUrl);
