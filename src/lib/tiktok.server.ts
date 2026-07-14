@@ -7,14 +7,10 @@ const TIKTOK_TOKEN_URL = "https://open.tiktokapis.com/v2/oauth/token/";
 const TIKTOK_REVOKE_URL = "https://open.tiktokapis.com/v2/oauth/revoke/";
 const TIKTOK_USER_INFO_URL =
   "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username";
-const TIKTOK_VIDEO_INIT_URL =
-  "https://open.tiktokapis.com/v2/post/publish/video/init/";
 const TIKTOK_INBOX_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/";
 const TIKTOK_PUBLISH_STATUS_URL =
   "https://open.tiktokapis.com/v2/post/publish/status/fetch/";
-const TIKTOK_CREATOR_INFO_URL =
-  "https://open.tiktokapis.com/v2/post/publish/creator_info/query/";
 
 export const TIKTOK_SCOPES = [
   "user.info.basic",
@@ -244,100 +240,30 @@ export async function publishTikTokVideo(opts: {
       ? opts.video.size
       : (opts.video as ArrayBuffer).byteLength;
 
-  // Step 0: query creator_info (REQUIRED by TikTok before init, especially
-  // for un-audited / sandbox apps). We must pass a privacy_level from the
-  // returned allow-list and honor the creator's interaction settings.
-  const ciRes = await fetch(TIKTOK_CREATOR_INFO_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "content-type": "application/json; charset=UTF-8",
-    },
-  });
-  const ciJson = await ciRes.json().catch(() => ({}));
-  if (!ciRes.ok || ciJson?.error?.code !== "ok") {
-    throw new Error(
-      `TikTok creator_info failed (${ciRes.status}): ${
-        ciJson?.error?.message ?? JSON.stringify(ciJson)
-      }`,
-    );
-  }
-  const allowed: string[] = ciJson?.data?.privacy_level_options ?? [];
-  const preferred = opts.privacyLevel ?? "SELF_ONLY";
-  const privacyLevel = allowed.includes(preferred)
-    ? preferred
-    : (allowed.includes("SELF_ONLY") ? "SELF_ONLY" : allowed[0]);
-  if (!privacyLevel) {
-    throw new Error("TikTok creator_info returned no privacy_level_options");
-  }
-  const commentDisabled: boolean = ciJson?.data?.comment_disabled ?? false;
-  const duetDisabled: boolean = ciJson?.data?.duet_disabled ?? false;
-  const stitchDisabled: boolean = ciJson?.data?.stitch_disabled ?? false;
-
-  // Step 1: init upload. If TikTok blocks Direct Post because the app/account
-  // is private-only, fall back to the inbox/draft upload flow instead of
-  // failing the user's post.
+  // Step 1: init an inbox upload. Direct Post is blocked for unaudited TikTok
+  // apps/accounts with a 403 "review integration guidelines" response, so use
+  // the inbox/draft flow as the default reliable path.
   const sourceInfo = {
     source: "FILE_UPLOAD",
     video_size: size,
     chunk_size: size,
     total_chunk_count: 1,
   };
-  const directInitBody = {
-    post_info: {
-      title: (opts.title ?? "").slice(0, 2200),
-      privacy_level: privacyLevel,
-      disable_comment: commentDisabled,
-      disable_duet: duetDisabled,
-      disable_stitch: stitchDisabled,
-      video_cover_timestamp_ms: 1000,
-    },
-    source_info: sourceInfo,
-  };
-
-  let actionRequired = false;
-  let actionMessage: string | undefined;
-  let initRes = await fetch(TIKTOK_VIDEO_INIT_URL, {
+  const initRes = await fetch(TIKTOK_INBOX_VIDEO_INIT_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "content-type": "application/json; charset=UTF-8",
     },
-    body: JSON.stringify(directInitBody),
+    body: JSON.stringify({ source_info: sourceInfo }),
   });
-  let initJson = await initRes.json();
+  const initJson = await initRes.json();
   if (!initRes.ok || initJson?.error?.code !== "ok") {
-    const errorCode = initJson?.error?.code;
-    const errorMessage = initJson?.error?.message ?? JSON.stringify(initJson);
-    const privateOnlyBlocked =
-      initRes.status === 403 &&
-      (errorCode === "unaudited_client_can_only_post_to_private_accounts" ||
-        errorMessage.toLowerCase().includes("integration guidelines"));
-
-    if (privateOnlyBlocked) {
-      initRes = await fetch(TIKTOK_INBOX_VIDEO_INIT_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "content-type": "application/json; charset=UTF-8",
-        },
-        body: JSON.stringify({ source_info: sourceInfo }),
-      });
-      initJson = await initRes.json();
-      if (!initRes.ok || initJson?.error?.code !== "ok") {
-        throw new Error(
-          `TikTok inbox upload failed (${initRes.status}): ${
-            initJson?.error?.message ?? JSON.stringify(initJson)
-          }`,
-        );
-      }
-      actionRequired = true;
-      actionMessage = "Uploaded to TikTok inbox. Open TikTok to finish posting this video.";
-    } else {
-      throw new Error(
-        `TikTok publish init failed (${initRes.status}): ${errorMessage}`,
-      );
-    }
+    throw new Error(
+      `TikTok inbox upload failed (${initRes.status}): ${
+        initJson?.error?.message ?? JSON.stringify(initJson)
+      }`,
+    );
   }
   const publishId: string | undefined = initJson?.data?.publish_id;
   const uploadUrl: string | undefined = initJson?.data?.upload_url;
@@ -387,5 +313,10 @@ export async function publishTikTokVideo(opts: {
     }
   }
 
-  return { publishId, shareUrl, actionRequired, message: actionMessage };
+  return {
+    publishId,
+    shareUrl,
+    actionRequired: true,
+    message: "Uploaded to TikTok inbox. Open TikTok to finish posting this video.",
+  };
 }
