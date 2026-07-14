@@ -9,6 +9,8 @@ const TIKTOK_USER_INFO_URL =
   "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username";
 const TIKTOK_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/video/init/";
+const TIKTOK_INBOX_VIDEO_INIT_URL =
+  "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/";
 const TIKTOK_PUBLISH_STATUS_URL =
   "https://open.tiktokapis.com/v2/post/publish/status/fetch/";
 const TIKTOK_CREATOR_INFO_URL =
@@ -234,7 +236,7 @@ export async function publishTikTokVideo(opts: {
     | "MUTUAL_FOLLOW_FRIENDS"
     | "FOLLOWER_OF_CREATOR"
     | "SELF_ONLY";
-}): Promise<{ publishId: string; shareUrl?: string }> {
+}): Promise<{ publishId: string; shareUrl?: string; actionRequired?: boolean; message?: string }> {
   const accessToken = await getValidTikTokAccessToken(opts.connectedAccountId);
 
   const size =
@@ -272,8 +274,16 @@ export async function publishTikTokVideo(opts: {
   const duetDisabled: boolean = ciJson?.data?.duet_disabled ?? false;
   const stitchDisabled: boolean = ciJson?.data?.stitch_disabled ?? false;
 
-  // Step 1: init upload
-  const initBody = {
+  // Step 1: init upload. If TikTok blocks Direct Post because the app/account
+  // is private-only, fall back to the inbox/draft upload flow instead of
+  // failing the user's post.
+  const sourceInfo = {
+    source: "FILE_UPLOAD",
+    video_size: size,
+    chunk_size: size,
+    total_chunk_count: 1,
+  };
+  const directInitBody = {
     post_info: {
       title: (opts.title ?? "").slice(0, 2200),
       privacy_level: privacyLevel,
@@ -282,33 +292,52 @@ export async function publishTikTokVideo(opts: {
       disable_stitch: stitchDisabled,
       video_cover_timestamp_ms: 1000,
     },
-    source_info: {
-      source: "FILE_UPLOAD",
-      video_size: size,
-      chunk_size: size,
-      total_chunk_count: 1,
-    },
+    source_info: sourceInfo,
   };
-  const initRes = await fetch(TIKTOK_VIDEO_INIT_URL, {
+
+  let actionRequired = false;
+  let actionMessage: string | undefined;
+  let initRes = await fetch(TIKTOK_VIDEO_INIT_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "content-type": "application/json; charset=UTF-8",
     },
-    body: JSON.stringify(initBody),
+    body: JSON.stringify(directInitBody),
   });
-  const initJson = await initRes.json();
+  let initJson = await initRes.json();
   if (!initRes.ok || initJson?.error?.code !== "ok") {
     const errorCode = initJson?.error?.code;
     const errorMessage = initJson?.error?.message ?? JSON.stringify(initJson);
-    if (errorCode === "unaudited_client_can_only_post_to_private_accounts") {
+    const privateOnlyBlocked =
+      initRes.status === 403 &&
+      (errorCode === "unaudited_client_can_only_post_to_private_accounts" ||
+        errorMessage.toLowerCase().includes("integration guidelines"));
+
+    if (privateOnlyBlocked) {
+      initRes = await fetch(TIKTOK_INBOX_VIDEO_INIT_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "content-type": "application/json; charset=UTF-8",
+        },
+        body: JSON.stringify({ source_info: sourceInfo }),
+      });
+      initJson = await initRes.json();
+      if (!initRes.ok || initJson?.error?.code !== "ok") {
+        throw new Error(
+          `TikTok inbox upload failed (${initRes.status}): ${
+            initJson?.error?.message ?? JSON.stringify(initJson)
+          }`,
+        );
+      }
+      actionRequired = true;
+      actionMessage = "Uploaded to TikTok inbox. Open TikTok to finish posting this video.";
+    } else {
       throw new Error(
-        "TikTok rejected this because Direct Post is still limited to private TikTok accounts until the TikTok app is approved. Set the connected TikTok account to Private, then reconnect/retry, or submit the TikTok app for Direct Post review.",
+        `TikTok publish init failed (${initRes.status}): ${errorMessage}`,
       );
     }
-    throw new Error(
-      `TikTok publish init failed (${initRes.status}): ${errorMessage}`,
-    );
   }
   const publishId: string | undefined = initJson?.data?.publish_id;
   const uploadUrl: string | undefined = initJson?.data?.upload_url;
@@ -358,5 +387,5 @@ export async function publishTikTokVideo(opts: {
     }
   }
 
-  return { publishId, shareUrl };
+  return { publishId, shareUrl, actionRequired, message: actionMessage };
 }

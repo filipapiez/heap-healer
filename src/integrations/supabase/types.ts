@@ -675,6 +675,7 @@ export type Database = {
         | "partial"
         | "failed"
         | "cancelled"
+        | "action_required"
       social_platform:
         | "youtube"
         | "x"
@@ -832,6 +833,7 @@ export const Constants = {
         "partial",
         "failed",
         "cancelled",
+        "action_required",
       ],
       social_platform: [
         "youtube",

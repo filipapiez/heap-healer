@@ -13,6 +13,7 @@ const STATUS_PILL: Record<string, string> = {
   partial: "bg-amber-100 text-amber-800",
   failed: "bg-rose-100 text-rose-800",
   cancelled: "bg-[var(--color-mist-100)] text-[var(--color-ink-700)]",
+  action_required: "bg-amber-100 text-amber-800",
   publishing: "bg-sky-100 text-sky-800",
   scheduled: "bg-sky-100 text-sky-800",
   draft: "bg-[var(--color-mist-100)] text-[var(--color-ink-700)]",
