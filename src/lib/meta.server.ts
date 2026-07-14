@@ -269,6 +269,70 @@ export async function publishInstagramImage(opts: {
   return pJson;
 }
 
+/**
+ * Publish a video as an Instagram Reel. Video must be a publicly reachable
+ * URL (a signed Supabase storage URL works). We create a REELS container,
+ * poll for FINISHED status, then publish. IG requires this for all videos —
+ * they cannot be posted as static images.
+ */
+export async function publishInstagramVideo(opts: {
+  igBusinessId: string;
+  pageAccessToken: string;
+  videoUrl: string;
+  caption?: string;
+  // ~5min max; IG typically finishes small clips in <30s.
+  maxWaitMs?: number;
+}): Promise<{ id: string }> {
+  const create = new URLSearchParams({
+    media_type: "REELS",
+    video_url: opts.videoUrl,
+    access_token: opts.pageAccessToken,
+  });
+  if (opts.caption) create.set("caption", opts.caption);
+  const cRes = await fetch(`${FB_GRAPH}/${opts.igBusinessId}/media`, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: create,
+  });
+  const cJson = await cRes.json();
+  if (!cRes.ok) throw new Error(`IG reel container failed (${cRes.status}): ${JSON.stringify(cJson)}`);
+
+  const containerId = cJson.id as string;
+  const deadline = Date.now() + (opts.maxWaitMs ?? 5 * 60 * 1000);
+  let status = "IN_PROGRESS";
+  let lastErr: unknown = null;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 3000));
+    const sUrl = new URL(`${FB_GRAPH}/${containerId}`);
+    sUrl.searchParams.set("fields", "status_code,status");
+    sUrl.searchParams.set("access_token", opts.pageAccessToken);
+    const sRes = await fetch(sUrl);
+    const sJson = await sRes.json();
+    if (!sRes.ok) { lastErr = sJson; continue; }
+    status = sJson.status_code ?? status;
+    if (status === "FINISHED") break;
+    if (status === "ERROR" || status === "EXPIRED") {
+      throw new Error(`IG reel processing ${status}: ${JSON.stringify(sJson)}`);
+    }
+  }
+  if (status !== "FINISHED") {
+    throw new Error(`IG reel not ready in time (last status ${status}): ${JSON.stringify(lastErr ?? {})}`);
+  }
+
+  const pub = new URLSearchParams({
+    creation_id: containerId,
+    access_token: opts.pageAccessToken,
+  });
+  const pRes = await fetch(`${FB_GRAPH}/${opts.igBusinessId}/media_publish`, {
+    method: "POST",
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    body: pub,
+  });
+  const pJson = await pRes.json();
+  if (!pRes.ok) throw new Error(`IG reel publish failed (${pRes.status}): ${JSON.stringify(pJson)}`);
+  return pJson;
+}
+
 /** Publish a text (optionally single image) Threads post. */
 export async function publishThreadsPost(opts: {
   threadsUserId: string;
