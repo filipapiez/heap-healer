@@ -459,6 +459,56 @@ export type Database = {
           },
         ]
       }
+      tiktok_oauth_tokens: {
+        Row: {
+          access_token: string
+          connected_account_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          open_id: string
+          refresh_expires_at: string | null
+          refresh_token: string | null
+          scope: string | null
+          token_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_token: string
+          connected_account_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          open_id: string
+          refresh_expires_at?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_token?: string
+          connected_account_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          open_id?: string
+          refresh_expires_at?: string | null
+          refresh_token?: string | null
+          scope?: string | null
+          token_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tiktok_oauth_tokens_connected_account_id_fkey"
+            columns: ["connected_account_id"]
+            isOneToOne: true
+            referencedRelation: "connected_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string

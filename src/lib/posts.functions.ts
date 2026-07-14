@@ -121,6 +121,7 @@ export const createPost = createServerFn({ method: "POST" })
     if (!scheduledAt) {
       const { publishToZernio } = await import("./zernio.server");
       const { publishYoutubeVideo } = await import("./youtube.server");
+      const { publishTikTokVideo } = await import("./tiktok.server");
       // Signed URLs for media (private bucket) so Zernio can fetch
       const mediaUrls: string[] = [];
       let firstMediaPath: string | null = null;
@@ -161,6 +162,21 @@ export const createPost = createServerFn({ method: "POST" })
               video: dl,
             });
             res = { external_post_id: yt.videoId, external_url: yt.url };
+          } else if (t.platform === "tiktok") {
+            // Native TikTok publish path — expects a video media asset.
+            if (!firstMediaPath) throw new Error("TikTok publish requires a video attachment");
+            const { data: dl, error: dlErr } = await supabase.storage.from("media")
+              .download(firstMediaPath);
+            if (dlErr || !dl) throw new Error(`Failed to read video: ${dlErr?.message ?? "unknown"}`);
+            const tt = await publishTikTokVideo({
+              connectedAccountId: account.id,
+              title: caption.slice(0, 2200),
+              contentType: firstMediaMime ?? "video/mp4",
+              video: dl,
+              // SELF_ONLY is required for un-audited / sandbox apps.
+              privacyLevel: "SELF_ONLY",
+            });
+            res = { external_post_id: tt.publishId, external_url: tt.shareUrl ?? null };
           } else {
             res = await publishToZernio({
               zernioAccountId: account.zernio_account_id!,
