@@ -33,7 +33,7 @@ export const listPosts = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const workspaceId = await activeWorkspaceId(supabase, userId);
     let q = supabase.from("posts")
-      .select("id, caption, status, scheduled_at, published_at, media_asset_ids, error_message, created_at")
+      .select("id, caption, status, scheduled_at, published_at, media_asset_ids, error_message, created_at, post_targets(platform, status, error_message)")
       .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false })
       .limit(100);

@@ -18,6 +18,18 @@ const STATUS_PILL: Record<string, string> = {
   draft: "bg-[var(--color-mist-100)] text-[var(--color-ink-700)]",
 };
 
+type PostTarget = {
+  platform: string | null;
+  status: string | null;
+  error_message: string | null;
+};
+
+function targetErrors(post: { post_targets?: PostTarget[] | null }) {
+  return (post.post_targets ?? [])
+    .filter((target) => target.status === "failed" && target.error_message)
+    .map((target) => `${target.platform ?? "Target"}: ${target.error_message}`);
+}
+
 function HistoryPage() {
   const q = useQuery({ queryKey: ["posts", "all"], queryFn: () => listPosts({ data: { scope: "all" } }) });
   const items = q.data?.items ?? [];
@@ -31,22 +43,30 @@ function HistoryPage() {
         <EmptyState title="No posts yet" body="Create your first post from the New Post page." />
       ) : (
         <ul className="space-y-2">
-          {items.map((p) => (
-            <li key={p.id} className="card flex items-start gap-3 p-3">
-              <div className="min-w-0 flex-1">
-                <div className="text-sm">{p.caption || <span className="text-[var(--color-ink-700)]/50">(no caption)</span>}</div>
-                <div className="mt-1 text-xs text-[var(--color-ink-700)]/60">
-                  {p.published_at ? `Published ${new Date(p.published_at).toLocaleString()}` :
-                    p.scheduled_at ? `Scheduled ${new Date(p.scheduled_at).toLocaleString()}` :
-                    `Created ${new Date(p.created_at).toLocaleString()}`}
-                  {p.error_message && ` · ${p.error_message}`}
+          {items.map((p) => {
+            const errors = targetErrors(p);
+            return (
+              <li key={p.id} className="card flex items-start gap-3 p-3">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm">{p.caption || <span className="text-[var(--color-ink-700)]/50">(no caption)</span>}</div>
+                  <div className="mt-1 text-xs text-[var(--color-ink-700)]/60">
+                    {p.published_at ? `Published ${new Date(p.published_at).toLocaleString()}` :
+                      p.scheduled_at ? `Scheduled ${new Date(p.scheduled_at).toLocaleString()}` :
+                      `Created ${new Date(p.created_at).toLocaleString()}`}
+                    {p.error_message && ` · ${p.error_message}`}
+                  </div>
+                  {errors.length > 0 && (
+                    <div className="mt-2 space-y-1 text-xs text-rose-700">
+                      {errors.map((message) => <div key={message}>{message}</div>)}
+                    </div>
+                  )}
                 </div>
-              </div>
-              <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_PILL[p.status] ?? "bg-[var(--color-mist-100)]"}`}>
-                {p.status}
-              </span>
-            </li>
-          ))}
+                <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_PILL[p.status] ?? "bg-[var(--color-mist-100)]"}`}>
+                  {p.status}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
