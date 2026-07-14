@@ -9,6 +9,10 @@ const TIKTOK_USER_INFO_URL =
   "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username";
 const TIKTOK_INBOX_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/";
+const TIKTOK_DIRECT_VIDEO_INIT_URL =
+  "https://open.tiktokapis.com/v2/post/publish/video/init/";
+const TIKTOK_CREATOR_INFO_URL =
+  "https://open.tiktokapis.com/v2/post/publish/creator_info/query/";
 const TIKTOK_PUBLISH_STATUS_URL =
   "https://open.tiktokapis.com/v2/post/publish/status/fetch/";
 
@@ -240,27 +244,56 @@ export async function publishTikTokVideo(opts: {
       ? opts.video.size
       : (opts.video as ArrayBuffer).byteLength;
 
-  // Step 1: init an inbox upload. Direct Post is blocked for unaudited TikTok
-  // apps/accounts with a 403 "review integration guidelines" response, so use
-  // the inbox/draft flow as the default reliable path.
+  // Step 1: query creator_info to discover the privacy levels this account
+  // is allowed to use for Direct Post. Required by TikTok before init.
+  const creatorRes = await fetch(TIKTOK_CREATOR_INFO_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json; charset=UTF-8",
+    },
+  });
+  const creatorJson = await creatorRes.json().catch(() => ({}));
+  if (!creatorRes.ok || creatorJson?.error?.code !== "ok") {
+    throw new Error(
+      `TikTok creator_info failed (${creatorRes.status}): ${
+        creatorJson?.error?.message ?? JSON.stringify(creatorJson)
+      }`,
+    );
+  }
+  const allowedPrivacy: string[] =
+    creatorJson?.data?.privacy_level_options ?? [];
+  const preferred = opts.privacyLevel ?? "SELF_ONLY";
+  const privacyLevel = allowedPrivacy.includes(preferred)
+    ? preferred
+    : allowedPrivacy[0] ?? "SELF_ONLY";
+
+  // Step 2: init a Direct Post upload.
   const sourceInfo = {
     source: "FILE_UPLOAD",
     video_size: size,
     chunk_size: size,
     total_chunk_count: 1,
   };
-  const initRes = await fetch(TIKTOK_INBOX_VIDEO_INIT_URL, {
+  const postInfo = {
+    title: (opts.title ?? "").slice(0, 2200),
+    privacy_level: privacyLevel,
+    disable_duet: false,
+    disable_comment: false,
+    disable_stitch: false,
+  };
+  const initRes = await fetch(TIKTOK_DIRECT_VIDEO_INIT_URL, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "content-type": "application/json; charset=UTF-8",
     },
-    body: JSON.stringify({ source_info: sourceInfo }),
+    body: JSON.stringify({ post_info: postInfo, source_info: sourceInfo }),
   });
   const initJson = await initRes.json();
   if (!initRes.ok || initJson?.error?.code !== "ok") {
     throw new Error(
-      `TikTok inbox upload failed (${initRes.status}): ${
+      `TikTok direct post init failed (${initRes.status}): ${
         initJson?.error?.message ?? JSON.stringify(initJson)
       }`,
     );
@@ -316,7 +349,7 @@ export async function publishTikTokVideo(opts: {
   return {
     publishId,
     shareUrl,
-    actionRequired: true,
-    message: "Uploaded to TikTok inbox. Open TikTok to finish posting this video.",
+    actionRequired: false,
+    message: null,
   };
 }
