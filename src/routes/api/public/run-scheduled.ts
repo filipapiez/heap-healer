@@ -12,7 +12,7 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
     handlers: {
       POST: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { publishToZernio } = await import("@/lib/zernio.server");
+        const { publishTargetNative } = await import("@/lib/publish.server");
 
         const now = new Date().toISOString();
         const { data: due, error } = await supabaseAdmin
@@ -38,29 +38,18 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
 
           const { data: targets } = await supabaseAdmin
             .from("post_targets")
-            .select("id, platform, connected_account:connected_accounts(id, zernio_account_id, status)")
+            .select("id, platform, connected_account:connected_accounts(id, status)")
             .eq("post_id", post.id)
             .eq("status", "pending");
 
-          // Signed URLs for media
-          const mediaUrls: string[] = [];
-          const ids = (post.media_asset_ids as string[] | null) ?? [];
-          if (ids.length) {
-            const { data: media } = await supabaseAdmin.from("media_assets")
-              .select("storage_path").in("id", ids);
-            for (const m of media ?? []) {
-              const { data: url } = await supabaseAdmin.storage.from("media")
-                .createSignedUrl(m.storage_path, 60 * 60 * 6);
-              if (url?.signedUrl) mediaUrls.push(url.signedUrl);
-            }
-          }
+          const mediaAssetIds = (post.media_asset_ids as string[] | null) ?? [];
 
           const overrides = (post.per_platform_overrides ?? {}) as Record<string, { caption?: string }>;
           let published = 0; let failed = 0;
 
           for (const t of targets ?? []) {
-            const account = t.connected_account as unknown as { id: string; zernio_account_id: string | null; status: string } | null;
-            if (!account || account.status !== "connected" || !account.zernio_account_id) {
+            const account = t.connected_account as unknown as { id: string; status: string } | null;
+            if (!account || account.status !== "connected") {
               await supabaseAdmin.from("post_targets").update({
                 status: "failed", error_message: "Account no longer connected",
               }).eq("id", t.id);
@@ -68,11 +57,11 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
             }
             const caption = overrides[t.platform]?.caption ?? post.caption ?? "";
             try {
-              const res = await publishToZernio({
-                zernioAccountId: account.zernio_account_id,
+              const res = await publishTargetNative(supabaseAdmin, {
                 platform: t.platform,
+                connectedAccountId: account.id,
                 caption,
-                mediaUrls,
+                mediaAssetIds,
               });
               await supabaseAdmin.from("post_targets").update({
                 status: "published",
