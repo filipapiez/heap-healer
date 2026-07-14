@@ -38,7 +38,7 @@ export const listPosts = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(100);
     if (data.scope === "scheduled") q = q.eq("status", "scheduled");
-    if (data.scope === "history") q = q.in("status", ["published", "partial", "failed", "cancelled"]);
+    if (data.scope === "history") q = q.in("status", ["published", "partial", "failed", "cancelled", "action_required"]);
     const { data: rows, error } = await q;
     if (error) throw error;
     return { items: rows ?? [] };
@@ -121,7 +121,8 @@ export const createPost = createServerFn({ method: "POST" })
       // Immediate publish — every platform through its native API.
       const { publishTargetNative } = await import("./publish.server");
 
-      let published = 0; let failed = 0;
+      let published = 0; let failed = 0; let actionRequired = 0;
+      let actionMessage: string | null = null;
       for (const t of targets ?? []) {
         const account = accounts.find((a) => a.id === t.connected_account_id)!;
         const caption = (data.overrides?.[t.platform] as { caption?: string } | undefined)?.caption ?? data.caption;
@@ -136,11 +137,16 @@ export const createPost = createServerFn({ method: "POST" })
             status: "published",
             external_post_id: res.external_post_id ?? null,
             external_url: res.external_url ?? null,
+            error_message: res.message ?? null,
             published_at: new Date().toISOString(),
           }).eq("id", t.id);
           await supabase.from("publish_attempts").insert({
             post_target_id: t.id, status: "published", response_payload: res as never,
           });
+          if (res.action_required) {
+            actionRequired++;
+            actionMessage = res.message ?? "Action required to finish publishing.";
+          }
           published++;
         } catch (e) {
           const message = e instanceof Error ? e.message : String(e);
@@ -155,12 +161,13 @@ export const createPost = createServerFn({ method: "POST" })
       }
 
       const finalStatus =
+        failed === 0 && actionRequired > 0 ? "action_required" :
         failed === 0 ? "published" :
         published === 0 ? "failed" : "partial";
       await supabase.from("posts").update({
         status: finalStatus,
         published_at: finalStatus !== "failed" ? new Date().toISOString() : null,
-        error_message: failed > 0 && published === 0 ? "All targets failed" : null,
+        error_message: actionMessage ?? (failed > 0 && published === 0 ? "All targets failed" : null),
       }).eq("id", post.id);
     }
 

@@ -10,6 +10,8 @@ export type PublishInput = {
 export type PublishResult = {
   external_post_id?: string | null;
   external_url?: string | null;
+  action_required?: boolean;
+  message?: string | null;
 };
 
 /**
@@ -75,6 +77,12 @@ export async function publishTargetNative(
       privacyLevel: "SELF_ONLY",
     });
     return { external_post_id: tt.publishId, external_url: tt.shareUrl ?? null };
+    return {
+      external_post_id: tt.publishId,
+      external_url: tt.shareUrl ?? null,
+      action_required: tt.actionRequired ?? false,
+      message: tt.message ?? null,
+    };
   }
 
   if (platform === "linkedin") {
