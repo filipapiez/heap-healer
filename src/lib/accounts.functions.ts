@@ -180,6 +180,30 @@ export const startConnect = createServerFn({ method: "POST" })
     }
     // ─────────────────────────────────────────────────────────────────
 
+    // ── Native TikTok path ───────────────────────────────────────────
+    if (data.platform === "tiktok") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { buildTikTokAuthorizeUrl, requireTikTokEnv } = await import("./tiktok.server");
+      const { clientKey } = requireTikTokEnv();
+      const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
+      // Force canonical origin so only ONE redirect URI needs registering in TikTok.
+      const origin = "https://mentionmyapp.com";
+      const { error: insErr } = await supabaseAdmin
+        .from("oauth_states" as never)
+        .insert({
+          state,
+          provider: "tiktok",
+          workspace_id: workspaceId,
+          user_id: userId,
+          redirect_origin: origin,
+        } as never);
+      if (insErr) throw insErr;
+      const redirectUri = `${origin}/api/public/oauth/tiktok/callback`;
+      const url = buildTikTokAuthorizeUrl({ clientKey, redirectUri, state });
+      return { url };
+    }
+    // ─────────────────────────────────────────────────────────────────
+
     const { data: ws } = await supabase.from("workspaces")
       .select("name").eq("id", workspaceId).maybeSingle();
     const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
@@ -237,6 +261,20 @@ export const disconnectAccount = createServerFn({ method: "POST" })
         await disconnectLinkedInAccount(row.id);
       } catch (e) {
         console.warn("[accounts] LinkedIn revoke failed; deleting locally", e);
+        const { error: delErr } = await supabase.from("connected_accounts")
+          .delete().eq("id", data.accountId);
+        if (delErr) throw delErr;
+      }
+      return { ok: true };
+    }
+
+    // Native TikTok: revoke + delete via service role.
+    if (row.platform === "tiktok") {
+      const { disconnectTikTokAccount } = await import("./tiktok.server");
+      try {
+        await disconnectTikTokAccount(row.id);
+      } catch (e) {
+        console.warn("[accounts] TikTok revoke failed; deleting locally", e);
         const { error: delErr } = await supabase.from("connected_accounts")
           .delete().eq("id", data.accountId);
         if (delErr) throw delErr;
