@@ -76,7 +76,6 @@ export async function publishTargetNative(
       // SELF_ONLY is required for un-audited / sandbox apps.
       privacyLevel: "SELF_ONLY",
     });
-    return { external_post_id: tt.publishId, external_url: tt.shareUrl ?? null };
     return {
       external_post_id: tt.publishId,
       external_url: tt.shareUrl ?? null,
