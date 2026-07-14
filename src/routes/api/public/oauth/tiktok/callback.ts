@@ -51,7 +51,12 @@ export const Route = createFileRoute("/api/public/oauth/tiktok/callback")({
 
         try {
           const tokens = await exchangeTikTokCode({ code, redirectUri });
-          const user = await fetchTikTokUser(tokens.access_token);
+          let user: Awaited<ReturnType<typeof fetchTikTokUser>> | null = null;
+          try {
+            user = await fetchTikTokUser(tokens.access_token);
+          } catch (userErr) {
+            console.warn("[tiktok-oauth] user info unavailable; saving account from token", userErr);
+          }
 
           const { data: acct, error: acctErr } = await supabaseAdmin
             .from("connected_accounts")
@@ -60,9 +65,9 @@ export const Route = createFileRoute("/api/public/oauth/tiktok/callback")({
                 workspace_id: row.workspace_id,
                 platform: "tiktok",
                 external_id: tokens.open_id,
-                handle: user.username ?? null,
-                display_name: user.display_name ?? user.username ?? "TikTok",
-                avatar_url: user.avatar_url ?? null,
+                handle: user?.username ?? null,
+                display_name: user?.display_name ?? user?.username ?? "TikTok",
+                avatar_url: user?.avatar_url ?? null,
                 status: "connected",
                 error_message: null,
                 connected_by: row.user_id,
