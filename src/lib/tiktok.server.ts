@@ -11,6 +11,8 @@ const TIKTOK_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/video/init/";
 const TIKTOK_PUBLISH_STATUS_URL =
   "https://open.tiktokapis.com/v2/post/publish/status/fetch/";
+const TIKTOK_CREATOR_INFO_URL =
+  "https://open.tiktokapis.com/v2/post/publish/creator_info/query/";
 
 export const TIKTOK_SCOPES = [
   "user.info.basic",
