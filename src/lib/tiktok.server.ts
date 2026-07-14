@@ -241,6 +241,31 @@ export async function publishTikTokVideo(opts: {
     opts.video instanceof Blob
       ? opts.video.size
       : (opts.video as ArrayBuffer).byteLength;
+  const videoBlob: Blob =
+    opts.video instanceof Blob
+      ? opts.video
+      : new Blob([opts.video], { type: opts.contentType ?? "video/mp4" });
+
+  // TikTok chunk rules (FILE_UPLOAD):
+  //   - min chunk size: 5 MB (5,242,880)
+  //   - max chunk size: 64 MB (67,108,864)
+  //   - all chunks except the LAST must be exactly chunk_size
+  //   - if video_size < 5 MB, must be uploaded as a single chunk
+  const MIN_CHUNK = 5 * 1024 * 1024;
+  const MAX_CHUNK = 64 * 1024 * 1024;
+  let chunkSize: number;
+  let totalChunkCount: number;
+  if (size <= MAX_CHUNK) {
+    chunkSize = size;
+    totalChunkCount = 1;
+  } else {
+    chunkSize = MAX_CHUNK;
+    totalChunkCount = Math.floor(size / chunkSize); // last chunk absorbs the remainder
+    if (totalChunkCount < 1) totalChunkCount = 1;
+  }
+  if (totalChunkCount > 1 && chunkSize < MIN_CHUNK) {
+    throw new Error("TikTok upload chunk size below 5MB minimum");
+  }
 
   // Step 1: query creator_info to discover the privacy levels this account
   // is allowed to use for Direct Post. Required by TikTok before init.
@@ -270,8 +295,8 @@ export async function publishTikTokVideo(opts: {
   const sourceInfo = {
     source: "FILE_UPLOAD",
     video_size: size,
-    chunk_size: size,
-    total_chunk_count: 1,
+    chunk_size: chunkSize,
+    total_chunk_count: totalChunkCount,
   };
   const postInfo = {
     title: (opts.title ?? "").slice(0, 2200),
@@ -312,20 +337,28 @@ export async function publishTikTokVideo(opts: {
     throw new Error("TikTok publish init missing publish_id or upload_url");
   }
 
-  // Step 2: upload bytes in a single chunk
-  const putRes = await fetch(uploadUrl, {
-    method: "PUT",
-    headers: {
-      "content-type": opts.contentType ?? "video/mp4",
-      "content-length": String(size),
-      "content-range": `bytes 0-${size - 1}/${size}`,
-    },
-    body: opts.video instanceof Blob ? opts.video : new Uint8Array(opts.video),
-  });
-  if (!putRes.ok && putRes.status !== 201 && putRes.status !== 200) {
-    throw new Error(
-      `TikTok video upload failed (${putRes.status}): ${await putRes.text()}`,
-    );
+  // Step 2: upload bytes. Single PUT when total_chunk_count === 1,
+  // otherwise one PUT per chunk with the correct Content-Range header.
+  const contentType = opts.contentType ?? "video/mp4";
+  for (let i = 0; i < totalChunkCount; i++) {
+    const start = i * chunkSize;
+    const end = i === totalChunkCount - 1 ? size - 1 : start + chunkSize - 1;
+    const partBlob = videoBlob.slice(start, end + 1, contentType);
+    const partSize = end - start + 1;
+    const putRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "content-type": contentType,
+        "content-length": String(partSize),
+        "content-range": `bytes ${start}-${end}/${size}`,
+      },
+      body: partBlob,
+    });
+    if (!putRes.ok && putRes.status !== 201 && putRes.status !== 200 && putRes.status !== 206) {
+      throw new Error(
+        `TikTok video upload failed on chunk ${i + 1}/${totalChunkCount} (${putRes.status}): ${await putRes.text()}`,
+      );
+    }
   }
 
   // Step 3: brief poll for publish status (best-effort)
