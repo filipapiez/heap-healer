@@ -125,3 +125,74 @@ export async function disconnectLinkedInAccount(connectedAccountId: string) {
     .eq("id", connectedAccountId);
   if (delErr) throw delErr;
 }
+
+/** Return a valid LinkedIn access token + member URN for a connected account. */
+export async function getValidLinkedInAccessToken(connectedAccountId: string): Promise<{
+  accessToken: string;
+  memberId: string;
+}> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("linkedin_oauth_tokens" as never)
+    .select("access_token, expires_at, linkedin_member_id")
+    .eq("connected_account_id", connectedAccountId)
+    .maybeSingle();
+  if (error || !data) throw new Error("No LinkedIn tokens found. Reconnect required.");
+  const row = data as unknown as {
+    access_token: string;
+    expires_at: string | null;
+    linkedin_member_id: string;
+  };
+  if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) {
+    throw new Error("LinkedIn access token expired. Reconnect required.");
+  }
+  return { accessToken: row.access_token, memberId: row.linkedin_member_id };
+}
+
+/** Publish a text post (optionally with a link) to the connected LinkedIn member's feed. */
+export async function publishLinkedInPost(opts: {
+  connectedAccountId: string;
+  text: string;
+  link?: string;
+}): Promise<{ external_post_id: string; external_url: string }> {
+  const { accessToken, memberId } = await getValidLinkedInAccessToken(opts.connectedAccountId);
+  const authorUrn = `urn:li:person:${memberId}`;
+  const body: Record<string, unknown> = {
+    author: authorUrn,
+    lifecycleState: "PUBLISHED",
+    specificContent: {
+      "com.linkedin.ugc.ShareContent": {
+        shareCommentary: { text: opts.text.slice(0, 3000) },
+        shareMediaCategory: opts.link ? "ARTICLE" : "NONE",
+        ...(opts.link
+          ? { media: [{ status: "READY", originalUrl: opts.link }] }
+          : {}),
+      },
+    },
+    visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
+  };
+  const res = await fetch(`${LI_API}/ugcPosts`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json",
+      "x-restli-protocol-version": "2.0.0",
+    },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(`LinkedIn publish failed (${res.status}): ${JSON.stringify(json)}`);
+  }
+  const id: string =
+    (json as { id?: string }).id ??
+    res.headers.get("x-restli-id") ??
+    "";
+  const activityId = id.startsWith("urn:li:share:") ? id.replace("urn:li:share:", "") : id;
+  return {
+    external_post_id: id,
+    external_url: activityId
+      ? `https://www.linkedin.com/feed/update/${encodeURIComponent(id)}/`
+      : "",
+  };
+}
