@@ -350,6 +350,5 @@ export async function publishTikTokVideo(opts: {
     publishId,
     shareUrl,
     actionRequired: false,
-    message: null,
   };
 }
