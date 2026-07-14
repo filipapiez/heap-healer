@@ -29,9 +29,10 @@ export async function publishTargetNative(
   const mediaUrls: string[] = [];
   let firstMediaPath: string | null = null;
   let firstMediaMime: string | null = null;
+  let firstMediaKind: "image" | "video" | null = null;
   if (mediaAssetIds.length) {
     const { data: media } = await supabase.from("media_assets")
-      .select("storage_path, mime_type").in("id", mediaAssetIds);
+      .select("storage_path, mime_type, kind").in("id", mediaAssetIds);
     for (const m of media ?? []) {
       const { data: url } = await supabase.storage.from("media")
         .createSignedUrl(m.storage_path, 60 * 60 * 6);
@@ -40,6 +41,7 @@ export async function publishTargetNative(
     if (media && media[0]) {
       firstMediaPath = (media[0] as { storage_path: string }).storage_path;
       firstMediaMime = (media[0] as { mime_type?: string }).mime_type ?? "video/mp4";
+      firstMediaKind = ((media[0] as { kind?: "image" | "video" }).kind) ?? null;
     }
   }
 
@@ -103,16 +105,24 @@ export async function publishTargetNative(
   }
 
   if (platform === "instagram") {
-    const { publishInstagramImage, getValidMetaAccessToken } = await import("./meta.server");
+    const { publishInstagramImage, publishInstagramVideo, getValidMetaAccessToken } = await import("./meta.server");
     const meta = await getValidMetaAccessToken(connectedAccountId);
     if (!meta.igBusinessId) throw new Error("Instagram business ID missing on account");
-    if (!mediaUrls[0]) throw new Error("Instagram publish requires an image attachment");
-    const ig = await publishInstagramImage({
-      igBusinessId: meta.igBusinessId,
-      pageAccessToken: meta.accessToken,
-      imageUrl: mediaUrls[0],
-      caption,
-    });
+    if (!mediaUrls[0]) throw new Error("Instagram publish requires an image or video attachment");
+    const isVideo = firstMediaKind === "video" || (firstMediaMime?.startsWith("video/") ?? false);
+    const ig = isVideo
+      ? await publishInstagramVideo({
+          igBusinessId: meta.igBusinessId,
+          pageAccessToken: meta.accessToken,
+          videoUrl: mediaUrls[0],
+          caption,
+        })
+      : await publishInstagramImage({
+          igBusinessId: meta.igBusinessId,
+          pageAccessToken: meta.accessToken,
+          imageUrl: mediaUrls[0],
+          caption,
+        });
     return { external_post_id: ig.id, external_url: null };
   }
 
