@@ -63,7 +63,7 @@ export const listAccounts = createServerFn({ method: "GET" })
   });
 
 /**
- * Kick off connect flow: asks Zernio for a hosted auth URL, records a pending
+ * Kick off connect flow: starts the native OAuth flow, records a pending
  * account row, and returns the URL for the browser to open.
  */
 export const startConnect = createServerFn({ method: "POST" })
@@ -82,7 +82,7 @@ export const startConnect = createServerFn({ method: "POST" })
       throw new Error("Only workspace owners and admins can connect accounts");
     }
 
-    // ── Native YouTube path (no Zernio) ──────────────────────────────
+    // ── Native YouTube path ──────────────────────────────
     if (data.platform === "youtube") {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { buildAuthorizeUrl, requireGoogleEnv } = await import("./youtube.server");

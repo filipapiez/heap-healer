@@ -72,7 +72,7 @@ export const deletePost = createServerFn({ method: "POST" })
 /**
  * Create a post (draft or scheduled) and optionally publish it now.
  * If scheduledAt is set, the post is stored as `scheduled` and not published.
- * Otherwise, it's published immediately via Zernio (per-target fan-out).
+ * Otherwise, it's published immediately.
  */
 export const createPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
