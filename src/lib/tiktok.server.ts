@@ -9,6 +9,8 @@ const TIKTOK_USER_INFO_URL =
   "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,username";
 const TIKTOK_DIRECT_VIDEO_INIT_URL =
   "https://open.tiktokapis.com/v2/post/publish/video/init/";
+const TIKTOK_INBOX_VIDEO_INIT_URL =
+  "https://open.tiktokapis.com/v2/post/publish/inbox/video/init/";
 const TIKTOK_CREATOR_INFO_URL =
   "https://open.tiktokapis.com/v2/post/publish/creator_info/query/";
 const TIKTOK_PUBLISH_STATUS_URL =
@@ -313,23 +315,39 @@ export async function publishTikTokVideo(opts: {
     },
     body: JSON.stringify({ post_info: postInfo, source_info: sourceInfo }),
   });
-  const initJson = await initRes.json();
+  let initJson = await initRes.json();
+  let usedInboxFallback = false;
   if (!initRes.ok || initJson?.error?.code !== "ok") {
     const initErrorMessage =
       initJson?.error?.message ?? initJson?.error_description ?? JSON.stringify(initJson);
-    if (
+    const isUnaudited =
       initRes.status === 403 &&
-      /integration guidelines|content-sharing-guidelines|unaudited_client/i.test(initErrorMessage)
-    ) {
+      /integration guidelines|content-sharing-guidelines|unaudited_client/i.test(initErrorMessage);
+    if (!isUnaudited) {
       throw new Error(
-        "TikTok Direct Post is blocked because this TikTok app has not been approved for direct publishing yet. Keep Direct Post enabled, but request TikTok Content Posting API review/approval before retrying.",
+        `TikTok direct post init failed (${initRes.status}): ${initErrorMessage}`,
       );
     }
-    throw new Error(
-      `TikTok direct post init failed (${initRes.status}): ${
-        initErrorMessage
-      }`,
-    );
+    // Fallback: upload to the creator's TikTok inbox as a draft. This endpoint
+    // works for un-audited apps; the creator finishes posting from the TikTok app.
+    const inboxRes = await fetch(TIKTOK_INBOX_VIDEO_INIT_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "content-type": "application/json; charset=UTF-8",
+      },
+      body: JSON.stringify({ source_info: sourceInfo }),
+    });
+    const inboxJson = await inboxRes.json();
+    if (!inboxRes.ok || inboxJson?.error?.code !== "ok") {
+      const inboxErr =
+        inboxJson?.error?.message ?? inboxJson?.error_description ?? JSON.stringify(inboxJson);
+      throw new Error(
+        `TikTok inbox upload fallback failed (${inboxRes.status}): ${inboxErr}`,
+      );
+    }
+    initJson = inboxJson;
+    usedInboxFallback = true;
   }
   const publishId: string | undefined = initJson?.data?.publish_id;
   const uploadUrl: string | undefined = initJson?.data?.upload_url;
@@ -390,6 +408,9 @@ export async function publishTikTokVideo(opts: {
   return {
     publishId,
     shareUrl,
-    actionRequired: false,
+    actionRequired: usedInboxFallback,
+    message: usedInboxFallback
+      ? "TikTok has not approved Direct Post for this app yet, so the video was uploaded to the creator's TikTok inbox as a draft. Open the TikTok app to finish posting."
+      : undefined,
   };
 }
