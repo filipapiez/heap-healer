@@ -32,7 +32,6 @@ import { Route as AuthenticatedEngagementRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
-import { Route as ApiPublicZernioRouteImport } from './routes/api/public/zernio'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
@@ -154,11 +153,6 @@ const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiPublicZernioRoute = ApiPublicZernioRouteImport.update({
-  id: '/api/public/zernio',
-  path: '/api/public/zernio',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
   id: '/api/public/run-scheduled',
   path: '/api/public/run-scheduled',
@@ -219,7 +213,6 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
-  '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -250,7 +243,6 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
-  '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -283,7 +275,6 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
-  '/api/public/zernio': typeof ApiPublicZernioRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -316,7 +307,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
-    | '/api/public/zernio'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -347,7 +337,6 @@ export interface FileRouteTypes {
     | '/settings'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
-    | '/api/public/zernio'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -379,7 +368,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
-    | '/api/public/zernio'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -401,7 +389,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
-  ApiPublicZernioRoute: typeof ApiPublicZernioRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
   ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
@@ -572,13 +559,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/zernio': {
-      id: '/api/public/zernio'
-      path: '/api/public/zernio'
-      fullPath: '/api/public/zernio'
-      preLoaderRoute: typeof ApiPublicZernioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/run-scheduled': {
       id: '/api/public/run-scheduled'
       path: '/api/public/run-scheduled'
@@ -679,7 +659,6 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
-  ApiPublicZernioRoute: ApiPublicZernioRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
   ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,
@@ -689,13 +668,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
