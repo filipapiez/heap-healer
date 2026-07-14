@@ -299,10 +299,15 @@ export async function publishTikTokVideo(opts: {
   });
   const initJson = await initRes.json();
   if (!initRes.ok || initJson?.error?.code !== "ok") {
+    const errorCode = initJson?.error?.code;
+    const errorMessage = initJson?.error?.message ?? JSON.stringify(initJson);
+    if (errorCode === "unaudited_client_can_only_post_to_private_accounts") {
+      throw new Error(
+        "TikTok rejected this because Direct Post is still limited to private TikTok accounts until the TikTok app is approved. Set the connected TikTok account to Private, then reconnect/retry, or submit the TikTok app for Direct Post review.",
+      );
+    }
     throw new Error(
-      `TikTok publish init failed (${initRes.status}): ${
-        initJson?.error?.message ?? JSON.stringify(initJson)
-      }`,
+      `TikTok publish init failed (${initRes.status}): ${errorMessage}`,
     );
   }
   const publishId: string | undefined = initJson?.data?.publish_id;
