@@ -204,16 +204,7 @@ export const startConnect = createServerFn({ method: "POST" })
     }
     // ─────────────────────────────────────────────────────────────────
 
-    const { data: ws } = await supabase.from("workspaces")
-      .select("name").eq("id", workspaceId).maybeSingle();
-    const { createConnectLink, ensureZernioProfileId } = await import("./zernio.server");
-    const profileId = await ensureZernioProfileId(ws?.name ?? "Workspace", workspaceId);
-    const link = await createConnectLink({
-      platform: data.platform,
-      profileId,
-      redirectUri: `${data.origin}/accounts`,
-    });
-    return { url: link.url };
+    throw new Error(`Connecting ${data.platform} is not yet supported. Only native OAuth platforms are enabled.`);
   });
 
 export const disconnectAccount = createServerFn({ method: "POST" })
@@ -222,7 +213,7 @@ export const disconnectAccount = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase } = context;
     const { data: row, error } = await supabase.from("connected_accounts")
-      .select("id, platform, zernio_account_id").eq("id", data.accountId).maybeSingle();
+      .select("id, platform").eq("id", data.accountId).maybeSingle();
     if (error) throw error;
     if (!row) throw new Error("Account not found");
 
@@ -282,14 +273,6 @@ export const disconnectAccount = createServerFn({ method: "POST" })
       return { ok: true };
     }
 
-    if (row.zernio_account_id) {
-      try {
-        const { disconnectZernioAccount } = await import("./zernio.server");
-        await disconnectZernioAccount(row.zernio_account_id);
-      } catch (e) {
-        console.warn("[accounts] Zernio disconnect failed; removing locally", e);
-      }
-    }
     const { error: delErr } = await supabase.from("connected_accounts")
       .delete().eq("id", data.accountId);
     if (delErr) throw delErr;
