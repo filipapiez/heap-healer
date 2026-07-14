@@ -290,9 +290,19 @@ export async function publishTikTokVideo(opts: {
   });
   const initJson = await initRes.json();
   if (!initRes.ok || initJson?.error?.code !== "ok") {
+    const initErrorMessage =
+      initJson?.error?.message ?? initJson?.error_description ?? JSON.stringify(initJson);
+    if (
+      initRes.status === 403 &&
+      /integration guidelines|content-sharing-guidelines|unaudited_client/i.test(initErrorMessage)
+    ) {
+      throw new Error(
+        "TikTok Direct Post is blocked because this TikTok app has not been approved for direct publishing yet. Keep Direct Post enabled, but request TikTok Content Posting API review/approval before retrying.",
+      );
+    }
     throw new Error(
       `TikTok direct post init failed (${initRes.status}): ${
-        initJson?.error?.message ?? JSON.stringify(initJson)
+        initErrorMessage
       }`,
     );
   }
