@@ -40,12 +40,18 @@ function NewPostPage() {
     mutationFn: async () => {
       setError("");
       const scheduledAt = schedule ? new Date(schedule).toISOString() : null;
+      const accountIds = selectedAccounts.filter((id) => {
+        const acc = connected.find((a) => a.id === id);
+        if (!acc) return false;
+        if (requiresVideo(acc.platform) && !hasVideo) return false;
+        return true;
+      });
       return createPost({
         data: {
           caption,
           mediaAssetIds: selectedMedia,
           overrides,
-          accountIds: selectedAccounts,
+          accountIds,
           scheduledAt,
         },
       });
