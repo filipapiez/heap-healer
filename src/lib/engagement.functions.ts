@@ -53,9 +53,6 @@ export const getAdminStatus = createServerFn({ method: "GET" })
       .select("current_workspace_id").eq("id", userId).maybeSingle();
     const workspaceId = profile?.current_workspace_id;
 
-    const zernioConfigured = Boolean(process.env.ZERNIO_API_URL && process.env.ZERNIO_API_KEY);
-    const webhookSecretConfigured = Boolean(process.env.ZERNIO_WEBHOOK_SECRET);
-
     let accountsByPlatform: { platform: string; count: number }[] = [];
     let scheduledCount = 0;
     if (workspaceId) {
@@ -73,8 +70,6 @@ export const getAdminStatus = createServerFn({ method: "GET" })
 
     return {
       workspaceId,
-      zernioConfigured,
-      webhookSecretConfigured,
       accountsByPlatform,
       scheduledCount,
     };

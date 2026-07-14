@@ -72,7 +72,7 @@ export const deletePost = createServerFn({ method: "POST" })
 /**
  * Create a post (draft or scheduled) and optionally publish it now.
  * If scheduledAt is set, the post is stored as `scheduled` and not published.
- * Otherwise, it's published immediately via Zernio (per-target fan-out).
+ * Otherwise, it's published immediately.
  */
 export const createPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -83,7 +83,7 @@ export const createPost = createServerFn({ method: "POST" })
 
     // Validate accounts belong to this workspace + are connected
     const { data: accounts, error: accErr } = await supabase.from("connected_accounts")
-      .select("id, platform, status, zernio_account_id")
+      .select("id, platform, status")
       .in("id", data.accountIds)
       .eq("workspace_id", workspaceId);
     if (accErr) throw accErr;
@@ -117,120 +117,21 @@ export const createPost = createServerFn({ method: "POST" })
       .insert(targetRows).select("id, connected_account_id, platform");
     if (tgtErr) throw tgtErr;
 
-    // Immediate publish path — fire per-target through Zernio.
     if (!scheduledAt) {
-      const { publishToZernio } = await import("./zernio.server");
-      const { publishYoutubeVideo } = await import("./youtube.server");
-      const { publishTikTokVideo } = await import("./tiktok.server");
-      const { publishLinkedInPost } = await import("./linkedin.server");
-      const {
-        publishFacebookPagePost,
-        publishInstagramImage,
-        publishThreadsPost,
-        getValidMetaAccessToken,
-      } = await import("./meta.server");
-      // Signed URLs for media (private bucket) so Zernio can fetch
-      const mediaUrls: string[] = [];
-      let firstMediaPath: string | null = null;
-      let firstMediaMime: string | null = null;
-      if (data.mediaAssetIds.length) {
-        const { data: media } = await supabase.from("media_assets")
-          .select("storage_path, mime_type").in("id", data.mediaAssetIds);
-        for (const m of media ?? []) {
-          const { data: url } = await supabase.storage.from("media")
-            .createSignedUrl(m.storage_path, 60 * 60 * 6);
-          if (url?.signedUrl) mediaUrls.push(url.signedUrl);
-        }
-        if (media && media[0]) {
-          firstMediaPath = (media[0] as { storage_path: string }).storage_path;
-          firstMediaMime = (media[0] as { mime_type?: string }).mime_type ?? "video/mp4";
-        }
-      }
+      // Immediate publish — every platform through its native API.
+      const { publishTargetNative } = await import("./publish.server");
 
       let published = 0; let failed = 0;
       for (const t of targets ?? []) {
         const account = accounts.find((a) => a.id === t.connected_account_id)!;
         const caption = (data.overrides?.[t.platform] as { caption?: string } | undefined)?.caption ?? data.caption;
         try {
-          let res: { external_post_id?: string | null; external_url?: string | null };
-          if (t.platform === "youtube") {
-            // Native YouTube publish path — expects a video media asset.
-            if (!firstMediaPath) throw new Error("YouTube publish requires a video attachment");
-            const { data: dl, error: dlErr } = await supabase.storage.from("media")
-              .download(firstMediaPath);
-            if (dlErr || !dl) throw new Error(`Failed to read video: ${dlErr?.message ?? "unknown"}`);
-            const [title, ...descLines] = caption.split("\n");
-            const yt = await publishYoutubeVideo({
-              connectedAccountId: account.id,
-              title: (title || "Untitled").slice(0, 100),
-              description: descLines.join("\n"),
-              privacyStatus: "public",
-              contentType: firstMediaMime ?? "video/mp4",
-              video: dl,
-            });
-            res = { external_post_id: yt.videoId, external_url: yt.url };
-          } else if (t.platform === "tiktok") {
-            // Native TikTok publish path — expects a video media asset.
-            if (!firstMediaPath) throw new Error("TikTok publish requires a video attachment");
-            const { data: dl, error: dlErr } = await supabase.storage.from("media")
-              .download(firstMediaPath);
-            if (dlErr || !dl) throw new Error(`Failed to read video: ${dlErr?.message ?? "unknown"}`);
-            const tt = await publishTikTokVideo({
-              connectedAccountId: account.id,
-              title: caption.slice(0, 2200),
-              contentType: firstMediaMime ?? "video/mp4",
-              video: dl,
-              // SELF_ONLY is required for un-audited / sandbox apps.
-              privacyLevel: "SELF_ONLY",
-            });
-            res = { external_post_id: tt.publishId, external_url: tt.shareUrl ?? null };
-          } else if (t.platform === "linkedin") {
-            const li = await publishLinkedInPost({
-              connectedAccountId: account.id,
-              text: caption,
-            });
-            res = { external_post_id: li.external_post_id, external_url: li.external_url };
-          } else if (t.platform === "facebook") {
-            const meta = await getValidMetaAccessToken(account.id);
-            if (!meta.pageId) throw new Error("Facebook page ID missing on account");
-            const fb = await publishFacebookPagePost({
-              pageId: meta.pageId,
-              pageAccessToken: meta.accessToken,
-              message: caption,
-            });
-            res = {
-              external_post_id: fb.id,
-              external_url: `https://www.facebook.com/${fb.id}`,
-            };
-          } else if (t.platform === "instagram") {
-            const meta = await getValidMetaAccessToken(account.id);
-            if (!meta.igBusinessId) throw new Error("Instagram business ID missing on account");
-            if (!mediaUrls[0]) throw new Error("Instagram publish requires an image attachment");
-            const ig = await publishInstagramImage({
-              igBusinessId: meta.igBusinessId,
-              pageAccessToken: meta.accessToken,
-              imageUrl: mediaUrls[0],
-              caption,
-            });
-            res = { external_post_id: ig.id, external_url: null };
-          } else if (t.platform === "threads") {
-            const meta = await getValidMetaAccessToken(account.id);
-            if (!meta.metaUserId) throw new Error("Threads user ID missing on account");
-            const th = await publishThreadsPost({
-              threadsUserId: meta.metaUserId,
-              accessToken: meta.accessToken,
-              text: caption,
-              imageUrl: mediaUrls[0],
-            });
-            res = { external_post_id: th.id, external_url: null };
-          } else {
-            res = await publishToZernio({
-              zernioAccountId: account.zernio_account_id!,
-              platform: t.platform,
-              caption,
-              mediaUrls,
-            });
-          }
+          const res = await publishTargetNative(supabase, {
+            platform: t.platform,
+            connectedAccountId: account.id,
+            caption,
+            mediaAssetIds: data.mediaAssetIds,
+          });
           await supabase.from("post_targets").update({
             status: "published",
             external_post_id: res.external_post_id ?? null,
