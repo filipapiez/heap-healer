@@ -242,14 +242,44 @@ export async function publishTikTokVideo(opts: {
       ? opts.video.size
       : (opts.video as ArrayBuffer).byteLength;
 
+  // Step 0: query creator_info (REQUIRED by TikTok before init, especially
+  // for un-audited / sandbox apps). We must pass a privacy_level from the
+  // returned allow-list and honor the creator's interaction settings.
+  const ciRes = await fetch(TIKTOK_CREATOR_INFO_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json; charset=UTF-8",
+    },
+  });
+  const ciJson = await ciRes.json().catch(() => ({}));
+  if (!ciRes.ok || ciJson?.error?.code !== "ok") {
+    throw new Error(
+      `TikTok creator_info failed (${ciRes.status}): ${
+        ciJson?.error?.message ?? JSON.stringify(ciJson)
+      }`,
+    );
+  }
+  const allowed: string[] = ciJson?.data?.privacy_level_options ?? [];
+  const preferred = opts.privacyLevel ?? "SELF_ONLY";
+  const privacyLevel = allowed.includes(preferred)
+    ? preferred
+    : (allowed.includes("SELF_ONLY") ? "SELF_ONLY" : allowed[0]);
+  if (!privacyLevel) {
+    throw new Error("TikTok creator_info returned no privacy_level_options");
+  }
+  const commentDisabled: boolean = ciJson?.data?.comment_disabled ?? false;
+  const duetDisabled: boolean = ciJson?.data?.duet_disabled ?? false;
+  const stitchDisabled: boolean = ciJson?.data?.stitch_disabled ?? false;
+
   // Step 1: init upload
   const initBody = {
     post_info: {
       title: (opts.title ?? "").slice(0, 2200),
-      privacy_level: opts.privacyLevel ?? "SELF_ONLY",
-      disable_duet: false,
-      disable_comment: false,
-      disable_stitch: false,
+      privacy_level: privacyLevel,
+      disable_comment: commentDisabled,
+      disable_duet: duetDisabled,
+      disable_stitch: stitchDisabled,
       video_cover_timestamp_ms: 1000,
     },
     source_info: {
