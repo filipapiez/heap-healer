@@ -18,16 +18,6 @@ function AdminPage() {
 
       <section className="mb-6">
         <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-700)]/60">
-          Integration
-        </h2>
-        <ul className="space-y-2">
-          <StatusRow label="Zernio API credentials" ok={s?.zernioConfigured} />
-          <StatusRow label="Webhook signing secret" ok={s?.webhookSecretConfigured} />
-        </ul>
-      </section>
-
-      <section className="mb-6">
-        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-700)]/60">
           Workspace at a glance
         </h2>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -62,16 +52,5 @@ function AdminPage() {
         )}
       </section>
     </div>
-  );
-}
-
-function StatusRow({ label, ok }: { label: string; ok?: boolean }) {
-  return (
-    <li className="card flex items-center justify-between p-3 text-sm">
-      <span>{label}</span>
-      <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${ok ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`}>
-        {ok ? "configured" : "missing"}
-      </span>
-    </li>
   );
 }
