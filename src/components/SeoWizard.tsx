@@ -1,11 +1,11 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const ACCENT = "#e8590c";
-const INK = "#191919";
-const MUTED = "#68707d";
-const LINE = "#e5e7eb";
-const PANEL = "#f7f5f2";
+const ACCENT = "#5b5bd6";
+const INK = "#0b1020";
+const MUTED = "#3a4470";
+const LINE = "#e4e7f2";
+const PANEL = "#f7f8fc";
 const STEPS = 6;
 const CHECKOUT_URL =
   "https://buy.stripe.com/14A7sE0dr9sC7jt9eV0oM00?client_reference_id=3368c149-80ef-41e4-89d7-142cd2f92eb6";
@@ -106,26 +106,27 @@ export default function SeoWizard() {
   return (
     <main className="seo-wizard">
       <style>{`
-      .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,.82fr)}
+      .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(400px,.88fr)}
       .seo-main{padding:52px clamp(24px,7vw,88px);display:flex;flex-direction:column;justify-content:center;max-width:760px}
-      .seo-brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:19px;letter-spacing:-.03em;margin-bottom:34px}.seo-brand-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,${ACCENT},#ff9f43);color:#fff;display:grid;place-items:center;box-shadow:0 10px 25px #e8590c35;transform:rotate(-4deg);animation:brandFloat 4s ease-in-out infinite}.seo-brand em{font-style:normal;color:${ACCENT}}
-      .seo-progress{height:5px;background:${PANEL};border-radius:99px;overflow:hidden;margin-bottom:18px}.seo-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,${ACCENT},#ff9f43);transition:width .45s cubic-bezier(.22,1,.36,1)}
+      .seo-brand{display:flex;align-items:center;gap:11px;font-family:Sora,Inter,system-ui,sans-serif;font-weight:850;font-size:20px;letter-spacing:-.04em;margin-bottom:34px}.seo-brand-mark{width:38px;height:38px;filter:drop-shadow(0 10px 14px #5b5bd638);animation:brandFloat 4s ease-in-out infinite}.seo-brand em{font-style:normal;color:${ACCENT}}
+      .seo-progress{height:5px;background:${PANEL};border-radius:99px;overflow:hidden;margin-bottom:18px}.seo-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,${ACCENT},#8b7cf6);transition:width .45s cubic-bezier(.22,1,.36,1)}
       .step-card{animation:stepIn .45s cubic-bezier(.22,1,.36,1)}
       .seo-wizard input,.seo-wizard textarea,.seo-wizard select{box-sizing:border-box;width:100%;border:1.5px solid ${LINE};border-radius:14px;padding:15px 17px;font:inherit;color:${INK};outline:none;background:#fff}
-      .seo-wizard input:focus,.seo-wizard textarea:focus,.seo-wizard select:focus{border-color:${ACCENT};box-shadow:0 0 0 4px #e8590c17;transform:translateY(-1px)}
+      .seo-wizard input:focus,.seo-wizard textarea:focus,.seo-wizard select:focus{border-color:${ACCENT};box-shadow:0 0 0 4px #5b5bd617;transform:translateY(-1px)}
       .seo-wizard input,.seo-wizard textarea,.seo-wizard select,.seo-wizard button{transition:all .2s ease}.seo-wizard button{font:inherit}.seo-btn{border:0;border-radius:999px;padding:17px 22px;font-weight:700;cursor:pointer}.seo-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 24px #1919191b}.seo-btn:disabled{opacity:.35;cursor:not-allowed}
       .seo-proof{position:relative;overflow:hidden;background:${PANEL};border-radius:0 0 0 64px;padding:56px 48px;display:flex;flex-direction:column;justify-content:center}
-      .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.55;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:190px;height:190px;background:#ffd9c4;right:-55px;top:-45px}.seo-orb.two{width:120px;height:120px;background:#dedcff;left:-35px;bottom:12%;animation-delay:-3s}
+      .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:210px;height:210px;background:#dedcff;right:-55px;top:-45px}.seo-orb.two{width:130px;height:130px;background:#dff8ef;left:-35px;bottom:12%;animation-delay:-3s}
       .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:42px}.proof-grid>div+div{border-left:1px solid ${LINE}}
       .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}
-      .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #f3c9b3;background:#fff8f4;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #e8590c30}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+      .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+      .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
       @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
       @media(max-width:860px){.seo-wizard{grid-template-columns:1fr}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:100vh}.two-col{grid-template-columns:1fr}}
     `}</style>
       <section className="seo-main">
         <div className="seo-brand" aria-label="MentionMyApp">
-          <span className="seo-brand-mark">M</span>
+          <LogoMark />
           <span>
             MentionMy<em>App</em>
           </span>
@@ -401,12 +402,12 @@ export default function SeoWizard() {
         <span className="seo-orb two" aria-hidden="true" />
         <div className="proof-grid">
           <div>
-            <b style={{ fontSize: 27 }}>Technical</b>
-            <div style={{ fontSize: 12, color: MUTED }}>SEO fixes</div>
+            <b style={{ fontSize: 24 }}>Backlinks</b>
+            <div style={{ fontSize: 12, color: MUTED }}>Build authority</div>
           </div>
           <div>
-            <b style={{ fontSize: 27 }}>Content</b>
-            <div style={{ fontSize: 12, color: MUTED }}>Built for intent</div>
+            <b style={{ fontSize: 24 }}>New pages</b>
+            <div style={{ fontSize: 12, color: MUTED }}>Made indexable</div>
           </div>
           <div>
             <b style={{ fontSize: 27 }}>90 days</b>
@@ -424,9 +425,23 @@ export default function SeoWizard() {
             Fix what blocks growth. Build what people search for.
           </h2>
           <p style={{ color: MUTED, lineHeight: 1.7 }}>
-            We start with your website and Search Console baseline, then prioritize technical fixes,
-            indexing, internal links, and pages tied to real buyer demand.
+            MentionMyApp turns your SEO plan into focused, measurable work—not another report that
+            sits in your inbox.
           </p>
+          <div className="benefit-list">
+            <div className="benefit">
+              <span className="benefit-check">✓</span>Build relevant backlinks
+            </div>
+            <div className="benefit">
+              <span className="benefit-check">✓</span>Create new indexable pages
+            </div>
+            <div className="benefit">
+              <span className="benefit-check">✓</span>Fix technical SEO blockers
+            </div>
+            <div className="benefit">
+              <span className="benefit-check">✓</span>Track growth in Search Console
+            </div>
+          </div>
           <div
             style={{ borderTop: `1px solid ${LINE}`, marginTop: 24, paddingTop: 20, fontSize: 14 }}
           >
@@ -436,6 +451,29 @@ export default function SeoWizard() {
         </div>
       </aside>
     </main>
+  );
+}
+
+function LogoMark() {
+  return (
+    <svg className="seo-brand-mark" viewBox="0 0 40 40" role="img" aria-label="MentionMyApp logo">
+      <defs>
+        <linearGradient id="mma-logo" x1="5" y1="4" x2="35" y2="36" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#7c7cf0" />
+          <stop offset="1" stopColor="#4747c2" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="12" fill="url(#mma-logo)" />
+      <path
+        d="M10 27V14.5c0-1 .8-1.8 1.8-1.8h1.4c.6 0 1.2.3 1.5.9L20 22l5.3-8.4c.3-.6.9-.9 1.5-.9h1.4c1 0 1.8.8 1.8 1.8V27"
+        fill="none"
+        stroke="white"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="30" cy="9" r="4" fill="#7cf0be" stroke="white" strokeWidth="2" />
+    </svg>
   );
 }
 
