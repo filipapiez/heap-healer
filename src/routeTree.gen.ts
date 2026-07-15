@@ -23,6 +23,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResourcesSlugRouteImport } from './routes/resources/$slug'
+import { Route as ReportTokenRouteImport } from './routes/report/$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
 import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
@@ -108,6 +109,11 @@ const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ResourcesRoute,
+} as any)
+const ReportTokenRoute = ReportTokenRouteImport.update({
+  id: '/report/$token',
+  path: '/report/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/_authenticated/scheduled': typeof AuthenticatedScheduledRoute
   '/_authenticated/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
+    | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/oauth/linkedin/callback'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
+    | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/oauth/linkedin/callback'
@@ -378,6 +389,7 @@ export interface FileRouteTypes {
     | '/_authenticated/scheduled'
     | '/_authenticated/seo-audit'
     | '/_authenticated/settings'
+    | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/oauth/linkedin/callback'
@@ -401,6 +413,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/resources/$slug'
       preLoaderRoute: typeof ResourcesSlugRouteImport
       parentRoute: typeof ResourcesRoute
+    }
+    '/report/$token': {
+      id: '/report/$token'
+      path: '/report/$token'
+      fullPath: '/report/$token'
+      preLoaderRoute: typeof ReportTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
@@ -679,6 +699,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ReportTokenRoute: ReportTokenRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,

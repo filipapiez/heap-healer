@@ -540,7 +540,7 @@ export default function SeoWizard() {
                         Final scope and eligibility are confirmed after your audit.
                       </p>
                       <div className="checkout-price">
-                        <strong>$499</strong>
+                        <strong>$49</strong>
                         <span>/month · cancel anytime</span>
                       </div>
                     </div>
