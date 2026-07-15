@@ -141,6 +141,19 @@ function NewPostPage() {
           maxLength={4000}
         />
         <div className="mt-1 text-right text-xs text-[var(--color-ink-700)]/50">{caption.length}/4000</div>
+        {overLimits.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {overLimits.map((o) => (
+              <div
+                key={o.platform}
+                className="rounded-md bg-amber-50 px-3 py-1.5 text-xs text-amber-800"
+              >
+                Too long for {PLATFORM_LABELS[o.platform] ?? o.platform} — {o.length}/{o.limit} characters. Shorten the caption
+                {" "}or add a per-platform override below.
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="card mb-4 p-4">
