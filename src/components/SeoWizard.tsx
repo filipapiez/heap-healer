@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import WorldMap from "@/components/WorldMap";
 
 const ACCENT = "#5b5bd6";
 const INK = "#0b1020";
@@ -226,12 +227,12 @@ export default function SeoWizard() {
       .seo-proof{position:relative;overflow:hidden;background:${PANEL};border-radius:0 0 0 64px;padding:42px clamp(28px,3.5vw,60px);display:flex;flex-direction:column;justify-content:center}
       .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:210px;height:210px;background:#dedcff;right:-55px;top:-45px}.seo-orb.two{width:130px;height:130px;background:#dff8ef;left:-35px;bottom:12%;animation-delay:-3s}
       .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:22px}.proof-grid>div{padding:0 10px}.proof-grid>div+div{border-left:1px solid #d9dce8}.metric-icon{width:42px;height:42px;margin:0 auto 9px;border:1px dashed #c7cbd9;border-radius:50%;display:grid;place-items:center;color:${ACCENT};background:#fff}.metric-icon svg{width:19px;height:19px}.metric-value{font-family:Sora,Inter,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em}.metric-label{font-size:11px;color:#7a829d;margin-top:2px}
-      .world-stage{position:relative;width:min(100%,760px);margin:0 auto;aspect-ratio:1.75/1;overflow:hidden;border-radius:24px}.world-map-image{display:block;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply}.live-dot{position:absolute;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #6f6fe8,0 0 12px 5px #7c7cf060;animation:livePulse 2.6s ease-in-out infinite}.live-dot:after{content:"";position:absolute;inset:-4px;border:1px solid #7c7cf0;border-radius:50%;animation:mapPulse 2.6s ease-out infinite}.live-dot:nth-child(3n){animation-delay:-.8s}.live-dot:nth-child(3n+1){animation-delay:-1.6s}.review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
+      .review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
       .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}.secondary-checkout{width:100%;margin-top:10px;background:#fff;color:${ACCENT};border:1px solid #cfcff5!important}
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .market-picker{position:relative}.market-trigger{width:100%;display:flex;align-items:center;gap:13px;border:1.5px solid ${LINE};border-radius:16px;background:#fff;padding:17px 20px;color:${INK};font-size:17px;font-weight:650;cursor:pointer;box-shadow:0 5px 14px #252b5210}.market-trigger.open{border-color:#cfcff5;border-radius:16px 16px 0 0}.market-globe{color:${ACCENT};font-size:21px}.market-chevron{margin-left:auto;color:#8a91aa;transition:transform .2s ease}.market-trigger.open .market-chevron{transform:rotate(180deg)}.market-menu{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 10px);background:#fff;border:1px solid ${LINE};border-radius:16px;box-shadow:0 18px 40px #1a224224;overflow:hidden;animation:stepIn .2s ease}.market-search{border:0!important;border-radius:0!important;border-bottom:1px solid ${LINE}!important;box-shadow:none!important;padding:17px 20px!important}.market-options{max-height:285px;overflow:auto}.market-option{width:100%;display:flex;align-items:center;gap:12px;border:0;background:#fff;padding:14px 20px;text-align:left;color:${INK};cursor:pointer}.market-option:hover,.market-option.selected{background:#f4f3ff}.market-option.selected{color:${ACCENT};font-weight:700}.market-count{padding:10px 20px;border-top:1px solid ${LINE};font-size:12px;color:#8a91aa;background:#fbfbfd}.language-trigger{align-items:flex-start}.language-flag{font-size:22px;line-height:1}.language-copy{display:grid;gap:7px;text-align:left}.language-audience{font-size:13px;color:${ACCENT};font-weight:650}.language-menu{top:calc(100% + 10px)}.language-option{font-size:15px}.language-option .language-flag{font-size:20px}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
-      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}@keyframes mapPulse{0%{opacity:.55;transform:scale(.5)}75%,100%{opacity:0;transform:scale(1.8)}}@keyframes livePulse{0%,100%{filter:brightness(1);transform:scale(.9)}50%{filter:brightness(1.25);transform:scale(1.12)}}
+      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
       @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col{grid-template-columns:1fr}}
     `}</style>
@@ -520,7 +521,13 @@ export default function SeoWizard() {
             <div className="metric-label">Average organic growth</div>
           </div>
         </div>
-        <WorldMap />
+        <WorldMap
+          hqLabel="MentionMyApp"
+          accent={ACCENT}
+          dot="#aaa6d9"
+          dotOpacity={0.58}
+          height={420}
+        />
         <div className="review-pill" aria-label="4.9 out of 5 from more than 12,000 reviews">
           <span className="review-stars">★★★★★</span>
           <strong>4.9/5</strong>
@@ -528,42 +535,6 @@ export default function SeoWizard() {
         </div>
       </aside>
     </main>
-  );
-}
-
-function WorldMap() {
-  const dots = [
-    [12, 36],
-    [19, 42],
-    [25, 47],
-    [34, 39],
-    [46, 37],
-    [51, 42],
-    [59, 49],
-    [68, 43],
-    [75, 50],
-    [83, 43],
-    [88, 56],
-    [72, 67],
-    [53, 76],
-    [34, 69],
-  ];
-  return (
-    <div className="world-stage" aria-label="Global SEO growth map">
-      <img
-        className="world-map-image"
-        src="/mentionmyapp-world-map.jpg"
-        alt="Dotted world map showing MentionMyApp activity around the world"
-      />
-      {dots.map(([left, top], index) => (
-        <span
-          className="live-dot"
-          key={`${left}-${top}`}
-          aria-hidden="true"
-          style={{ left: `${left}%`, top: `${top}%`, animationDelay: `${-(index % 5) * 0.38}s` }}
-        />
-      ))}
-    </div>
   );
 }
 
