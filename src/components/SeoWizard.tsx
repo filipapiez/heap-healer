@@ -9,6 +9,7 @@ const PANEL = "#f7f8fc";
 const STEPS = 6;
 const CHECKOUT_URL =
   "https://buy.stripe.com/14A7sE0dr9sC7jt9eV0oM00?client_reference_id=3368c149-80ef-41e4-89d7-142cd2f92eb6";
+const SECONDARY_CHECKOUT_URL = "https://buy.stripe.com/aFa5kF3Y00ifbpf8KbcAo00";
 
 type SeoLeadClient = {
   from: (table: "seo_leads") => {
@@ -84,6 +85,11 @@ export default function SeoWizard() {
     setDone(true);
     window.location.assign(CHECKOUT_URL);
   };
+  const submitSecondary = async () => {
+    await persist(STEPS, true);
+    setDone(true);
+    window.location.assign(SECONDARY_CHECKOUT_URL);
+  };
   const canContinue = useMemo(() => {
     if (step === 1) return /^(https?:\/\/)?[^\s.]+\.[^\s]+/.test(lead.website.trim());
     if (step === 3) return lead.business_desc.trim().length > 10;
@@ -118,7 +124,7 @@ export default function SeoWizard() {
       .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:210px;height:210px;background:#dedcff;right:-55px;top:-45px}.seo-orb.two{width:130px;height:130px;background:#dff8ef;left:-35px;bottom:12%;animation-delay:-3s}
       .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:22px}.proof-grid>div{padding:0 10px}.proof-grid>div+div{border-left:1px solid #d9dce8}.metric-icon{width:42px;height:42px;margin:0 auto 9px;border:1px dashed #c7cbd9;border-radius:50%;display:grid;place-items:center;color:${ACCENT};background:#fff}.metric-icon svg{width:19px;height:19px}.metric-value{font-family:Sora,Inter,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em}.metric-label{font-size:11px;color:#7a829d;margin-top:2px}
       .world-stage{position:relative;width:min(100%,760px);margin:0 auto;aspect-ratio:1.5/1;overflow:hidden}.world-map-image{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}.live-dot{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #7c7cf0,0 0 18px 8px #7c7cf090;animation:livePulse 2.4s ease-out infinite}.live-dot:after{content:"";position:absolute;inset:-8px;border:1px solid #5b5bd6;border-radius:50%;animation:mapPulse 2.4s ease-out infinite}.live-dot:nth-child(3n){animation-delay:-.8s}.live-dot:nth-child(3n+1){animation-delay:-1.6s}.review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
-      .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}
+      .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}.secondary-checkout{width:100%;margin-top:10px;background:#fff;color:${ACCENT};border:1px solid #cfcff5!important}
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
       @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}@keyframes mapPulse{0%{opacity:.75;transform:scale(.4)}75%,100%{opacity:0;transform:scale(2.4)}}@keyframes livePulse{0%,100%{filter:brightness(1);transform:scale(.85)}50%{filter:brightness(1.35);transform:scale(1.25)}}
@@ -386,7 +392,16 @@ export default function SeoWizard() {
               </button>
             </div>
             {step === STEPS && (
-              <div className="checkout-note">🔒 Secure payment powered by Stripe</div>
+              <>
+                <button
+                  className="seo-btn secondary-checkout"
+                  disabled={!canContinue || saving}
+                  onClick={submitSecondary}
+                >
+                  Use alternate Stripe checkout →
+                </button>
+                <div className="checkout-note">🔒 Secure payments powered by Stripe</div>
+              </>
             )}
           </>
         ) : (
