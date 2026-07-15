@@ -4,6 +4,7 @@ create table if not exists public.seo_leads (
   updated_at timestamptz not null default now(),
   current_step int not null default 1 check (current_step between 1 and 6),
   completed boolean not null default false,
+  name text,
   website text,
   target_market text,
   language text,
