@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import SeoWizard from "@/components/SeoWizard";
+import LandingPage from "@/components/LandingPage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,5 +22,5 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "canonical", href: "https://mentionmyapp.com/" }],
   }),
-  component: SeoWizard,
+  component: LandingPage,
 });
