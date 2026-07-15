@@ -117,11 +117,11 @@ export default function SeoWizard() {
       .seo-proof{position:relative;overflow:hidden;background:${PANEL};border-radius:0 0 0 64px;padding:42px clamp(28px,3.5vw,60px);display:flex;flex-direction:column;justify-content:center}
       .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:210px;height:210px;background:#dedcff;right:-55px;top:-45px}.seo-orb.two{width:130px;height:130px;background:#dff8ef;left:-35px;bottom:12%;animation-delay:-3s}
       .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:22px}.proof-grid>div{padding:0 10px}.proof-grid>div+div{border-left:1px solid #d9dce8}.metric-icon{width:42px;height:42px;margin:0 auto 9px;border:1px dashed #c7cbd9;border-radius:50%;display:grid;place-items:center;color:${ACCENT};background:#fff}.metric-icon svg{width:19px;height:19px}.metric-value{font-family:Sora,Inter,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em}.metric-label{font-size:11px;color:#7a829d;margin-top:2px}
-      .world-stage{position:relative;width:min(100%,720px);margin:0 auto;aspect-ratio:1.75/1}.world-map{width:100%;height:100%;overflow:visible}.map-land{fill:url(#dotPattern);opacity:.9}.map-route{fill:none;stroke:#b9b9f3;stroke-width:1.2;stroke-dasharray:4 6;opacity:.55}.map-pulse{fill:${ACCENT};transform-box:fill-box;transform-origin:center;animation:mapPulse 2.8s ease-out infinite}.map-pulse:nth-of-type(2n){animation-delay:-1.4s}.map-halo{fill:${ACCENT};opacity:.1;animation:mapPulse 2.8s ease-out infinite}.review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
+      .world-stage{position:relative;width:min(100%,760px);margin:0 auto;aspect-ratio:1.5/1;overflow:hidden}.world-map-image{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}.live-dot{position:absolute;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #7c7cf0,0 0 18px 8px #7c7cf090;animation:livePulse 2.4s ease-out infinite}.live-dot:after{content:"";position:absolute;inset:-8px;border:1px solid #5b5bd6;border-radius:50%;animation:mapPulse 2.4s ease-out infinite}.live-dot:nth-child(3n){animation-delay:-.8s}.live-dot:nth-child(3n+1){animation-delay:-1.6s}.review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
       .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
-      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}@keyframes mapPulse{0%{opacity:.9;transform:scale(.6)}70%,100%{opacity:0;transform:scale(2.6)}}
+      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}@keyframes mapPulse{0%{opacity:.75;transform:scale(.4)}75%,100%{opacity:0;transform:scale(2.4)}}@keyframes livePulse{0%,100%{filter:brightness(1);transform:scale(.85)}50%{filter:brightness(1.35);transform:scale(1.25)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
       @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col{grid-template-columns:1fr}}
     `}</style>
@@ -436,57 +436,37 @@ export default function SeoWizard() {
 }
 
 function WorldMap() {
+  const dots = [
+    [12, 36],
+    [19, 42],
+    [25, 47],
+    [34, 39],
+    [46, 37],
+    [51, 42],
+    [59, 49],
+    [68, 43],
+    [75, 50],
+    [83, 43],
+    [88, 56],
+    [72, 67],
+    [53, 76],
+    [34, 69],
+  ];
   return (
     <div className="world-stage" aria-label="Global SEO growth map">
-      <svg
-        className="world-map"
-        viewBox="0 0 760 430"
-        role="img"
-        aria-label="World map showing global customer activity"
-      >
-        <defs>
-          <pattern id="dotPattern" width="7" height="7" patternUnits="userSpaceOnUse">
-            <circle cx="2" cy="2" r="1.45" fill="#858ba1" />
-          </pattern>
-        </defs>
-        <path
-          className="map-land"
-          d="M24 131l29-22 42-7 21-27 45-21 57 4 22 16 42 4 29 23-18 21-29 5-13 25-30 1-18 28-26-5-16 22-22-12-23-35-42-3-28 15-22-10z"
+      <img
+        className="world-map-image"
+        src="/mentionmyapp-world-map.jpg"
+        alt="Dotted world map showing MentionMyApp activity around the world"
+      />
+      {dots.map(([left, top], index) => (
+        <span
+          className="live-dot"
+          key={`${left}-${top}`}
+          aria-hidden="true"
+          style={{ left: `${left}%`, top: `${top}%`, animationDelay: `${-(index % 5) * 0.38}s` }}
         />
-        <path
-          className="map-land"
-          d="M188 211l36 7 28 26 11 39-14 31-1 44-20 38-19-22-8-42-18-33-12-46z"
-        />
-        <path
-          className="map-land"
-          d="M346 117l29-21 43-2 24-18 50 7 33-13 65 19 53-2 42 28 48 7 12 26-31 20-47-2-30 22-37-5-31 14-45-18-31 4-18-22-34-5-25-19-35 5-21-12z"
-        />
-        <path
-          className="map-land"
-          d="M415 202l39 4 34 29 4 50-17 39-28 42-20-28-13-51-21-34 8-34z"
-        />
-        <path className="map-land" d="M635 302l35-19 48 8 20 27-19 25-39 4-31-16z" />
-        <path className="map-route" d="M113 174C230 84 374 108 478 211S644 257 690 315" />
-        <path className="map-route" d="M211 264C315 204 410 185 555 151" />
-        {[
-          [112, 174],
-          [170, 192],
-          [214, 264],
-          [443, 213],
-          [478, 211],
-          [543, 170],
-          [611, 191],
-          [690, 315],
-          [450, 330],
-          [354, 128],
-        ].map(([cx, cy], i) => (
-          <g key={i}>
-            <circle className="map-halo" cx={cx} cy={cy} r="13" />
-            <circle className="map-pulse" cx={cx} cy={cy} r="4" />
-            <circle cx={cx} cy={cy} r="3.2" fill="#5b5bd6" />
-          </g>
-        ))}
-      </svg>
+      ))}
     </div>
   );
 }
