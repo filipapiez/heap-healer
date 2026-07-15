@@ -6,6 +6,7 @@ import { MediaUploader } from "@/components/MediaUploader";
 import { listMedia } from "@/lib/media.functions";
 import { listAccounts } from "@/lib/accounts.functions";
 import { createPost } from "@/lib/posts.functions";
+import { PostPreview } from "@/components/PostPreview";
 
 export const Route = createFileRoute("/_authenticated/new-post")({
   head: () => ({ meta: [{ title: "New post — MentionMyApp" }] }),
@@ -33,6 +34,30 @@ function NewPostPage() {
     const items = media.data?.items ?? [];
     return selectedMedia.some((id) => items.find((m) => m.id === id)?.kind === "video");
   }, [selectedMedia, media.data]);
+
+  const previewMedia = useMemo(() => {
+    const items = media.data?.items ?? [];
+    return selectedMedia
+      .map((id) => items.find((m) => m.id === id))
+      .filter((m): m is NonNullable<typeof m> => Boolean(m))
+      .map((m) => ({ id: m.id, url: m.url, kind: m.kind as "image" | "video" }));
+  }, [selectedMedia, media.data]);
+
+  const previewPlatforms = useMemo(() => {
+    const set = new Set<string>();
+    for (const id of selectedAccounts) {
+      const acc = connected.find((a) => a.id === id);
+      if (acc) set.add(acc.platform);
+    }
+    return Array.from(set);
+  }, [selectedAccounts, connected]);
+
+  const previewAccount = useMemo(() => {
+    const first = connected.find((a) => selectedAccounts.includes(a.id));
+    return first
+      ? { name: first.display_name || first.handle || first.platform, handle: first.handle || first.display_name || first.platform }
+      : { name: undefined, handle: undefined };
+  }, [connected, selectedAccounts]);
 
   const requiresVideo = (platform: string) => platform === "tiktok";
 
@@ -66,8 +91,11 @@ function NewPostPage() {
   const canSubmit = selectedAccounts.length > 0 && (caption.trim().length > 0 || selectedMedia.length > 0);
 
   return (
-    <div className="max-w-3xl">
+    <div>
       <PageHeader title="New post" subtitle="Compose once, publish to every selected account." />
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="min-w-0 max-w-3xl">
 
       {error && <div className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</div>}
 
@@ -202,6 +230,19 @@ function NewPostPage() {
         >
           {submit.isPending ? "Publishing…" : schedule ? "Schedule post" : "Publish now"}
         </button>
+      </div>
+        </div>
+
+        <aside className="min-w-0">
+          <PostPreview
+            platforms={previewPlatforms}
+            caption={caption}
+            overrides={overrides}
+            media={previewMedia}
+            accountName={previewAccount.name}
+            accountHandle={previewAccount.handle}
+          />
+        </aside>
       </div>
     </div>
   );
