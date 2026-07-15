@@ -5,31 +5,32 @@ const LINE = "#e4e7f2";
 const PANEL = "#f7f8fc";
 const NAVY = "#11162b";
 
-const PHASES = [
-  [
-    "01",
-    "Fix your SEO",
-    "Weeks 1–2",
-    "Technical audit, speed and crawl fixes, schema, indexing, titles, headings, and internal links.",
-  ],
-  [
-    "02",
-    "Build pages that rank",
-    "Every month",
-    "Keyword and competitor research plus new indexable landing pages and articles built around real demand.",
-  ],
-  [
-    "03",
-    "Build authority",
-    "Every month",
-    "Relevant backlink opportunities and content structured for Google and AI-search visibility.",
-  ],
-  [
-    "04",
-    "Prove it grew",
-    "Always on",
-    "A live report showing clicks, impressions, indexed pages, backlinks, and progress against your baseline.",
-  ],
+const FEATURES = [
+  {
+    title: "Technical SEO audit",
+    copy: "Find crawl, indexing, metadata, schema, speed, and internal-link problems before they keep costing you traffic.",
+    kind: "audit",
+  },
+  {
+    title: "Search-focused page plan",
+    copy: "A practical publishing plan based on competitor gaps, buyer intent, and the pages your market is already rewarding.",
+    kind: "calendar",
+  },
+  {
+    title: "New indexable pages",
+    copy: "Landing pages and articles created around real search demand, connected to the rest of your site, and submitted for indexing.",
+    kind: "pages",
+  },
+  {
+    title: "Authority backlinks",
+    copy: "Track relevant link opportunities, live placements, target URLs, anchor text, and status in one place.",
+    kind: "links",
+  },
+  {
+    title: "AI visibility tracking",
+    copy: "See whether ChatGPT, Perplexity, Gemini, and Google AI results mention your brand for important searches.",
+    kind: "ai",
+  },
 ];
 
 const FAQ = [
@@ -62,6 +63,9 @@ export default function LandingPage() {
       `}</style>
       <style>{`
         .lp-hero{padding-top:72px;padding-bottom:42px}.lp-hero-grid{grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);gap:72px}.lp-hero h1{font-size:clamp(46px,4.5vw,62px);line-height:1.03;max-width:640px}.lp-hero-copy{padding-top:10px}.lp-outcomes{display:grid;gap:9px;margin:24px 0 28px}.lp-outcome{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:650}.lp-outcome span{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#e8f8f1;color:#14966f;font-size:11px}.lp-audit-preview{background:#fff;border:1px solid ${LINE};border-radius:18px;box-shadow:0 24px 70px #18203e18;overflow:hidden}.lp-audit-bar{display:flex;align-items:center;gap:7px;padding:13px 16px;border-bottom:1px solid ${LINE};background:#fbfbfd}.lp-audit-dot{width:8px;height:8px;border-radius:50%;background:#d7d9e3}.lp-audit-url{margin-left:8px;border:1px solid ${LINE};background:#fff;border-radius:6px;padding:6px 11px;color:${MUTED};font-size:11px;flex:1}.lp-audit-body{padding:24px}.lp-audit-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.lp-audit-head h2{font-size:22px;margin:5px 0 0;letter-spacing:-.035em}.lp-score{width:64px;height:64px;border-radius:50%;border:7px solid #dddffd;border-top-color:${ACCENT};display:grid;place-items:center;font-weight:850}.lp-chart{height:120px;margin:26px 0 20px;border-left:1px solid ${LINE};border-bottom:1px solid ${LINE};position:relative;background:repeating-linear-gradient(to bottom,transparent 0,transparent 39px,#eef0f6 40px)}.lp-chart svg{position:absolute;inset:10px 8px;width:calc(100% - 16px);height:calc(100% - 20px)}.lp-audit-tasks{display:grid;gap:9px}.lp-audit-task{display:flex;justify-content:space-between;align-items:center;border-top:1px solid ${LINE};padding-top:11px;font-size:12px}.lp-audit-task span:last-child{color:#14966f;font-weight:750}.lp-proof{margin-top:56px}.lp-proof div{text-align:center;padding:18px 12px}.lp-proof div+div{padding-left:12px}.lp-proof span{display:block;margin-top:3px}@media(max-width:900px){.lp-hero-grid{grid-template-columns:1fr}.lp-hero-copy{padding-top:0}}@media(max-width:540px){.lp-audit-body{padding:18px}.lp-hero h1{font-size:43px}}
+      `}</style>
+      <style>{`
+        .landing-page{font-family:Arial,Helvetica,sans-serif}.lp-wrap{max-width:1280px}.lp-nav{height:76px;background:#fff;position:sticky;top:0;z-index:30}.lp-logo{font-size:22px}.lp-cta{border-radius:10px;box-shadow:none}.lp-ghost{border-radius:10px}.lp-hero{padding-top:88px;padding-bottom:70px}.lp-hero-grid{max-width:1220px;margin:auto}.lp-section{padding-top:92px;padding-bottom:92px}.lp-editorial-head{margin-bottom:54px}.lp-editorial-head .lp-eyebrow{color:${ACCENT};margin-bottom:24px}.lp-editorial-head h2{font-size:clamp(42px,5vw,68px);line-height:1.08;letter-spacing:-.055em;margin:0;max-width:1150px}.lp-editorial-head h2 span{color:#b5b6ba}.lp-feature-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}.lp-feature{border:1px solid #dddfe5;border-radius:18px;padding:30px 32px;min-height:470px;display:flex;flex-direction:column;background:#fff;overflow:hidden}.lp-feature:nth-child(1),.lp-feature:nth-child(2){grid-column:span 3;min-height:520px}.lp-feature:nth-child(n+3){grid-column:span 2}.lp-feature h3{font-size:22px;letter-spacing:-.03em;margin:0 0 12px}.lp-feature>p{font-size:15px;line-height:1.55;color:#74767b;margin:0;max-width:500px}.lp-feature-visual{margin-top:auto;padding-top:30px;min-height:245px;display:flex;align-items:flex-end;justify-content:center}.visual-window{width:92%;height:220px;border:1px solid #e0e2e7;border-radius:14px;background:#fafafa;box-shadow:0 12px 24px #1b22400b;overflow:hidden}.visual-window-bar{height:28px;border-bottom:1px solid #e1e3e8;display:flex;align-items:center;gap:5px;padding:0 10px}.visual-window-bar i{width:7px;height:7px;border-radius:50%;background:#d2d4d9}.visual-audit-list{padding:16px}.visual-audit-list div{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px;border-bottom:1px solid #e7e8ec;font-size:11px;color:#6f727a}.visual-audit-list b{color:${ACCENT};font-weight:700}.visual-calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:92%}.visual-day{border:1px solid #dfe1e8;border-radius:11px;padding:12px;min-height:66px;font-size:10px;color:#777b86;background:#fff}.visual-day strong{display:block;color:${INK};font-size:14px;margin-bottom:8px}.visual-day span{display:inline-block;background:#efefff;color:${ACCENT};border-radius:99px;padding:3px 6px}.visual-page{width:90%;border:1px solid #e0e2e7;border-radius:13px;padding:18px;background:#fff}.visual-page-cover{height:75px;border-radius:8px;background:linear-gradient(135deg,#ececff,#f8f8fc);margin-bottom:15px}.visual-line{height:7px;background:#e5e6ea;border-radius:5px;margin:7px 0}.visual-line.short{width:55%}.visual-links{width:100%;height:220px;position:relative}.visual-node{position:absolute;width:42px;height:42px;border:1px solid #d8daea;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:10px;font-weight:800;color:${ACCENT};z-index:2}.visual-node.main{width:58px;height:58px;left:42%;top:42%;background:${ACCENT};color:#fff}.visual-links:before,.visual-links:after{content:"";position:absolute;left:18%;right:18%;top:52%;height:1px;background:#bfc1ed;transform:rotate(18deg)}.visual-links:after{transform:rotate(-22deg)}.visual-ai{width:100%;display:grid;gap:8px}.visual-query{border:1px solid #e0e2e7;border-radius:10px;padding:12px;background:#fff;font-size:10px}.visual-query b{display:block;font-size:12px;margin-bottom:5px}.visual-query span{color:#14966f}.lp-dashboard{background:#fff;color:${INK};border-top:1px solid ${LINE};border-bottom:1px solid ${LINE}}.lp-dashboard p{color:${MUTED}}.lp-dashboard .lp-eyebrow{color:${ACCENT}}.lp-report{border:1px solid ${LINE};box-shadow:none}.lp-story{border-radius:16px}.lp-pricing{background:#fafafa}@media(max-width:900px){.lp-feature-grid{grid-template-columns:1fr}.lp-feature,.lp-feature:nth-child(1),.lp-feature:nth-child(2),.lp-feature:nth-child(n+3){grid-column:1;min-height:430px}.lp-editorial-head h2{font-size:42px}}
       `}</style>
       <nav className="lp-nav">
         <div className="lp-wrap">
@@ -188,19 +192,20 @@ export default function LandingPage() {
         <p>Measured in your Search Console against the agreed day-one baseline.</p>
       </section>
       <section id="service" className="lp-section lp-wrap">
-        <h2 className="lp-title">Everything we do for your website</h2>
-        <p className="lp-sub">
-          One SEO growth system—from repairing the foundation to proving the result.
-        </p>
-        <div className="lp-phases">
-          {PHASES.map(([n, name, tag, copy]) => (
-            <article className="lp-phase" key={n}>
-              <div>
-                <span className="lp-phase-number">{n}</span>
-                <h3>{name}</h3>
-                <span className="lp-phase-tag">{tag}</span>
+        <div className="lp-editorial-head">
+          <div className="lp-eyebrow">Platform features</div>
+          <h2>
+            A complete SEO growth system <span>— all in one place.</span>
+          </h2>
+        </div>
+        <div className="lp-feature-grid">
+          {FEATURES.map((feature) => (
+            <article className="lp-feature" key={feature.title}>
+              <h3>{feature.title}</h3>
+              <p>{feature.copy}</p>
+              <div className="lp-feature-visual">
+                <FeatureVisual kind={feature.kind} />
               </div>
-              <p>✓ {copy}</p>
             </article>
           ))}
         </div>
@@ -344,5 +349,92 @@ export default function LandingPage() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function FeatureVisual({ kind }: { kind: string }) {
+  if (kind === "audit")
+    return (
+      <div className="visual-window">
+        <div className="visual-window-bar">
+          <i />
+          <i />
+          <i />
+        </div>
+        <div className="visual-audit-list">
+          <div>
+            <span>Meta title and description</span>
+            <b>Fixed ✓</b>
+          </div>
+          <div>
+            <span>Missing structured data</span>
+            <b>Ready</b>
+          </div>
+          <div>
+            <span>Broken internal links</span>
+            <b>Fixed ✓</b>
+          </div>
+          <div>
+            <span>Pages blocked from indexing</span>
+            <b>Resolved</b>
+          </div>
+        </div>
+      </div>
+    );
+  if (kind === "calendar")
+    return (
+      <div className="visual-calendar">
+        {["Research", "Service", "Guide", "Location", "Comparison", "FAQ"].map((item, index) => (
+          <div className="visual-day" key={item}>
+            <strong>{index + 4}</strong>
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    );
+  if (kind === "pages")
+    return (
+      <div className="visual-page">
+        <div className="visual-page-cover" />
+        <strong>Your new SEO landing page</strong>
+        <div className="visual-line short" />
+        <div className="visual-line" />
+        <div className="visual-line" />
+        <div className="visual-line short" />
+      </div>
+    );
+  if (kind === "links")
+    return (
+      <div className="visual-links">
+        <span className="visual-node main">MMA</span>
+        <span className="visual-node" style={{ left: "10%", top: "18%" }}>
+          DR62
+        </span>
+        <span className="visual-node" style={{ right: "7%", top: "12%" }}>
+          DR54
+        </span>
+        <span className="visual-node" style={{ left: "16%", bottom: "8%" }}>
+          DR47
+        </span>
+        <span className="visual-node" style={{ right: "14%", bottom: "4%" }}>
+          DR71
+        </span>
+      </div>
+    );
+  return (
+    <div className="visual-ai">
+      <div className="visual-query">
+        <b>ChatGPT · best software for my team</b>
+        <span>Brand mentioned ✓</span>
+      </div>
+      <div className="visual-query">
+        <b>Perplexity · tools for organic growth</b>
+        <span>Page cited ✓</span>
+      </div>
+      <div className="visual-query">
+        <b>Google AI Overview · SEO service</b>
+        <span>Tracking visibility</span>
+      </div>
+    </div>
   );
 }
