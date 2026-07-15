@@ -60,6 +60,9 @@ export default function LandingPage() {
       <style>{`
         .lp-hero{padding-top:64px;padding-bottom:48px;text-align:left}.lp-hero-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);gap:64px;align-items:center}.lp-kicker{border:0;border-left:3px solid ${ACCENT};border-radius:0;background:transparent;padding:2px 0 2px 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.lp-hero h1{font-size:clamp(44px,5.4vw,68px);line-height:1.02;max-width:680px;margin:22px 0 20px}.lp-hero p{font-size:17px;max-width:610px;margin:0 0 28px}.lp-hero-actions{justify-content:flex-start}.lp-project{background:${NAVY};color:#fff;border-radius:8px;padding:28px;box-shadow:18px 22px 0 #efefff}.lp-project-top{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #2b3045;padding-bottom:20px;margin-bottom:6px}.lp-project-label{font-size:11px;color:#aeb4ca;text-transform:uppercase;letter-spacing:.12em}.lp-project h2{font-size:25px;letter-spacing:-.035em;margin:7px 0 0}.lp-project-price{text-align:right}.lp-project-price strong{display:block;font-size:28px}.lp-project-price span{font-size:11px;color:#aeb4ca}.lp-project-row{display:grid;grid-template-columns:72px 1fr 22px;gap:13px;align-items:center;padding:14px 0;border-bottom:1px solid #292e42}.lp-project-row:last-child{border-bottom:0}.lp-project-week{font-size:11px;color:#aeb4ca}.lp-project-row strong{font-size:14px}.lp-project-check{width:21px;height:21px;border-radius:50%;background:#263e3a;color:#67dda9;display:grid;place-items:center;font-size:11px}.lp-project-foot{margin-top:12px;background:#1b2037;border-radius:7px;padding:13px 14px;font-size:12px;color:#c8cce0;line-height:1.5}.lp-proof{max-width:none;margin:46px 0 0;border:0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};border-radius:0;box-shadow:none}.lp-proof div{padding:20px 24px 20px 0;text-align:left}.lp-proof div+div{padding-left:24px}.lp-proof strong{font-size:25px}.lp-proof span{font-size:11px}.lp-map{display:none}@media(max-width:900px){.lp-hero-grid{grid-template-columns:1fr;gap:44px}.lp-project{box-shadow:10px 12px 0 #efefff}}@media(max-width:540px){.lp-proof{grid-template-columns:1fr}.lp-proof div,.lp-proof div+div{padding:14px 0;border-left:0;border-bottom:1px solid ${LINE}}.lp-proof div:last-child{border-bottom:0}.lp-project{padding:22px}.lp-project-row{grid-template-columns:62px 1fr 22px}}
       `}</style>
+      <style>{`
+        .lp-hero{padding-top:72px;padding-bottom:42px}.lp-hero-grid{grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);gap:72px}.lp-hero h1{font-size:clamp(46px,4.5vw,62px);line-height:1.03;max-width:640px}.lp-hero-copy{padding-top:10px}.lp-outcomes{display:grid;gap:9px;margin:24px 0 28px}.lp-outcome{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:650}.lp-outcome span{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#e8f8f1;color:#14966f;font-size:11px}.lp-audit-preview{background:#fff;border:1px solid ${LINE};border-radius:18px;box-shadow:0 24px 70px #18203e18;overflow:hidden}.lp-audit-bar{display:flex;align-items:center;gap:7px;padding:13px 16px;border-bottom:1px solid ${LINE};background:#fbfbfd}.lp-audit-dot{width:8px;height:8px;border-radius:50%;background:#d7d9e3}.lp-audit-url{margin-left:8px;border:1px solid ${LINE};background:#fff;border-radius:6px;padding:6px 11px;color:${MUTED};font-size:11px;flex:1}.lp-audit-body{padding:24px}.lp-audit-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}.lp-audit-head h2{font-size:22px;margin:5px 0 0;letter-spacing:-.035em}.lp-score{width:64px;height:64px;border-radius:50%;border:7px solid #dddffd;border-top-color:${ACCENT};display:grid;place-items:center;font-weight:850}.lp-chart{height:120px;margin:26px 0 20px;border-left:1px solid ${LINE};border-bottom:1px solid ${LINE};position:relative;background:repeating-linear-gradient(to bottom,transparent 0,transparent 39px,#eef0f6 40px)}.lp-chart svg{position:absolute;inset:10px 8px;width:calc(100% - 16px);height:calc(100% - 20px)}.lp-audit-tasks{display:grid;gap:9px}.lp-audit-task{display:flex;justify-content:space-between;align-items:center;border-top:1px solid ${LINE};padding-top:11px;font-size:12px}.lp-audit-task span:last-child{color:#14966f;font-weight:750}.lp-proof{margin-top:56px}.lp-proof div{text-align:center;padding:18px 12px}.lp-proof div+div{padding-left:12px}.lp-proof span{display:block;margin-top:3px}@media(max-width:900px){.lp-hero-grid{grid-template-columns:1fr}.lp-hero-copy{padding-top:0}}@media(max-width:540px){.lp-audit-body{padding:18px}.lp-hero h1{font-size:43px}}
+      `}</style>
       <nav className="lp-nav">
         <div className="lp-wrap">
           <a className="lp-logo" href="/">
@@ -82,14 +85,24 @@ export default function LandingPage() {
       </nav>
       <header className="lp-hero lp-wrap">
         <div className="lp-hero-grid">
-          <div>
-            <span className="lp-kicker">SEO growth service · Chicago</span>
-            <h1>More pages indexed. More customers finding you.</h1>
+          <div className="lp-hero-copy">
+            <span className="lp-kicker">SEO work you can actually verify</span>
+            <h1>Turn your website into a source of steady leads.</h1>
             <p>
-              We repair technical SEO, find the searches your competitors are winning, and build the
-              pages and links your website is missing. You see every result in your own growth
-              report.
+              We fix the technical problems holding your site back, then build useful pages around
+              the searches your customers already make.
             </p>
+            <div className="lp-outcomes">
+              <div className="lp-outcome">
+                <span>✓</span>Technical SEO and indexing repaired
+              </div>
+              <div className="lp-outcome">
+                <span>✓</span>New search-focused pages published
+              </div>
+              <div className="lp-outcome">
+                <span>✓</span>Progress measured in your Search Console
+              </div>
+            </div>
             <div className="lp-hero-actions">
               <a className="lp-cta" href="/grow">
                 Get a free website audit →
@@ -99,40 +112,58 @@ export default function LandingPage() {
               </a>
             </div>
           </div>
-          <aside className="lp-project" aria-label="Your first 90 days with MentionMyApp">
-            <div className="lp-project-top">
-              <div>
-                <div className="lp-project-label">Your first 90 days</div>
-                <h2>A clear SEO work plan</h2>
+          <aside className="lp-audit-preview" aria-label="Example MentionMyApp SEO audit">
+            <div className="lp-audit-bar">
+              <span className="lp-audit-dot" />
+              <span className="lp-audit-dot" />
+              <span className="lp-audit-dot" />
+              <span className="lp-audit-url">yourwebsite.com / growth report</span>
+            </div>
+            <div className="lp-audit-body">
+              <div className="lp-audit-head">
+                <div>
+                  <div className="lp-project-label" style={{ color: MUTED }}>
+                    Organic visibility
+                  </div>
+                  <h2>Your growth, in plain numbers</h2>
+                </div>
+                <div className="lp-score">82</div>
               </div>
-              <div className="lp-project-price">
-                <strong>$49</strong>
-                <span>per month</span>
+              <div className="lp-chart">
+                <svg viewBox="0 0 420 100" preserveAspectRatio="none" aria-hidden="true">
+                  <path
+                    d="M0 88 C45 85 62 72 103 75 S165 51 205 58 S275 30 315 36 S373 12 420 17"
+                    fill="none"
+                    stroke={ACCENT}
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M0 88 C45 85 62 72 103 75 S165 51 205 58 S275 30 315 36 S373 12 420 17 L420 100 L0 100 Z"
+                    fill="#5b5bd616"
+                  />
+                </svg>
               </div>
-            </div>
-            <div className="lp-project-row">
-              <span className="lp-project-week">Week 1</span>
-              <strong>Audit and baseline</strong>
-              <span className="lp-project-check">✓</span>
-            </div>
-            <div className="lp-project-row">
-              <span className="lp-project-week">Week 2</span>
-              <strong>Technical and indexing fixes</strong>
-              <span className="lp-project-check">✓</span>
-            </div>
-            <div className="lp-project-row">
-              <span className="lp-project-week">Month 1</span>
-              <strong>Search pages and internal links</strong>
-              <span className="lp-project-check">✓</span>
-            </div>
-            <div className="lp-project-row">
-              <span className="lp-project-week">Ongoing</span>
-              <strong>Backlinks, reporting, and growth</strong>
-              <span className="lp-project-check">✓</span>
-            </div>
-            <div className="lp-project-foot">
-              No measurable organic growth after 90 days? Eligible payments are refunded under the
-              guarantee.
+              <div className="lp-audit-tasks">
+                <div className="lp-audit-task">
+                  <span>Indexed pages</span>
+                  <span>18 → 42</span>
+                </div>
+                <div className="lp-audit-task">
+                  <span>Organic clicks</span>
+                  <span>+38%</span>
+                </div>
+                <div className="lp-audit-task">
+                  <span>Backlinks verified</span>
+                  <span>18 live</span>
+                </div>
+              </div>
+              <div
+                className="lp-sub"
+                style={{ textAlign: "left", fontSize: 10, margin: "15px 0 0" }}
+              >
+                Example report layout. Customers see their own verified campaign data.
+              </div>
             </div>
           </aside>
         </div>
