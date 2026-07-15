@@ -169,6 +169,44 @@ const LANGUAGES = [
   { label: "Ukrainian", flag: "🇺🇦", audience: "33 million" },
 ];
 
+const SERVICE_SCOPE = [
+  {
+    group: "Fix",
+    blurb: "Weeks 1–2 · technical foundation",
+    items: [
+      "Technical SEO audit covering speed, mobile, crawl errors, and schema",
+      "Indexing fixes and sitemap resubmission for priority pages",
+      "On-page cleanup for titles, descriptions, headings, and internal links",
+    ],
+  },
+  {
+    group: "Build",
+    blurb: "Every month · new indexable pages",
+    items: [
+      "Keyword and competitor-gap research for your market",
+      "New SEO landing pages and articles built around real search demand",
+      "Every page interlinked, submitted for indexing, and tracked",
+    ],
+  },
+  {
+    group: "Promote",
+    blurb: "Every month · authority and visibility",
+    items: [
+      "Relevant backlink opportunities identified and built into the plan",
+      "Content structured for Google results and AI search visibility",
+    ],
+  },
+  {
+    group: "Prove",
+    blurb: "Always on · clear measurement",
+    items: [
+      "Day-one Google Search Console baseline snapshot",
+      "Monthly reporting for clicks, impressions, links, and indexed pages",
+      "Day-90 review against baseline: no measurable growth, full refund",
+    ],
+  },
+];
+
 type SeoLeadClient = {
   from: (table: "seo_leads") => {
     upsert: (
@@ -268,7 +306,7 @@ export default function SeoWizard() {
   };
 
   return (
-    <main className="seo-wizard">
+    <main className={`seo-wizard ${step === STEPS ? "checkout-step" : ""}`}>
       <style>{`
       .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(440px,1fr);grid-template-rows:72px minmax(0,1fr)}
       .seo-topbar{grid-column:1/-1;display:flex;align-items:center;padding:0 clamp(24px,4vw,64px);border-bottom:1px solid ${LINE};background:rgba(255,255,255,.94);backdrop-filter:blur(14px);z-index:10}.seo-main{padding:48px clamp(24px,7vw,92px);display:flex;flex-direction:column;justify-content:center;max-width:780px}
@@ -286,9 +324,10 @@ export default function SeoWizard() {
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .market-picker{position:relative}.market-trigger{width:100%;display:flex;align-items:center;gap:14px;border:1.5px solid ${LINE};border-radius:24px;background:#fff;padding:19px 22px;color:${INK};font-size:17px;font-weight:650;cursor:pointer;box-shadow:0 7px 20px #252b5210}.market-trigger.open{border-color:#cfcff5;border-radius:24px}.market-globe{color:${ACCENT};font-size:21px}.market-chevron{margin-left:auto;color:#8a91aa;transition:transform .2s ease}.market-trigger.open .market-chevron{transform:rotate(180deg)}.market-menu{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 10px);background:#fff;border:1px solid ${LINE};border-radius:22px;box-shadow:0 20px 48px #1a224228;overflow:hidden;animation:stepIn .2s ease}.market-search{border:0!important;border-radius:0!important;border-bottom:1px solid ${LINE}!important;box-shadow:none!important;padding:18px 22px!important}.market-options{max-height:300px;overflow:auto}.market-option{width:100%;display:flex;align-items:center;gap:13px;border:0;background:#fff;padding:15px 22px;text-align:left;color:${INK};cursor:pointer}.market-option:hover,.market-option.selected{background:#f4f3ff}.market-option.selected{color:${ACCENT};font-weight:700}.market-count{padding:11px 22px;border-top:1px solid ${LINE};font-size:12px;color:#8a91aa;background:#fbfbfd}.language-trigger{align-items:flex-start}.language-flag{font-size:22px;line-height:1}.language-copy{display:grid;gap:7px;text-align:left}.language-audience{font-size:13px;color:${ACCENT};font-weight:650}.language-menu{top:calc(100% + 10px)}.language-option{font-size:15px}.language-option .language-flag{font-size:20px}.baseline-select-wrap{position:relative}.baseline-select{appearance:none!important;border-radius:999px!important;padding:16px 46px 16px 20px!important;background:#fff!important;box-shadow:0 6px 18px #252b520d}.baseline-select-wrap:after{content:"⌄";position:absolute;right:19px;top:50%;transform:translateY(-56%);color:#7f869f;font-size:18px;pointer-events:none}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
+      .checkout-step .seo-main{grid-column:1/-1;max-width:1240px;width:100%;margin:0 auto;padding-top:38px;padding-bottom:54px;box-sizing:border-box}.checkout-step .seo-proof{display:none}.checkout-step .seo-progress{margin-bottom:14px}.checkout-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr);gap:26px;align-items:start}.checkout-intro{margin-bottom:24px}.checkout-intro h1{font-size:clamp(32px,4vw,48px);line-height:1.08;letter-spacing:-.035em;margin:0 0 10px}.checkout-intro p{margin:0;color:${MUTED};font-size:16px;line-height:1.6}.scope-list{display:grid;gap:11px}.scope-card{background:${PANEL};border:1px solid #eceef6;border-radius:20px;padding:17px 20px}.scope-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.scope-number{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:${ACCENT};color:#fff;font-size:12px;font-weight:850}.scope-name{font-weight:850}.scope-blurb{font-size:12px;color:#7d849d}.scope-card ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}.scope-card li{display:flex;gap:9px;font-size:13.5px;line-height:1.45}.scope-check{color:#119b69;font-weight:900}.checkout-panel{position:sticky;top:96px;display:grid;gap:14px}.checkout-guarantee{background:${INK};color:#fff;border-radius:24px;padding:26px;box-shadow:0 24px 60px #0b102032}.checkout-guarantee-kicker{font-size:11.5px;font-weight:850;letter-spacing:.15em;color:#a9aaf7}.checkout-guarantee h2{font-size:21px;line-height:1.35;margin:10px 0}.checkout-guarantee p{font-size:13px;line-height:1.55;color:#bec3d1;margin:0}.checkout-price{display:flex;align-items:baseline;gap:9px;border-top:1px solid #2b3042;margin-top:17px;padding-top:15px}.checkout-price strong{font-size:38px}.checkout-price span{font-size:13px;color:#bec3d1}.checkout-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-field label{display:block;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};margin-bottom:7px}.checkout-actions{display:flex;gap:10px}.checkout-actions .back{width:70px;flex:0 0 70px;background:${PANEL};color:${INK}}.checkout-actions .primary{flex:1;background:linear-gradient(135deg,${ACCENT},#4545c1);color:#fff;box-shadow:0 12px 26px #5b5bd638}.checkout-hint{text-align:center;color:${MUTED};font-size:12px}.checkout-alt{border:0;background:transparent;color:${ACCENT};font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
       @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
-      @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col{grid-template-columns:1fr}}
+      @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col,.checkout-layout{grid-template-columns:1fr}.checkout-step .seo-main{padding:28px 22px 44px}.checkout-panel{position:static}.checkout-fields{grid-template-columns:1fr}}
     `}</style>
       <header className="seo-topbar">
         <div className="seo-brand" aria-label="MentionMyApp">
@@ -465,85 +504,125 @@ export default function SeoWizard() {
               </Shell>
             )}
             {step === 6 && (
-              <Shell
-                title="Start with a free growth audit"
-                sub="We'll review your technical SEO, indexing, content gaps, and opportunities before recommending a plan."
-              >
-                <div className="guarantee">
-                  <div
-                    style={{ fontSize: 12, fontWeight: 800, letterSpacing: ".14em", color: ACCENT }}
-                  >
-                    THE 90-DAY GUARANTEE
-                  </div>
-                  <h2 style={{ fontSize: 23, lineHeight: 1.35, margin: "12px 0" }}>
-                    No measurable SEO growth in 90 days? Get every dollar back.
-                  </h2>
-                  <p style={{ fontSize: 14, color: "#c2c5cc", lineHeight: 1.6, margin: 0 }}>
-                    Measured in your Google Search Console against the day-one baseline. Final scope
-                    and eligibility are confirmed after the audit.
+              <div className="step-card">
+                <div className="checkout-intro">
+                  <h1>Everything we do — and the guarantee behind it</h1>
+                  <p>
+                    One complete SEO growth system with clear deliverables and no surprise add-ons.
                   </p>
-                  <ul style={{ paddingLeft: 20, lineHeight: 1.8, fontSize: 14 }}>
-                    <li>Technical SEO and indexing fixes</li>
-                    <li>Search-demand and competitor gap analysis</li>
-                    <li>New SEO landing-page plan</li>
-                    <li>Monthly Search Console reporting</li>
-                  </ul>
                 </div>
-                <Spacer />
-                <Label>Your name</Label>
-                <input
-                  aria-label="Your name"
-                  placeholder="Your name"
-                  autoComplete="name"
-                  value={lead.name}
-                  onChange={(e) => set("name", e.target.value)}
-                />
-                <Spacer />
-                <Label>Work email</Label>
-                <input
-                  aria-label="Work email"
-                  placeholder="you@company.com"
-                  type="email"
-                  autoComplete="email"
-                  value={lead.email}
-                  onChange={(e) => set("email", e.target.value)}
-                />
-              </Shell>
+                <div className="checkout-layout">
+                  <div className="scope-list">
+                    {SERVICE_SCOPE.map((section, index) => (
+                      <article className="scope-card" key={section.group}>
+                        <div className="scope-head">
+                          <span className="scope-number">{index + 1}</span>
+                          <span className="scope-name">{section.group}</span>
+                          <span className="scope-blurb">{section.blurb}</span>
+                        </div>
+                        <ul>
+                          {section.items.map((item) => (
+                            <li key={item}>
+                              <span className="scope-check">✓</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </article>
+                    ))}
+                  </div>
+                  <div className="checkout-panel">
+                    <div className="checkout-guarantee">
+                      <div className="checkout-guarantee-kicker">THE 90-DAY GUARANTEE</div>
+                      <h2>No measurable organic growth in 90 days? Get every dollar back.</h2>
+                      <p>
+                        Measured in your Google Search Console against the agreed day-one baseline.
+                        Final scope and eligibility are confirmed after your audit.
+                      </p>
+                      <div className="checkout-price">
+                        <strong>$499</strong>
+                        <span>/month · cancel anytime</span>
+                      </div>
+                    </div>
+                    <div className="checkout-fields">
+                      <div className="checkout-field">
+                        <label htmlFor="checkout-name">Your name</label>
+                        <input
+                          id="checkout-name"
+                          placeholder="Your name"
+                          autoComplete="name"
+                          value={lead.name}
+                          onChange={(e) => set("name", e.target.value)}
+                        />
+                      </div>
+                      <div className="checkout-field">
+                        <label htmlFor="checkout-email">Work email</label>
+                        <input
+                          id="checkout-email"
+                          placeholder="you@company.com"
+                          type="email"
+                          autoComplete="email"
+                          value={lead.email}
+                          onChange={(e) => set("email", e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="checkout-actions">
+                      <button
+                        className="seo-btn back"
+                        onClick={() => setStep(5)}
+                        aria-label="Back to previous step"
+                      >
+                        ←
+                      </button>
+                      <button
+                        className="seo-btn primary"
+                        disabled={!canContinue || saving}
+                        onClick={submit}
+                      >
+                        {saving ? "Preparing checkout…" : "Continue to secure checkout →"}
+                      </button>
+                    </div>
+                    {!canContinue && (
+                      <div className="checkout-hint">
+                        Enter your name and work email to continue
+                      </div>
+                    )}
+                    <div className="checkout-hint">
+                      🔒 Secure checkout powered by Stripe · Baseline confirmed before the guarantee
+                      period begins
+                    </div>
+                    <button
+                      className="checkout-alt"
+                      disabled={!canContinue || saving}
+                      onClick={submitSecondary}
+                    >
+                      Use alternate Stripe checkout
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
-            <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
-              {step > 1 && (
+            {step < STEPS && (
+              <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
+                {step > 1 && (
+                  <button
+                    className="seo-btn"
+                    onClick={() => setStep((s) => Math.max(1, s - 1))}
+                    style={{ background: PANEL, color: INK, width: 92 }}
+                  >
+                    ←
+                  </button>
+                )}
                 <button
                   className="seo-btn"
-                  onClick={() => setStep((s) => Math.max(1, s - 1))}
-                  style={{ background: PANEL, color: INK, width: 92 }}
-                >
-                  ←
-                </button>
-              )}
-              <button
-                className="seo-btn"
-                disabled={!canContinue || saving}
-                onClick={step === STEPS ? submit : next}
-                style={{ background: step === STEPS ? ACCENT : INK, color: "#fff", flex: 1 }}
-              >
-                {saving
-                  ? "Preparing checkout…"
-                  : step === STEPS
-                    ? "Continue to secure checkout →"
-                    : "Continue →"}
-              </button>
-            </div>
-            {step === STEPS && (
-              <>
-                <button
-                  className="seo-btn secondary-checkout"
                   disabled={!canContinue || saving}
-                  onClick={submitSecondary}
+                  onClick={next}
+                  style={{ background: INK, color: "#fff", flex: 1 }}
                 >
-                  Use alternate Stripe checkout →
+                  {saving ? "Saving…" : "Continue →"}
                 </button>
-                <div className="checkout-note">🔒 Secure payments powered by Stripe</div>
-              </>
+              </div>
             )}
           </>
         ) : (
