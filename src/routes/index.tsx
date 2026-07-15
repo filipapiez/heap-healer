@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "We fix technical SEO and build indexable pages around real search demand. If indexed pages and organic clicks do not grow in 90 days, you do not pay.",
+          "We fix technical SEO and build indexable pages around real search demand. No measurable SEO growth in 90 days? Get every dollar back.",
       },
       { property: "og:title", content: "Fix your SEO — measurable growth in 90 days" },
       {

@@ -118,6 +118,7 @@ export default function SeoWizard() {
       .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.55;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:190px;height:190px;background:#ffd9c4;right:-55px;top:-45px}.seo-orb.two{width:120px;height:120px;background:#dedcff;left:-35px;bottom:12%;animation-delay:-3s}
       .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:42px}.proof-grid>div+div{border-left:1px solid ${LINE}}
       .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}
+      .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #f3c9b3;background:#fff8f4;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #e8590c30}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
       @media(max-width:860px){.seo-wizard{grid-template-columns:1fr}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:100vh}.two-col{grid-template-columns:1fr}}
@@ -160,6 +161,15 @@ export default function SeoWizard() {
                   onChange={(e) => set("website", e.target.value)}
                   autoFocus
                 />
+                <div className="money-back">
+                  <span className="money-back-icon" aria-hidden="true">
+                    ✓
+                  </span>
+                  <span>
+                    <strong>90-day money-back guarantee</strong>No measurable SEO growth in 90 days?
+                    Get every dollar back.
+                  </span>
+                </div>
               </Shell>
             )}
             {step === 2 && (
@@ -314,8 +324,7 @@ export default function SeoWizard() {
                     THE 90-DAY GUARANTEE
                   </div>
                   <h2 style={{ fontSize: 23, lineHeight: 1.35, margin: "12px 0" }}>
-                    If your indexed pages and organic clicks haven't grown after 90 days, you don't
-                    pay.
+                    No measurable SEO growth in 90 days? Get every dollar back.
                   </h2>
                   <p style={{ fontSize: 14, color: "#c2c5cc", lineHeight: 1.6, margin: 0 }}>
                     Measured in your Google Search Console against the day-one baseline. Final scope
