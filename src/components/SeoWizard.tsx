@@ -413,8 +413,8 @@ export default function SeoWizard() {
             <div className="metric-icon">
               <TrendIcon />
             </div>
-            <div className="metric-value">Backlinks</div>
-            <div className="metric-label">Built for authority</div>
+            <div className="metric-value">35,000</div>
+            <div className="metric-label">Companies</div>
           </div>
           <div>
             <div className="metric-icon">
