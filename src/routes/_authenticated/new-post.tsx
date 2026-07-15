@@ -8,6 +8,27 @@ import { listAccounts } from "@/lib/accounts.functions";
 import { createPost } from "@/lib/posts.functions";
 import { PostPreview } from "@/components/PostPreview";
 
+const PLATFORM_LIMITS: Record<string, number> = {
+  threads: 500,
+  twitter: 280,
+  x: 280,
+  bluesky: 300,
+  tiktok: 2200,
+  instagram: 2200,
+  youtube: 5000,
+  linkedin: 3000,
+  facebook: 63206,
+  meta: 63206,
+  pinterest: 500,
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+  threads: "Threads", twitter: "X", x: "X", bluesky: "Bluesky",
+  tiktok: "TikTok", instagram: "Instagram", youtube: "YouTube",
+  linkedin: "LinkedIn", facebook: "Facebook", meta: "Facebook",
+  pinterest: "Pinterest",
+};
+
 export const Route = createFileRoute("/_authenticated/new-post")({
   head: () => ({ meta: [{ title: "New post — MentionMyApp" }] }),
   component: NewPostPage,
@@ -51,6 +72,17 @@ function NewPostPage() {
     }
     return Array.from(set);
   }, [selectedAccounts, connected]);
+
+  const overLimits = useMemo(() => {
+    return previewPlatforms
+      .map((p) => {
+        const limit = PLATFORM_LIMITS[p];
+        const text = (overrides[p]?.caption?.trim() || caption) ?? "";
+        if (!limit || text.length <= limit) return null;
+        return { platform: p, limit, length: text.length };
+      })
+      .filter((x): x is { platform: string; limit: number; length: number } => x !== null);
+  }, [previewPlatforms, caption, overrides]);
 
   const previewAccount = useMemo(() => {
     const first = connected.find((a) => selectedAccounts.includes(a.id));
@@ -109,6 +141,19 @@ function NewPostPage() {
           maxLength={4000}
         />
         <div className="mt-1 text-right text-xs text-[var(--color-ink-700)]/50">{caption.length}/4000</div>
+        {overLimits.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {overLimits.map((o) => (
+              <div
+                key={o.platform}
+                className="rounded-md bg-amber-50 px-3 py-1.5 text-xs text-amber-800"
+              >
+                Too long for {PLATFORM_LABELS[o.platform] ?? o.platform} — {o.length}/{o.limit} characters. Shorten the caption
+                {" "}or add a per-platform override below.
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="card mb-4 p-4">
