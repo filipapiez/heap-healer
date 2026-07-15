@@ -104,25 +104,24 @@ function buildDots(): { base: Dot[]; cluster: Dot[]; satellites: Dot[] } {
 
     base.push({ x, y, r: 1.25, o: 1 });
 
-    // density boost near nodes: extra jittered micro-dots, falloff
-    const extra = best < 12 ? 4 : best < 22 ? 3 : best < 34 ? 2 : best < 46 ? 1 : 0;
+    // A restrained density lift keeps the geography readable.
+    const extra = best < 14 ? 2 : best < 27 ? 1 : 0;
     for (let k = 1; k <= extra; k++) {
-      // spread: 2.4-4.4 cells out, so clusters read as scatter, not doubled dots
-      const spread = CELL * (2.4 + Math.abs(jit(i, k + 21)) * 2.0);
+      const spread = CELL * (0.7 + Math.abs(jit(i, k + 21)) * 0.9);
       const ang = jit(i, k + 33) * Math.PI * 2;
       cluster.push({
         x: x + Math.cos(ang) * spread,
         y: y + Math.sin(ang) * spread,
-        r: 0.8 + Math.abs(jit(i, k + 47)) * 0.5,
-        o: 0.85 - k * 0.13,
+        r: 0.65 + Math.abs(jit(i, k + 47)) * 0.35,
+        o: 0.48 - k * 0.08,
       });
     }
 
     // accent satellites: a few land dots closest to each node
     const used = satCount.get(bestNode) ?? 0;
-    if (best < 26 && used < 5 && i % 2 === 0) {
+    if (best < 22 && used < 3 && i % 3 === 0) {
       satCount.set(bestNode, used + 1);
-      satellites.push({ x, y, r: 1.9, o: 0.85, accent: true });
+      satellites.push({ x, y, r: 1.55, o: 0.7, accent: true });
     }
   });
 
@@ -166,27 +165,33 @@ export default function WorldMap({
   const { base, cluster, satellites } = useMemo(buildDots, []);
   const hq = useMemo(() => project(HQ), []);
   const dests = useMemo(() => DESTS.map(project), []);
-  const arcs = useMemo(() => dests.map((d, i) => ({ d: arcPath(hq, d), i, dest: d })), [hq, dests]);
+  const arcs = useMemo(
+    () =>
+      dests
+        .filter((_, index) => [0, 3, 5, 7, 9, 11, 14, 17, 19, 20].includes(index))
+        .map((d, i) => ({ d: arcPath(hq, d), i, dest: d })),
+    [hq, dests],
+  );
 
   return (
     <div style={{ width: "100%", maxHeight: height, lineHeight: 0 }} aria-hidden>
       <style>{`
         @keyframes wmDrawArc {
           0%   { stroke-dashoffset: 340; opacity: 0; }
-          8%   { opacity: 0.85; }
-          45%  { stroke-dashoffset: 0; opacity: 0.85; }
+          8%   { opacity: 0.55; }
+          45%  { stroke-dashoffset: 0; opacity: 0.55; }
           62%  { opacity: 0; }
           100% { stroke-dashoffset: 0; opacity: 0; }
         }
         @keyframes wmPulse {
           0%   { transform: scale(0.4); opacity: 0.85; }
-          100% { transform: scale(2.8); opacity: 0; }
+          100% { transform: scale(2.1); opacity: 0; }
         }
         @keyframes wmDestPing {
           0%, 38% { transform: scale(0); opacity: 0; }
-          46%  { transform: scale(1); opacity: 0.9; }
-          70%  { transform: scale(2.4); opacity: 0; }
-          100% { transform: scale(2.4); opacity: 0; }
+          46%  { transform: scale(1); opacity: 0.65; }
+          70%  { transform: scale(1.8); opacity: 0; }
+          100% { transform: scale(1.8); opacity: 0; }
         }
         @keyframes wmHqGlow { 50% { opacity: 0.9; } }
         @keyframes wmSat { 50% { opacity: 0.35; } }
@@ -246,7 +251,7 @@ export default function WorldMap({
         </g>
 
         {/* Arcs from HQ */}
-        <g fill="none" stroke="url(#wmArcGrad)" strokeWidth="1.3" strokeLinecap="round">
+        <g fill="none" stroke="url(#wmArcGrad)" strokeWidth="0.85" strokeLinecap="round">
           {arcs.map(({ d, i, dest }) => {
             const delay = (i * (CYCLE / arcs.length)).toFixed(2);
             return (
@@ -258,7 +263,7 @@ export default function WorldMap({
                 />
                 {animate && (
                   <>
-                    <circle r="2.4" fill={accent} opacity="0">
+                    <circle r="1.8" fill={accent} opacity="0">
                       <animateMotion
                         dur={`${CYCLE}s`}
                         repeatCount="indefinite"
@@ -281,10 +286,10 @@ export default function WorldMap({
                       className="wm-ping"
                       cx={dest[0]}
                       cy={dest[1]}
-                      r={6}
+                      r={4.5}
                       fill="none"
                       stroke={accent}
-                      strokeWidth="1.2"
+                      strokeWidth="0.9"
                       style={{ animationDelay: `${delay}s` }}
                     />
                   </>
@@ -298,10 +303,10 @@ export default function WorldMap({
         <g>
           {dests.map(([x, y], i) => (
             <g key={i}>
-              <circle cx={x} cy={y} r={7} fill="url(#wmGlow)" />
-              <circle cx={x} cy={y} r={4.5} fill={accent} opacity="0.22" />
-              <circle cx={x} cy={y} r={2.4} fill={accent} />
-              <circle cx={x} cy={y} r={1} fill="#fff" />
+              <circle cx={x} cy={y} r={5.5} fill="url(#wmGlow)" />
+              <circle cx={x} cy={y} r={3.4} fill={accent} opacity="0.18" />
+              <circle cx={x} cy={y} r={1.9} fill={accent} />
+              <circle cx={x} cy={y} r={0.75} fill="#fff" />
             </g>
           ))}
         </g>
@@ -311,7 +316,7 @@ export default function WorldMap({
           <circle
             cx={hq[0]}
             cy={hq[1]}
-            r={26}
+            r={20}
             fill="url(#wmGlow)"
             className={animate ? "wm-hqglow" : undefined}
           />

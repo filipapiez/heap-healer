@@ -524,8 +524,8 @@ export default function SeoWizard() {
         <WorldMap
           hqLabel="MentionMyApp"
           accent={ACCENT}
-          dot="#aaa6d9"
-          dotOpacity={0.58}
+          dot="#747a91"
+          dotOpacity={0.72}
           height={420}
         />
         <div className="review-pill" aria-label="4.9 out of 5 from more than 12,000 reviews">
