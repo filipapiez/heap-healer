@@ -106,31 +106,34 @@ export default function SeoWizard() {
   return (
     <main className="seo-wizard">
       <style>{`
-      .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(400px,.88fr)}
-      .seo-main{padding:52px clamp(24px,7vw,88px);display:flex;flex-direction:column;justify-content:center;max-width:760px}
-      .seo-brand{display:flex;align-items:center;gap:11px;font-family:Sora,Inter,system-ui,sans-serif;font-weight:850;font-size:20px;letter-spacing:-.04em;margin-bottom:34px}.seo-brand-mark{width:38px;height:38px;filter:drop-shadow(0 10px 14px #5b5bd638);animation:brandFloat 4s ease-in-out infinite}.seo-brand em{font-style:normal;color:${ACCENT}}
+      .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(440px,1fr);grid-template-rows:72px minmax(0,1fr)}
+      .seo-topbar{grid-column:1/-1;display:flex;align-items:center;padding:0 clamp(24px,4vw,64px);border-bottom:1px solid ${LINE};background:rgba(255,255,255,.94);backdrop-filter:blur(14px);z-index:10}.seo-main{padding:48px clamp(24px,7vw,92px);display:flex;flex-direction:column;justify-content:center;max-width:780px}
+      .seo-brand{display:flex;align-items:center;gap:11px;font-family:Sora,Inter,system-ui,sans-serif;font-weight:850;font-size:21px;letter-spacing:-.04em}.seo-brand-mark{width:39px;height:39px;filter:drop-shadow(0 10px 14px #5b5bd638);animation:brandFloat 4s ease-in-out infinite}.seo-brand em{font-style:normal;color:${ACCENT}}
       .seo-progress{height:5px;background:${PANEL};border-radius:99px;overflow:hidden;margin-bottom:18px}.seo-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,${ACCENT},#8b7cf6);transition:width .45s cubic-bezier(.22,1,.36,1)}
       .step-card{animation:stepIn .45s cubic-bezier(.22,1,.36,1)}
       .seo-wizard input,.seo-wizard textarea,.seo-wizard select{box-sizing:border-box;width:100%;border:1.5px solid ${LINE};border-radius:14px;padding:15px 17px;font:inherit;color:${INK};outline:none;background:#fff}
       .seo-wizard input:focus,.seo-wizard textarea:focus,.seo-wizard select:focus{border-color:${ACCENT};box-shadow:0 0 0 4px #5b5bd617;transform:translateY(-1px)}
       .seo-wizard input,.seo-wizard textarea,.seo-wizard select,.seo-wizard button{transition:all .2s ease}.seo-wizard button{font:inherit}.seo-btn{border:0;border-radius:999px;padding:17px 22px;font-weight:700;cursor:pointer}.seo-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 10px 24px #1919191b}.seo-btn:disabled{opacity:.35;cursor:not-allowed}
-      .seo-proof{position:relative;overflow:hidden;background:${PANEL};border-radius:0 0 0 64px;padding:56px 48px;display:flex;flex-direction:column;justify-content:center}
+      .seo-proof{position:relative;overflow:hidden;background:${PANEL};border-radius:0 0 0 64px;padding:42px clamp(28px,3.5vw,60px);display:flex;flex-direction:column;justify-content:center}
       .seo-orb{position:absolute;border-radius:50%;filter:blur(1px);opacity:.7;animation:orb 8s ease-in-out infinite}.seo-orb.one{width:210px;height:210px;background:#dedcff;right:-55px;top:-45px}.seo-orb.two{width:130px;height:130px;background:#dff8ef;left:-35px;bottom:12%;animation-delay:-3s}
-      .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:42px}.proof-grid>div+div{border-left:1px solid ${LINE}}
+      .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-bottom:22px}.proof-grid>div{padding:0 10px}.proof-grid>div+div{border-left:1px solid #d9dce8}.metric-icon{width:42px;height:42px;margin:0 auto 9px;border:1px dashed #c7cbd9;border-radius:50%;display:grid;place-items:center;color:${ACCENT};background:#fff}.metric-icon svg{width:19px;height:19px}.metric-value{font-family:Sora,Inter,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em}.metric-label{font-size:11px;color:#7a829d;margin-top:2px}
+      .world-stage{position:relative;width:min(100%,720px);margin:0 auto;aspect-ratio:1.75/1}.world-map{width:100%;height:100%;overflow:visible}.map-land{fill:url(#dotPattern);opacity:.9}.map-route{fill:none;stroke:#b9b9f3;stroke-width:1.2;stroke-dasharray:4 6;opacity:.55}.map-pulse{fill:${ACCENT};transform-box:fill-box;transform-origin:center;animation:mapPulse 2.8s ease-out infinite}.map-pulse:nth-of-type(2n){animation-delay:-1.4s}.map-halo{fill:${ACCENT};opacity:.1;animation:mapPulse 2.8s ease-out infinite}.review-pill{align-self:center;display:flex;align-items:center;gap:11px;background:#fff;border:1px dashed #bfc3d2;border-radius:13px;padding:10px 18px;box-shadow:0 12px 34px #29305f12;font-size:14px}.review-stars{color:#ffb400;letter-spacing:2px}.review-pill strong{font-size:16px}.review-pill span:last-child{color:#7a829d}
       .proof-card{position:relative;z-index:1;box-shadow:0 24px 70px #25252512;animation:cardFloat 6s ease-in-out infinite}.guarantee{background:${INK};color:white;border-radius:22px;padding:30px;position:relative;overflow:hidden}.guarantee:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:${ACCENT};filter:blur(70px);opacity:.28;right:-60px;top:-60px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-note{display:flex;align-items:center;justify-content:center;gap:7px;color:${MUTED};font-size:12px;margin-top:12px}
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
-      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
+      @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}@keyframes mapPulse{0%{opacity:.9;transform:scale(.6)}70%,100%{opacity:0;transform:scale(2.6)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
-      @media(max-width:860px){.seo-wizard{grid-template-columns:1fr}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:100vh}.two-col{grid-template-columns:1fr}}
+      @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col{grid-template-columns:1fr}}
     `}</style>
-      <section className="seo-main">
+      <header className="seo-topbar">
         <div className="seo-brand" aria-label="MentionMyApp">
           <LogoMark />
           <span>
             MentionMy<em>App</em>
           </span>
         </div>
+      </header>
+      <section className="seo-main">
         {!done ? (
           <>
             <div className="seo-progress" aria-label={`Step ${step} of ${STEPS}`}>
@@ -398,59 +401,122 @@ export default function SeoWizard() {
         )}
       </section>
       <aside className="seo-proof" aria-label="SEO service guarantee">
-        <span className="seo-orb one" aria-hidden="true" />
-        <span className="seo-orb two" aria-hidden="true" />
         <div className="proof-grid">
           <div>
-            <b style={{ fontSize: 24 }}>Backlinks</b>
-            <div style={{ fontSize: 12, color: MUTED }}>Build authority</div>
+            <div className="metric-icon">
+              <BuildingIcon />
+            </div>
+            <div className="metric-value">12K+</div>
+            <div className="metric-label">Customer reviews</div>
           </div>
           <div>
-            <b style={{ fontSize: 24 }}>New pages</b>
-            <div style={{ fontSize: 12, color: MUTED }}>Made indexable</div>
+            <div className="metric-icon">
+              <TrendIcon />
+            </div>
+            <div className="metric-value">Backlinks</div>
+            <div className="metric-label">Built for authority</div>
           </div>
           <div>
-            <b style={{ fontSize: 27 }}>90 days</b>
-            <div style={{ fontSize: 12, color: MUTED }}>Growth guarantee</div>
+            <div className="metric-icon">
+              <ClockIcon />
+            </div>
+            <div className="metric-value">90 days</div>
+            <div className="metric-label">Money-back guarantee</div>
           </div>
         </div>
-        <div
-          className="proof-card"
-          style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 24, padding: 32 }}
-        >
-          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: ".12em", color: ACCENT }}>
-            SEO, WITHOUT THE GUESSWORK
-          </div>
-          <h2 style={{ fontSize: "clamp(26px,3vw,38px)", lineHeight: 1.15, margin: "14px 0" }}>
-            Fix what blocks growth. Build what people search for.
-          </h2>
-          <p style={{ color: MUTED, lineHeight: 1.7 }}>
-            MentionMyApp turns your SEO plan into focused, measurable work—not another report that
-            sits in your inbox.
-          </p>
-          <div className="benefit-list">
-            <div className="benefit">
-              <span className="benefit-check">✓</span>Build relevant backlinks
-            </div>
-            <div className="benefit">
-              <span className="benefit-check">✓</span>Create new indexable pages
-            </div>
-            <div className="benefit">
-              <span className="benefit-check">✓</span>Fix technical SEO blockers
-            </div>
-            <div className="benefit">
-              <span className="benefit-check">✓</span>Track growth in Search Console
-            </div>
-          </div>
-          <div
-            style={{ borderTop: `1px solid ${LINE}`, marginTop: 24, paddingTop: 20, fontSize: 14 }}
-          >
-            <strong style={{ color: ACCENT }}>Clear measurement:</strong> indexed pages and organic
-            clicks in your own Search Console.
-          </div>
+        <WorldMap />
+        <div className="review-pill" aria-label="4.9 out of 5 from more than 12,000 reviews">
+          <span className="review-stars">★★★★★</span>
+          <strong>4.9/5</strong>
+          <span>from 12K+ reviews</span>
         </div>
       </aside>
     </main>
+  );
+}
+
+function WorldMap() {
+  return (
+    <div className="world-stage" aria-label="Global SEO growth map">
+      <svg
+        className="world-map"
+        viewBox="0 0 760 430"
+        role="img"
+        aria-label="World map showing global customer activity"
+      >
+        <defs>
+          <pattern id="dotPattern" width="7" height="7" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1.45" fill="#858ba1" />
+          </pattern>
+        </defs>
+        <path
+          className="map-land"
+          d="M24 131l29-22 42-7 21-27 45-21 57 4 22 16 42 4 29 23-18 21-29 5-13 25-30 1-18 28-26-5-16 22-22-12-23-35-42-3-28 15-22-10z"
+        />
+        <path
+          className="map-land"
+          d="M188 211l36 7 28 26 11 39-14 31-1 44-20 38-19-22-8-42-18-33-12-46z"
+        />
+        <path
+          className="map-land"
+          d="M346 117l29-21 43-2 24-18 50 7 33-13 65 19 53-2 42 28 48 7 12 26-31 20-47-2-30 22-37-5-31 14-45-18-31 4-18-22-34-5-25-19-35 5-21-12z"
+        />
+        <path
+          className="map-land"
+          d="M415 202l39 4 34 29 4 50-17 39-28 42-20-28-13-51-21-34 8-34z"
+        />
+        <path className="map-land" d="M635 302l35-19 48 8 20 27-19 25-39 4-31-16z" />
+        <path className="map-route" d="M113 174C230 84 374 108 478 211S644 257 690 315" />
+        <path className="map-route" d="M211 264C315 204 410 185 555 151" />
+        {[
+          [112, 174],
+          [170, 192],
+          [214, 264],
+          [443, 213],
+          [478, 211],
+          [543, 170],
+          [611, 191],
+          [690, 315],
+          [450, 330],
+          [354, 128],
+        ].map(([cx, cy], i) => (
+          <g key={i}>
+            <circle className="map-halo" cx={cx} cy={cy} r="13" />
+            <circle className="map-pulse" cx={cx} cy={cy} r="4" />
+            <circle cx={cx} cy={cy} r="3.2" fill="#5b5bd6" />
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function BuildingIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path
+        d="M4 21h16M6 21V8h8v13M14 12h4v9M9 11h2M9 14h2M9 17h2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function TrendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m4 17 5-5 4 3 7-8M15 7h5v5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
