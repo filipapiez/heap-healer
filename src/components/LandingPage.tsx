@@ -67,6 +67,9 @@ export default function LandingPage() {
       <style>{`
         .landing-page{font-family:Arial,Helvetica,sans-serif}.lp-wrap{max-width:1280px}.lp-nav{height:76px;background:#fff;position:sticky;top:0;z-index:30}.lp-logo{font-size:22px}.lp-cta{border-radius:10px;box-shadow:none}.lp-ghost{border-radius:10px}.lp-hero{padding-top:88px;padding-bottom:70px}.lp-hero-grid{max-width:1220px;margin:auto}.lp-section{padding-top:92px;padding-bottom:92px}.lp-editorial-head{margin-bottom:54px}.lp-editorial-head .lp-eyebrow{color:${ACCENT};margin-bottom:24px}.lp-editorial-head h2{font-size:clamp(42px,5vw,68px);line-height:1.08;letter-spacing:-.055em;margin:0;max-width:1150px}.lp-editorial-head h2 span{color:#b5b6ba}.lp-feature-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}.lp-feature{border:1px solid #dddfe5;border-radius:18px;padding:30px 32px;min-height:470px;display:flex;flex-direction:column;background:#fff;overflow:hidden}.lp-feature:nth-child(1),.lp-feature:nth-child(2){grid-column:span 3;min-height:520px}.lp-feature:nth-child(n+3){grid-column:span 2}.lp-feature h3{font-size:22px;letter-spacing:-.03em;margin:0 0 12px}.lp-feature>p{font-size:15px;line-height:1.55;color:#74767b;margin:0;max-width:500px}.lp-feature-visual{margin-top:auto;padding-top:30px;min-height:245px;display:flex;align-items:flex-end;justify-content:center}.visual-window{width:92%;height:220px;border:1px solid #e0e2e7;border-radius:14px;background:#fafafa;box-shadow:0 12px 24px #1b22400b;overflow:hidden}.visual-window-bar{height:28px;border-bottom:1px solid #e1e3e8;display:flex;align-items:center;gap:5px;padding:0 10px}.visual-window-bar i{width:7px;height:7px;border-radius:50%;background:#d2d4d9}.visual-audit-list{padding:16px}.visual-audit-list div{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px;border-bottom:1px solid #e7e8ec;font-size:11px;color:#6f727a}.visual-audit-list b{color:${ACCENT};font-weight:700}.visual-calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:92%}.visual-day{border:1px solid #dfe1e8;border-radius:11px;padding:12px;min-height:66px;font-size:10px;color:#777b86;background:#fff}.visual-day strong{display:block;color:${INK};font-size:14px;margin-bottom:8px}.visual-day span{display:inline-block;background:#efefff;color:${ACCENT};border-radius:99px;padding:3px 6px}.visual-page{width:90%;border:1px solid #e0e2e7;border-radius:13px;padding:18px;background:#fff}.visual-page-cover{height:75px;border-radius:8px;background:linear-gradient(135deg,#ececff,#f8f8fc);margin-bottom:15px}.visual-line{height:7px;background:#e5e6ea;border-radius:5px;margin:7px 0}.visual-line.short{width:55%}.visual-links{width:100%;height:220px;position:relative}.visual-node{position:absolute;width:42px;height:42px;border:1px solid #d8daea;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:10px;font-weight:800;color:${ACCENT};z-index:2}.visual-node.main{width:58px;height:58px;left:42%;top:42%;background:${ACCENT};color:#fff}.visual-links:before,.visual-links:after{content:"";position:absolute;left:18%;right:18%;top:52%;height:1px;background:#bfc1ed;transform:rotate(18deg)}.visual-links:after{transform:rotate(-22deg)}.visual-ai{width:100%;display:grid;gap:8px}.visual-query{border:1px solid #e0e2e7;border-radius:10px;padding:12px;background:#fff;font-size:10px}.visual-query b{display:block;font-size:12px;margin-bottom:5px}.visual-query span{color:#14966f}.lp-dashboard{background:#fff;color:${INK};border-top:1px solid ${LINE};border-bottom:1px solid ${LINE}}.lp-dashboard p{color:${MUTED}}.lp-dashboard .lp-eyebrow{color:${ACCENT}}.lp-report{border:1px solid ${LINE};box-shadow:none}.lp-story{border-radius:16px}.lp-pricing{background:#fafafa}@media(max-width:900px){.lp-feature-grid{grid-template-columns:1fr}.lp-feature,.lp-feature:nth-child(1),.lp-feature:nth-child(2),.lp-feature:nth-child(n+3){grid-column:1;min-height:430px}.lp-editorial-head h2{font-size:42px}}
       `}</style>
+      <style>{`
+        .lp-hero{position:relative;text-align:center;padding:105px 20px 76px;max-width:none;background:linear-gradient(#ffffffdd,#ffffffee),repeating-linear-gradient(90deg,#f2f3fb 0,#f2f3fb 1px,transparent 1px,transparent 52px),repeating-linear-gradient(0deg,#f2f3fb 0,#f2f3fb 1px,transparent 1px,transparent 52px)}.lp-hero-grid{display:block;max-width:1050px}.lp-hero-copy{padding:0}.lp-hero .lp-kicker{border:0;padding:0;color:${ACCENT};justify-content:center}.lp-hero h1{font-size:clamp(50px,6.4vw,86px);line-height:1.03;max-width:1050px;margin:24px auto}.lp-hero h1 em{font-style:normal;color:${ACCENT}}.lp-hero p{font-size:19px;max-width:760px;margin:0 auto 30px}.lp-hero-actions{justify-content:center}.lp-hero .lp-cta{min-width:300px;background:${INK};font-size:17px;padding:18px 30px}.lp-hero .lp-ghost{display:none}.lp-outcomes{display:none}.lp-audit-preview{display:none}.lp-proof{max-width:1050px;margin:64px auto 0;background:#fff}.lp-steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid ${LINE};border-radius:18px;overflow:hidden}.lp-step{padding:34px;min-height:220px}.lp-step+.lp-step{border-left:1px solid ${LINE}}.lp-step-number{font-size:12px;color:${ACCENT};font-weight:800;letter-spacing:.1em}.lp-step h3{font-size:22px;margin:38px 0 10px;letter-spacing:-.03em}.lp-step p{font-size:14px;color:${MUTED};line-height:1.65;margin:0}.lp-network{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:center;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};padding-top:100px;padding-bottom:100px}.lp-network h2{font-size:clamp(40px,5vw,66px);line-height:1.08;letter-spacing:-.05em;margin:15px 0 24px}.lp-network h2 span{color:#b5b6ba}.lp-network-list{display:grid;gap:13px;color:${MUTED};font-size:15px}.lp-network-list div:before{content:'✓';color:${ACCENT};font-weight:800;margin-right:10px}.lp-network-visual{min-height:430px;position:relative}.lp-network-visual .visual-links{height:430px}.lp-network-visual .visual-node{width:58px;height:58px}.lp-network-visual .visual-node.main{width:82px;height:82px}.lp-case-band{background:#f7f7f7;padding:100px 20px}.lp-case-quote{font-size:clamp(34px,4vw,58px);line-height:1.15;letter-spacing:-.045em;max-width:980px;margin:0 0 55px}.lp-case-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.lp-case-metric{background:#fff;border-radius:16px;padding:28px}.lp-case-metric span{color:${MUTED};font-size:13px}.lp-case-metric strong{display:block;font-size:56px;margin-top:30px;letter-spacing:-.05em}@media(max-width:800px){.lp-steps,.lp-network,.lp-case-metrics{grid-template-columns:1fr}.lp-step+.lp-step{border-left:0;border-top:1px solid ${LINE}}}
+      `}</style>
       <nav className="lp-nav">
         <div className="lp-wrap">
           <a className="lp-logo" href="/">
@@ -90,11 +93,13 @@ export default function LandingPage() {
       <header className="lp-hero lp-wrap">
         <div className="lp-hero-grid">
           <div className="lp-hero-copy">
-            <span className="lp-kicker">SEO work you can actually verify</span>
-            <h1>Turn your website into a source of steady leads.</h1>
+            <span className="lp-kicker">SEO growth, measured from day one</span>
+            <h1>
+              Grow organic traffic <em>without guessing what works.</em>
+            </h1>
             <p>
-              We fix the technical problems holding your site back, then build useful pages around
-              the searches your customers already make.
+              We fix technical SEO, create pages around real customer searches, build authority, and
+              show every result in your own live growth report.
             </p>
             <div className="lp-outcomes">
               <div className="lp-outcome">
@@ -109,7 +114,7 @@ export default function LandingPage() {
             </div>
             <div className="lp-hero-actions">
               <a className="lp-cta" href="/grow">
-                Get a free website audit →
+                Start with a free website audit →
               </a>
               <a className="lp-ghost" href="#service">
                 See exactly what we do
@@ -191,6 +196,40 @@ export default function LandingPage() {
         <h2>No measurable organic growth in 90 days? Get every dollar back.</h2>
         <p>Measured in your Search Console against the agreed day-one baseline.</p>
       </section>
+      <section className="lp-section lp-wrap">
+        <div className="lp-editorial-head">
+          <div className="lp-eyebrow">How it works</div>
+          <h2>
+            Traffic growth made simple <span>— in three practical steps.</span>
+          </h2>
+        </div>
+        <div className="lp-steps">
+          <article className="lp-step">
+            <span className="lp-step-number">STEP 01</span>
+            <h3>Audit the foundation</h3>
+            <p>
+              We inspect crawlability, indexing, page structure, Search Console data, and competitor
+              gaps before choosing priorities.
+            </p>
+          </article>
+          <article className="lp-step">
+            <span className="lp-step-number">STEP 02</span>
+            <h3>Fix and publish</h3>
+            <p>
+              Technical issues are resolved first. Then we create focused pages, improve internal
+              links, and build relevant authority signals.
+            </p>
+          </article>
+          <article className="lp-step">
+            <span className="lp-step-number">STEP 03</span>
+            <h3>Measure the growth</h3>
+            <p>
+              Your private report tracks clicks, impressions, indexed pages, backlinks, and AI
+              mentions against the agreed baseline.
+            </p>
+          </article>
+        </div>
+      </section>
       <section id="service" className="lp-section lp-wrap">
         <div className="lp-editorial-head">
           <div className="lp-eyebrow">Platform features</div>
@@ -208,6 +247,28 @@ export default function LandingPage() {
               </div>
             </article>
           ))}
+        </div>
+      </section>
+      <section className="lp-network lp-wrap">
+        <div>
+          <div className="lp-eyebrow" style={{ color: ACCENT }}>
+            Authority building
+          </div>
+          <h2>
+            A backlink plan <span>built around relevance, not volume.</span>
+          </h2>
+          <div className="lp-network-list">
+            <div>Opportunities matched to your market and pages</div>
+            <div>Every placement tracked by source, anchor, and target URL</div>
+            <div>Live, pending, and lost links visible in your report</div>
+            <div>Internal links connect new authority to valuable pages</div>
+          </div>
+          <a className="lp-cta" href="/grow" style={{ marginTop: 28 }}>
+            Get my growth plan →
+          </a>
+        </div>
+        <div className="lp-network-visual">
+          <FeatureVisual kind="links" />
         </div>
       </section>
       <section className="lp-section lp-dashboard">
@@ -301,6 +362,30 @@ export default function LandingPage() {
         </div>
         <div className="lp-review-score">
           <span className="lp-stars">★★★★★</span> <strong>4.9/5</strong> from 12K+ customer reviews
+        </div>
+      </section>
+      <section className="lp-case-band">
+        <div className="lp-wrap">
+          <div className="lp-eyebrow" style={{ color: ACCENT }}>
+            Your results
+          </div>
+          <p className="lp-case-quote">
+            No vague monthly slides. See the work, the baseline, and the numbers that changed.
+          </p>
+          <div className="lp-case-metrics">
+            <div className="lp-case-metric">
+              <span>Companies served</span>
+              <strong>35,000</strong>
+            </div>
+            <div className="lp-case-metric">
+              <span>Customer reviews</span>
+              <strong>12K+</strong>
+            </div>
+            <div className="lp-case-metric">
+              <span>Average organic growth</span>
+              <strong>72%</strong>
+            </div>
+          </div>
         </div>
       </section>
       <section id="pricing" className="lp-pricing">
