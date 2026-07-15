@@ -78,16 +78,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MentionMyApp — post everywhere at once" },
-      { name: "description", content: "Publish once to every major platform and build the authority that helps ChatGPT, Google AI, Gemini, Claude, and Perplexity discover your brand." },
-      { property: "og:title", content: "MentionMyApp — post everywhere at once" },
-      { property: "og:description", content: "Publish once to every major platform and build the authority that helps ChatGPT, Google AI, Gemini, Claude, and Perplexity discover your brand." },
+      { title: "MentionMyApp — SEO growth backed by a 90-day guarantee" },
+      {
+        name: "description",
+        content:
+          "Technical SEO, indexing fixes, and search-focused pages measured transparently in Google Search Console.",
+      },
+      { property: "og:title", content: "MentionMyApp — measurable SEO growth" },
+      {
+        property: "og:description",
+        content: "Fix technical SEO, improve indexing, and build pages around real search demand.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "MentionMyApp — post everywhere at once" },
-      { name: "twitter:description", content: "Publish once to every major platform and build the authority that helps ChatGPT, Google AI, Gemini, Claude, and Perplexity discover your brand." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/df2e90b8-b7e0-4198-8c26-ac82b4e7e410" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/df2e90b8-b7e0-4198-8c26-ac82b4e7e410" },
+      { name: "twitter:title", content: "MentionMyApp — measurable SEO growth" },
+      {
+        name: "twitter:description",
+        content: "Technical SEO, indexing, and content built around real search demand.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/df2e90b8-b7e0-4198-8c26-ac82b4e7e410",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/df2e90b8-b7e0-4198-8c26-ac82b4e7e410",
+      },
     ],
     links: [
       {
@@ -96,7 +114,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

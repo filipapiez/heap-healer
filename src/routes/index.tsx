@@ -1,46 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { LANDING_HTML, LANDING_CSS, runLandingScript } from "@/lib/landing";
+import SeoWizard from "@/components/SeoWizard";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MentionMyApp — one post, eleven platforms" },
+      { title: "SEO Growth Service | 90-Day Guarantee | MentionMyApp" },
       {
         name: "description",
         content:
-          "Upload a video, watermark it, write one caption — MentionMyApp publishes to YouTube, TikTok, Instagram and 8 more platforms, then pulls every like and comment into one inbox.",
+          "We fix technical SEO and build indexable pages around real search demand. If indexed pages and organic clicks do not grow in 90 days, you do not pay.",
       },
-      { property: "og:title", content: "MentionMyApp — one post, eleven platforms" },
+      { property: "og:title", content: "Fix your SEO — measurable growth in 90 days" },
       {
         property: "og:description",
         content:
-          "Publish once to 11 platforms, reply from one inbox, and turn every post into backlinks that rank on Google.",
+          "Technical SEO fixes, new indexable pages, and transparent Search Console reporting — backed by a 90-day guarantee.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://mentionmyapp.com/" },
+      { name: "twitter:card", content: "summary" },
     ],
-    links: [
-      { rel: "canonical", href: "https://mentionmyapp.com/" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap",
-      },
-    ],
+    links: [{ rel: "canonical", href: "https://mentionmyapp.com/" }],
   }),
-  component: Landing,
+  component: SeoWizard,
 });
-
-function Landing() {
-  useEffect(() => {
-    const cleanup = runLandingScript();
-    return cleanup;
-  }, []);
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: LANDING_CSS }} />
-      <div dangerouslySetInnerHTML={{ __html: LANDING_HTML }} />
-    </>
-  );
-}
