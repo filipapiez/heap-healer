@@ -1,6 +1,6 @@
 // =============================================================
 // WorldMap.tsx v3 — MentionMyApp network map
-// v2 + density clusters: land dots thicken around the HQ and
+// v4 - density clusters (wide scatter): land dots thicken around the HQ and
 // every connected city (extra jittered micro-dots with distance
 // falloff), plus accent "activity" satellites near each node.
 // Real geography, transparent bg, zero dependencies.
@@ -107,11 +107,14 @@ function buildDots(): { base: Dot[]; cluster: Dot[]; satellites: Dot[] } {
     // density boost near nodes: extra jittered micro-dots, falloff
     const extra = best < 12 ? 4 : best < 22 ? 3 : best < 34 ? 2 : best < 46 ? 1 : 0;
     for (let k = 1; k <= extra; k++) {
+      // spread: 2.4-4.4 cells out, so clusters read as scatter, not doubled dots
+      const spread = CELL * (2.4 + Math.abs(jit(i, k + 21)) * 2.0);
+      const ang = jit(i, k + 33) * Math.PI * 2;
       cluster.push({
-        x: x + jit(i, k) * CELL * 1.15,
-        y: y + jit(i, k + 9) * CELL * 1.15,
-        r: 0.85,
-        o: 0.9 - k * 0.12,
+        x: x + Math.cos(ang) * spread,
+        y: y + Math.sin(ang) * spread,
+        r: 0.8 + Math.abs(jit(i, k + 47)) * 0.5,
+        o: 0.85 - k * 0.13,
       });
     }
 
