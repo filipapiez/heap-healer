@@ -1,417 +1,711 @@
-const A = "#5a58dd";
+// =============================================================
+// LandingPage.tsx v2 — MentionMyApp homepage
+// BabyLoveGrowth-style layout, MentionMyApp brand + offer:
+//   nav · hero + guarantee line + client logo strip ·
+//   free GEO audit widget · how it works (3 steps) ·
+//   platform features grid · "written like you" example ·
+//   success stories · backlink/network section (WorldMap) ·
+//   Google + AI-assistants twin cards · final CTA · footer
+//
+// HONESTY GUARDS (all ship empty/hidden until filled with REAL data):
+//   CLIENTS — logo strip · CASES — success stories ·
+//   Any feature card you won't actually ship: delete it.
+//
+// Routes: /grow = wizard funnel · /signin = auth
+// =============================================================
 
-const FAQ = [
-  [
-    "What do you actually do?",
-    "We audit technical SEO, repair indexing problems, plan and create search-focused pages, build relevant authority links, and track the results in your report.",
-  ],
-  [
-    "How is growth measured?",
-    "Against the day-one baseline in your own Google Search Console: organic clicks, impressions, indexed pages, and the agreed supporting metrics.",
-  ],
-  [
-    "What does the 90-day guarantee cover?",
-    "If there is no measurable organic growth after 90 days against the agreed baseline, eligible payments are refunded under the guarantee.",
-  ],
-  [
-    "Can I see the work?",
-    "Yes. Your report shows completed fixes, new pages, indexing status, backlinks, Search Console performance, and AI-search mentions.",
-  ],
+import { useState } from "react";
+import WorldMap from "@/components/WorldMap";
+
+// ---------- Brand ----------
+const ACCENT = "#6366F1";
+const ACCENT_DARK = "#4F46E5";
+const INK = "#171A2B";
+const NAVY = "#141830";
+const MUTED = "#6B7280";
+const LINE = "#E5E7EB";
+const BG = "#FFFFFF";
+const PANEL = "#F6F6FB";
+const POS = "#22C55E";
+
+// ---------- Configurable proof (REAL data only; empty = hidden) ----------
+const CLIENTS: string[] = []; // e.g. ["Acme Dental", "Riverside Law", ...]
+const CASES: {
+  company: string;
+  headline: string;
+  stat1: [string, string];
+  stat2: [string, string];
+  quote?: string;
+  person?: string;
+}[] = [];
+// e.g. [{ company: "Acme Dental", headline: "How Acme Dental 3x'd organic clicks",
+//         stat1: ["3x", "Organic clicks"], stat2: ["41", "Pages indexed"],
+//         quote: "…", person: "Dr. A, Owner" }]
+
+const ENGINES = ["ChatGPT", "Claude", "Perplexity", "Gemini"];
+
+const STEPS = [
+  {
+    n: "01",
+    t: "Business & gap analysis",
+    d: "We analyze your business, audience, and competitors to find the searches you should own — on Google and inside AI answers.",
+    chips: ["Keyword discovery", "Competitor gaps"],
+  },
+  {
+    n: "02",
+    t: "Fix, publish, promote",
+    d: "Technical SEO repaired, new optimized pages published and indexed every month, backlinks built, AI visibility pushed.",
+    chips: ["Technical fixes", "New indexed pages", "Backlinks"],
+  },
+  {
+    n: "03",
+    t: "Prove it grew",
+    d: "Day-one Search Console baseline, a live growth report you can open anytime, and the day-90 check: no growth, full refund.",
+    chips: ["Live report", "90-day guarantee"],
+  },
+];
+
+const FEATURES = [
+  {
+    t: "Branded SEO Content",
+    d: "Articles and landing pages aligned to your brand voice, structured to rank on Google and get cited by AI assistants.",
+    icon: "✍️",
+    wide: true,
+  },
+  {
+    t: "30-Day Content Strategy",
+    d: "A full month of topics planned from ranking and citation trends — every piece has a target query and a job.",
+    icon: "🗓",
+    wide: true,
+  },
+  {
+    t: "Automated Publishing",
+    d: "Publishes to your CMS — WordPress, Webflow, Shopify and more. No integration work on your side.",
+    icon: "🚀",
+  },
+  {
+    t: "Authority Backlinks",
+    d: "Contextual links from relevant, real websites. Strengthens authority for both search and AI rankings.",
+    icon: "🔗",
+  },
+  {
+    t: "Technical GEO Audit",
+    d: "Scans for gaps in schema, metadata, speed, and structure that hold back visibility — then we fix them.",
+    icon: "🔧",
+  },
+  {
+    t: "LLM Visibility Tracking",
+    d: "Tracks your brand across ChatGPT, Perplexity, and AI Overviews. Measures citation growth over time.",
+    icon: "👁",
+  },
+  {
+    t: "Live Growth Report",
+    d: "Impressions, clicks, indexed pages, links built, AI mentions — one shareable link, updated daily from Search Console.",
+    icon: "📈",
+  },
+  {
+    t: "50+ Languages",
+    d: "Content generated in over 50 languages with natural flow — reach customers in every market you serve.",
+    icon: "🌍",
+  },
 ];
 
 export default function LandingPage() {
+  const [auditUrl, setAuditUrl] = useState("");
+
   return (
-    <main className="site">
-      <style>{CSS}</style>
-      <nav className="nav shell">
-        <a className="brand" href="/">
-          MentionMy<span>App</span>
-        </a>
-        <div className="navlinks">
-          <a href="#features">Features</a>
-          <a href="#results">Results</a>
-          <a href="#pricing">Pricing</a>
+    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", color: INK, background: BG }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        .lp-display { font-family: 'Sora', 'Inter', sans-serif; letter-spacing: -0.03em; }
+        .lp-cta {
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer;
+          border-radius: 999px; padding: 16px 30px; font-size: 15.5px; font-weight: 700; font-family: inherit;
+          background: linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK}); color: #fff;
+          box-shadow: 0 10px 26px ${ACCENT}45; text-decoration: none; transition: transform 120ms, box-shadow 120ms;
+        }
+        .lp-cta:hover { transform: translateY(-1px); }
+        .lp-ghost { display: inline-flex; align-items: center; border-radius: 999px; padding: 15px 24px; font-size: 15px; font-weight: 600; color: ${INK}; text-decoration: none; border: 1.5px solid ${LINE}; background: ${BG}; }
+        .lp-sec { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+        .lp-eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: ${ACCENT_DARK}; }
+        .lp-h2 { font-family: 'Sora', sans-serif; letter-spacing: -0.03em; font-size: clamp(28px, 3.8vw, 44px); font-weight: 800; line-height: 1.1; margin: 12px 0 0; }
+        .lp-h2 .ghost { color: #B9BCC9; }
+        .lp-card { background: ${BG}; border: 1.5px solid ${LINE}; border-radius: 20px; }
+        .lp-chip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid ${LINE}; border-radius: 999px; padding: 8px 16px; font-size: 13.5px; font-weight: 600; background: ${BG}; }
+        @media (max-width: 900px) { .lp-2col { grid-template-columns: 1fr !important; } }
+      `}</style>
+
+      {/* ---------- NAV ---------- */}
+      <nav
+        style={{
+          borderBottom: `1px solid ${LINE}`,
+          position: "sticky",
+          top: 0,
+          background: `${BG}F2`,
+          backdropFilter: "blur(8px)",
+          zIndex: 50,
+        }}
+      >
+        <div
+          className="lp-sec"
+          style={{ display: "flex", alignItems: "center", gap: 26, padding: "14px 20px" }}
+        >
+          <a
+            href="/"
+            className="lp-display"
+            style={{ fontWeight: 800, fontSize: 19, color: INK, textDecoration: "none" }}
+          >
+            Mention<span style={{ color: ACCENT }}>My</span>App
+          </a>
+          <div style={{ display: "flex", gap: 22, fontSize: 14, color: MUTED }}>
+            <a href="#stories" style={{ color: "inherit", textDecoration: "none" }}>
+              Success stories
+            </a>
+            <a href="#features" style={{ color: "inherit", textDecoration: "none" }}>
+              Features
+            </a>
+            <a href="#pricing" style={{ color: "inherit", textDecoration: "none" }}>
+              Pricing
+            </a>
+          </div>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
+            <a
+              href="/auth"
+              style={{
+                fontSize: 14.5,
+                fontWeight: 600,
+                color: INK,
+                textDecoration: "none",
+                padding: "10px 14px",
+              }}
+            >
+              Sign in
+            </a>
+            <a href="/grow" className="lp-cta" style={{ padding: "11px 20px", fontSize: 14 }}>
+              Start for free
+            </a>
+          </div>
         </div>
-        <a className="navcta" href="/grow">
-          Start free audit
-        </a>
       </nav>
 
-      <header className="hero">
-        <div className="heroPattern" />
-        <div className="shell heroInner">
-          <p className="label">SEO GROWTH ON AUTOPILOT</p>
-          <h1>
-            Grow organic traffic
-            <br />
-            <em>without the guesswork.</em>
+      {/* ---------- HERO ---------- */}
+      <header
+        style={{
+          textAlign: "center",
+          padding: "76px 20px 20px",
+          background: `radial-gradient(60% 50% at 50% 0%, ${ACCENT}0D, transparent)`,
+        }}
+      >
+        <div className="lp-sec">
+          <h1
+            className="lp-display"
+            style={{
+              fontSize: "clamp(38px, 6vw, 68px)",
+              fontWeight: 800,
+              lineHeight: 1.05,
+              margin: "0 auto 20px",
+              maxWidth: 900,
+            }}
+          >
+            Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span>
           </h1>
-          <p className="lead">
-            We fix the technical problems holding your site back, create pages customers are
-            searching for, build authority, and measure every result.
+          <p
+            style={{
+              fontSize: 18.5,
+              color: MUTED,
+              lineHeight: 1.6,
+              maxWidth: 660,
+              margin: "0 auto 30px",
+            }}
+          >
+            We fix your technical SEO, publish optimized pages that get indexed, build backlinks,
+            and track your visibility inside AI assistants — all done for you.
           </p>
-          <a className="primary" href="/grow">
-            Start with a free website audit <b>→</b>
+          <a href="/grow" className="lp-cta" style={{ fontSize: 16.5, padding: "18px 38px" }}>
+            Start for free
           </a>
-          <p className="guarantee">
-            No measurable organic growth in 90 days? <strong>You get your money back.</strong>
-          </p>
-          <div className="logoStrip">
-            <span>35,000 companies served</span>
-            <i />
-            <span>12K+ customer reviews</span>
-            <i />
-            <span>72% average organic growth</span>
+          <div style={{ marginTop: 16, fontSize: 14.5, color: MUTED }}>
+            If your organic metrics don't improve within 90 days,{" "}
+            <strong style={{ color: INK }}>you get your money back</strong> 🛡
           </div>
+
+          {/* Client logo strip — hidden until CLIENTS has real entries */}
+          {CLIENTS.length > 0 && (
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: 0,
+                marginTop: 44,
+                border: `1px solid ${LINE}`,
+                borderRadius: 12,
+                overflow: "hidden",
+              }}
+            >
+              {CLIENTS.map((c) => (
+                <div
+                  key={c}
+                  style={{
+                    padding: "14px 26px",
+                    borderRight: `1px solid ${LINE}`,
+                    fontFamily: "Georgia, serif",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: "#9AA0AA",
+                  }}
+                >
+                  {c}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 
-      <section className="section shell intro" id="features">
-        <p className="label">PLATFORM FEATURES</p>
-        <h2>
-          A powerful SEO growth system <span>— all in one place.</span>
+      {/* ---------- FREE GEO AUDIT WIDGET ---------- */}
+      <section className="lp-sec" style={{ padding: "36px 20px 20px" }}>
+        <div
+          className="lp-card"
+          style={{
+            textAlign: "center",
+            padding: "50px 24px",
+            background: `radial-gradient(50% 60% at 50% 0%, ${ACCENT}0F, ${BG})`,
+          }}
+        >
+          <div className="lp-eyebrow">Free GEO Audit</div>
+          <h2 className="lp-h2" style={{ maxWidth: 720, margin: "12px auto 0" }}>
+            Do <span style={{ color: ACCENT }}>ChatGPT, Claude, Perplexity & Gemini</span> recommend
+            your website?
+          </h2>
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              justifyContent: "center",
+              flexWrap: "wrap",
+              margin: "24px 0 26px",
+            }}
+          >
+            {ENGINES.map((e) => (
+              <span key={e} className="lp-chip">
+                ✦ {e}
+              </span>
+            ))}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              maxWidth: 560,
+              margin: "0 auto",
+              background: BG,
+              border: `1.5px solid ${LINE}`,
+              borderRadius: 999,
+              padding: 6,
+              boxShadow: "0 14px 34px rgba(23,26,43,0.08)",
+            }}
+          >
+            <input
+              value={auditUrl}
+              onChange={(e) => setAuditUrl(e.target.value)}
+              placeholder="yourwebsite.com"
+              style={{
+                flex: 1,
+                border: "none",
+                outline: "none",
+                padding: "12px 18px",
+                fontSize: 15.5,
+                fontFamily: "inherit",
+                background: "transparent",
+                color: INK,
+                minWidth: 0,
+              }}
+            />
+            <a
+              href={`/grow?site=${encodeURIComponent(auditUrl)}`}
+              className="lp-cta"
+              style={{ padding: "12px 24px", fontSize: 14.5, whiteSpace: "nowrap" }}
+            >
+              Run free audit →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- HOW IT WORKS ---------- */}
+      <section className="lp-sec" style={{ padding: "70px 20px 20px" }}>
+        <div className="lp-eyebrow">How it works</div>
+        <h2 className="lp-h2">
+          Traffic growth made simple <span className="ghost">— in three strategic steps.</span>
         </h2>
-        <div className="featureGrid">
-          <FeatureCard
-            title="Technical SEO audit"
-            copy="Find and fix indexing, metadata, schema, crawl, speed, and internal-link problems."
-            visual="audit"
-            wide
-          />
-          <FeatureCard
-            title="30-day search plan"
-            copy="A practical month of pages based on buyer intent, competitor gaps, and real demand."
-            visual="calendar"
-            wide
-          />
-          <FeatureCard
-            title="New indexable pages"
-            copy="Useful landing pages and articles, connected to your site and submitted for indexing."
-            visual="page"
-          />
-          <FeatureCard
-            title="Authority backlinks"
-            copy="Relevant placements tracked by source, target page, anchor text, and live status."
-            visual="links"
-          />
-          <FeatureCard
-            title="AI visibility tracking"
-            copy="See when ChatGPT, Perplexity, Gemini, and Google AI mention or cite your brand."
-            visual="ai"
-          />
-        </div>
-      </section>
-
-      <section className="section pale">
-        <div className="shell example">
-          <p className="label">YOUR WORKSPACE</p>
-          <h2>
-            Not a monthly slide deck <span>— a live record of your growth.</span>
-          </h2>
-          <p className="sectionLead">
-            Everything we fix, publish, and earn stays visible alongside the numbers from your
-            Search Console.
-          </p>
-          <div className="dashboard">
-            <div className="dashTop">
-              <div>
-                <small>MENTIONMYAPP GROWTH REPORT</small>
-                <h3>Acme Studio</h3>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 16,
+            marginTop: 34,
+          }}
+        >
+          {STEPS.map((s) => (
+            <div key={s.n} className="lp-card" style={{ padding: "26px 28px" }}>
+              <div
+                className="lp-display"
+                style={{ color: ACCENT, fontWeight: 800, fontSize: 15, marginBottom: 10 }}
+              >
+                {s.n}
               </div>
-              <div className="range">Last 90 days⌄</div>
+              <h3
+                className="lp-display"
+                style={{ fontSize: 21, fontWeight: 800, margin: "0 0 10px" }}
+              >
+                {s.t}
+              </h3>
+              <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 16px" }}>
+                {s.d}
+              </p>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {s.chips.map((c) => (
+                  <span key={c} className="lp-chip" style={{ fontSize: 12, padding: "6px 12px" }}>
+                    <span style={{ color: POS }}>✓</span> {c}
+                  </span>
+                ))}
+              </div>
             </div>
-            <div className="metrics">
-              <Metric n="+38%" t="Organic clicks" />
-              <Metric n="+24" t="Indexed pages" />
-              <Metric n="18" t="Backlinks live" />
-              <Metric n="7" t="AI mentions" />
-            </div>
-            <div className="chart">
-              <svg viewBox="0 0 900 230" preserveAspectRatio="none">
-                <path
-                  d="M0 205 C90 200 125 180 205 188 S330 150 400 160 S520 108 585 118 S720 50 900 35"
-                  fill="none"
-                  stroke={A}
-                  strokeWidth="6"
-                />
-                <path
-                  d="M0 205 C90 200 125 180 205 188 S330 150 400 160 S520 108 585 118 S720 50 900 35 L900 230 L0 230Z"
-                  fill="#5a58dd12"
-                />
-              </svg>
-            </div>
-            <div className="workRows">
-              <span>
-                Technical fixes completed <b>14/14</b>
-              </span>
-              <span>
-                Pages published <b>12</b>
-              </span>
-              <span>
-                Search Console synced <b>Today</b>
-              </span>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      <section className="section shell network">
-        <div className="networkCopy">
-          <p className="label">AUTHORITY BUILDING</p>
-          <h2>
-            A backlink plan <span>that gets stronger as your site grows.</span>
-          </h2>
-          <ul>
-            <li>Opportunities matched to your topic and market</li>
-            <li>Contextual links inside relevant pages</li>
-            <li>Every live, pending, or lost link tracked</li>
-            <li>Authority directed to the pages that matter</li>
-          </ul>
-          <a className="darkButton" href="/grow">
-            Get my growth plan →
-          </a>
+      {/* ---------- PLATFORM FEATURES ---------- */}
+      <section id="features" className="lp-sec" style={{ padding: "70px 20px 20px" }}>
+        <div className="lp-eyebrow">Platform features</div>
+        <h2 className="lp-h2">
+          A powerful suite of features <span className="ghost">— all in one place.</span>
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: 16,
+            marginTop: 34,
+          }}
+        >
+          {FEATURES.map((f) => (
+            <div
+              key={f.t}
+              className="lp-card"
+              style={{ padding: "24px 26px", gridColumn: f.wide ? "span 1" : undefined }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <h3 className="lp-display" style={{ fontSize: 19, fontWeight: 800, margin: 0 }}>
+                  {f.t}
+                </h3>
+                <span style={{ fontSize: 18 }} aria-hidden>
+                  {f.icon}
+                </span>
+              </div>
+              <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.65, margin: 0 }}>{f.d}</p>
+            </div>
+          ))}
         </div>
-        <Network />
       </section>
 
-      <section className="section results" id="results">
-        <div className="shell">
-          <p className="label">MEASURED RESULTS</p>
-          <h2>
-            The numbers change <span>— and you can verify every one.</span>
+      {/* ---------- WRITTEN LIKE YOU ---------- */}
+      <section className="lp-sec" style={{ padding: "70px 20px 20px" }}>
+        <div className="lp-eyebrow">Examples</div>
+        <h2 className="lp-h2">
+          Not just written for you <span className="ghost">— written like you.</span>
+        </h2>
+        <p style={{ color: MUTED, fontSize: 16, maxWidth: 640, margin: "14px 0 30px" }}>
+          Every page inherits your brand colors, your tone of voice, and links straight back to the
+          products you sell.
+        </p>
+        <div
+          className="lp-2col"
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}
+        >
+          <MiniCard n="1" title="Brand colors">
+            <div style={{ display: "flex", gap: 8 }}>
+              {[ACCENT, "#8B8FF5", "#C7CAF0", "#F2F3FD"].map((c) => (
+                <span
+                  key={c}
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 10,
+                    background: c,
+                    border: `1px solid ${LINE}`,
+                  }}
+                />
+              ))}
+            </div>
+          </MiniCard>
+          <MiniCard n="2" title="Voice & tone">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["expert but friendly", "plain-language", "action-focused"].map((t) => (
+                <span key={t} className="lp-chip" style={{ fontSize: 12.5 }}>
+                  {t}
+                </span>
+              ))}
+            </div>
+          </MiniCard>
+          <MiniCard n="3" title="Cross-linked offerings">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["Your services", "Your products", "Your booking page"].map((t) => (
+                <span
+                  key={t}
+                  className="lp-chip"
+                  style={{ fontSize: 12.5, color: ACCENT_DARK, borderColor: `${ACCENT}55` }}
+                >
+                  🔗 {t}
+                </span>
+              ))}
+            </div>
+          </MiniCard>
+        </div>
+      </section>
+
+      {/* ---------- SUCCESS STORIES (hidden until real) ---------- */}
+      {CASES.length > 0 && (
+        <section id="stories" className="lp-sec" style={{ padding: "70px 20px 20px" }}>
+          <div className="lp-eyebrow">Success stories</div>
+          <h2 className="lp-h2">
+            Our customer results <span className="ghost">— receipts included.</span>
           </h2>
-          <div className="resultCards">
-            <Metric n="35,000" t="companies served" />
-            <Metric n="12K+" t="customer reviews" />
-            <Metric n="72%" t="average organic growth" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              gap: 16,
+              marginTop: 34,
+            }}
+          >
+            {CASES.map((c) => (
+              <div key={c.company} className="lp-card" style={{ padding: "26px 28px" }}>
+                <h3
+                  className="lp-display"
+                  style={{ fontSize: 19, fontWeight: 800, margin: "0 0 14px" }}
+                >
+                  {c.headline}
+                </h3>
+                <div style={{ display: "flex", gap: 26, marginBottom: 14 }}>
+                  {[c.stat1, c.stat2].map(([v, l]) => (
+                    <div key={l}>
+                      <div className="lp-display" style={{ fontSize: 26, fontWeight: 800 }}>
+                        {v}
+                      </div>
+                      <div style={{ fontSize: 12, color: MUTED }}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+                {c.quote && (
+                  <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, margin: 0 }}>
+                    "{c.quote}" — {c.person}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
-          <div className="quote">
-            <p>
-              “Finally, SEO work we can actually see. We know what changed, what was published, and
-              whether it moved the numbers.”
+        </section>
+      )}
+
+      {/* ---------- NETWORK / MAP ---------- */}
+      <section className="lp-sec" style={{ padding: "70px 20px 10px" }}>
+        <div className="lp-eyebrow">From Chicago to everywhere</div>
+        <h2 className="lp-h2">
+          One team in Chicago <span className="ghost">— growing businesses worldwide.</span>
+        </h2>
+        <div style={{ marginTop: 20 }}>
+          <WorldMap hqLabel="MentionMyApp" accent={ACCENT} dot="#C7CAF0" height={440} />
+        </div>
+      </section>
+
+      {/* ---------- TWIN OUTCOME CARDS ---------- */}
+      <section className="lp-sec" style={{ padding: "50px 20px 20px" }}>
+        <div
+          className="lp-2col"
+          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
+        >
+          <div className="lp-card" style={{ padding: "28px 30px" }}>
+            <h3
+              className="lp-display"
+              style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
+            >
+              Rank high on Google
+            </h3>
+            <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
+              SEO pages published and indexed monthly, targeting high-intent keywords your customers
+              actually search for.
             </p>
-            <span>What customers want from an SEO partner</span>
+            {/* mini GSC-style chart */}
+            <svg viewBox="0 0 420 150" style={{ width: "100%" }}>
+              {[30, 70, 110].map((y) => (
+                <line key={y} x1="0" x2="420" y1={y} y2={y} stroke={LINE} strokeWidth="1" />
+              ))}
+              <path
+                d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26 L420,150 L0,150 Z"
+                fill={`${ACCENT}1A`}
+              />
+              <path
+                d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26"
+                fill="none"
+                stroke={ACCENT}
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              <line
+                x1="150"
+                x2="150"
+                y1="10"
+                y2="140"
+                stroke={MUTED}
+                strokeDasharray="5 5"
+                strokeWidth="1.2"
+                opacity="0.6"
+              />
+              <text x="156" y="22" fontSize="10" fill={MUTED} fontFamily="Inter">
+                work starts
+              </text>
+            </svg>
+          </div>
+          <div className="lp-card" style={{ padding: "28px 30px" }}>
+            <h3
+              className="lp-display"
+              style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
+            >
+              Get mentioned by AI assistants
+            </h3>
+            <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
+              AI assistants discover your pages and recommend your business when customers ask.
+            </p>
+            <div
+              style={{
+                background: PANEL,
+                borderRadius: 14,
+                padding: "16px 18px",
+                fontSize: 13.5,
+                lineHeight: 1.6,
+              }}
+            >
+              <div style={{ textAlign: "right", marginBottom: 10 }}>
+                <span
+                  style={{
+                    background: INK,
+                    color: "#fff",
+                    borderRadius: 12,
+                    padding: "8px 14px",
+                    display: "inline-block",
+                  }}
+                >
+                  What's the best option near me?
+                </span>
+              </div>
+              <div
+                style={{
+                  background: BG,
+                  border: `1.5px solid ${LINE}`,
+                  borderRadius: 12,
+                  padding: "12px 14px",
+                }}
+              >
+                I'd recommend <strong style={{ color: ACCENT_DARK }}>your business</strong> — here's
+                why customers rate it highly…
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section shell pricing" id="pricing">
-        <div>
-          <p className="label">SIMPLE PRICING</p>
-          <h2>Everything you need to start growing.</h2>
-          <p className="sectionLead left">
-            Start with a free audit. Continue only when the baseline, priorities, and scope make
-            sense.
-          </p>
-        </div>
-        <div className="priceBox">
-          <div>
-            <small>MENTIONMYAPP SEO</small>
-            <strong>$49</strong>
-            <span>per month</span>
+      {/* ---------- PRICING ANCHOR ---------- */}
+      <section
+        id="pricing"
+        style={{ background: NAVY, color: "#fff", padding: "60px 20px", marginTop: 50 }}
+      >
+        <div className="lp-sec" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", color: "#A5B4FC" }}>
+            SIMPLE PRICING
           </div>
-          <ul>
-            <li>Technical SEO and indexing fixes</li>
-            <li>New pages based on search demand</li>
-            <li>Backlink and AI visibility tracking</li>
-            <li>Your live customer growth report</li>
-            <li>90-day money-back growth guarantee</li>
-          </ul>
-          <a className="primary" href="/grow">
-            Start free audit →
-          </a>
-        </div>
-      </section>
-
-      <section className="section shell faq">
-        <p className="label">FAQ</p>
-        <h2>Clear answers before you start.</h2>
-        {FAQ.map(([q, a]) => (
-          <details key={q}>
-            <summary>
-              {q}
-              <b>+</b>
-            </summary>
-            <p>{a}</p>
-          </details>
-        ))}
-      </section>
-      <section className="final">
-        <div className="heroPattern" />
-        <div>
-          <h2>
-            Grow organic traffic
-            <br />
-            <em>with a plan you can see.</em>
+          <h2
+            className="lp-display"
+            style={{ fontSize: "clamp(26px, 3.4vw, 38px)", fontWeight: 800, margin: "12px 0 8px" }}
+          >
+            $49/month. Everything included.
           </h2>
-          <a className="primary" href="/grow">
-            Start with a free website audit →
+          <p style={{ color: "#B6BAD1", fontSize: 15, margin: "0 0 26px" }}>
+            No measurable growth in 90 days — every dollar back. Cancel anytime.
+          </p>
+          <a href="/grow" className="lp-cta" style={{ fontSize: 16, padding: "17px 34px" }}>
+            Start with a free growth audit →
           </a>
-          <p>No card required for the audit.</p>
         </div>
       </section>
-      <footer className="footer shell">
-        <a className="brand" href="/">
-          MentionMy<span>App</span>
-        </a>
-        <p>SEO growth, measured from day one.</p>
-        <div>
-          <a href="/grow">Free audit</a>
-          <a href="/auth">Sign in</a>
-          <a href="/terms">Terms</a>
+
+      {/* ---------- FOOTER ---------- */}
+      <footer
+        style={{ borderTop: `1px solid ${LINE}`, padding: "26px 20px", fontSize: 13, color: MUTED }}
+      >
+        <div
+          className="lp-sec"
+          style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}
+        >
+          <span>© {new Date().getFullYear()} MentionMyApp · Chicago, IL</span>
+          <span style={{ display: "flex", gap: 18 }}>
+            <a href="/grow" style={{ color: "inherit" }}>
+              Free audit
+            </a>
+            <a href="/auth" style={{ color: "inherit" }}>
+              Sign in
+            </a>
+            <a href="/terms" style={{ color: "inherit" }}>
+              Guarantee terms
+            </a>
+          </span>
         </div>
       </footer>
-    </main>
-  );
-}
-
-function Metric({ n, t }: { n: string; t: string }) {
-  return (
-    <div className="metric">
-      <strong>{n}</strong>
-      <span>{t}</span>
     </div>
   );
 }
 
-function FeatureCard({
-  title,
-  copy,
-  visual,
-  wide = false,
-}: {
-  title: string;
-  copy: string;
-  visual: string;
-  wide?: boolean;
-}) {
+// ---------- Small pieces ----------
+function MiniCard({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
   return (
-    <article className={`feature ${wide ? "wide" : ""}`}>
-      <h3>{title}</h3>
-      <p>{copy}</p>
-      <Visual kind={visual} />
-    </article>
-  );
-}
-
-function Visual({ kind }: { kind: string }) {
-  if (kind === "audit")
-    return (
-      <div className="browser">
-        <div className="browserBar">
-          <i />
-          <i />
-          <i />
-        </div>
-        <div className="audit">
-          <div>
-            <span>High</span>Missing page title<b>Fixed ✓</b>
-          </div>
-          <div>
-            <span>Medium</span>Broken internal links<b>Fixed ✓</b>
-          </div>
-          <div>
-            <span>Medium</span>Pages not indexed<b>Resolved</b>
-          </div>
-          <div>
-            <span>Low</span>Missing schema<b>Ready</b>
-          </div>
-        </div>
+    <div style={{ background: "#F6F6FB", borderRadius: 18, padding: "22px 24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <span
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: "50%",
+            background: "#6366F1",
+            color: "#fff",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 12,
+            fontWeight: 800,
+          }}
+        >
+          {n}
+        </span>
+        <span
+          style={{
+            fontWeight: 800,
+            fontSize: 13,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: "#6B7280",
+          }}
+        >
+          {title}
+        </span>
       </div>
-    );
-  if (kind === "calendar")
-    return (
-      <div className="calendar">
-        {["Research", "Service", "Comparison", "Location", "Guide", "FAQ"].map((x, i) => (
-          <div key={x}>
-            <b>{i + 4}</b>
-            <span>{x}</span>
-            <small>{i % 2 ? "Google" : "Buyer intent"}</small>
-          </div>
-        ))}
-      </div>
-    );
-  if (kind === "page")
-    return (
-      <div className="pageMock">
-        <div />
-        <h4>Your new search page</h4>
-        <i />
-        <i />
-        <i className="short" />
-      </div>
-    );
-  if (kind === "links") return <Network mini />;
-  return (
-    <div className="aiMock">
-      <p>
-        <b>ChatGPT</b> best software for growing a local business <span>MentionMyApp cited ✓</span>
-      </p>
-      <p>
-        <b>Perplexity</b> how to improve website visibility <span>Page mentioned ✓</span>
-      </p>
+      {children}
     </div>
   );
 }
-
-function Network({ mini = false }: { mini?: boolean }) {
-  return (
-    <div className={`networkVisual ${mini ? "mini" : ""}`}>
-      <svg viewBox="0 0 600 440">
-        <g stroke="#b9b8ef" strokeWidth="1.5">
-          {[
-            [300, 220, 90, 90],
-            [300, 220, 510, 80],
-            [300, 220, 100, 350],
-            [300, 220, 500, 350],
-            [90, 90, 510, 80],
-            [90, 90, 100, 350],
-            [510, 80, 500, 350],
-            [100, 350, 500, 350],
-            [160, 210, 430, 210],
-          ].map((l, i) => (
-            <line key={i} x1={l[0]} y1={l[1]} x2={l[2]} y2={l[3]} />
-          ))}
-        </g>
-        <g fill="#fff" stroke="#cac9ed" strokeWidth="2">
-          <circle cx="90" cy="90" r="38" />
-          <circle cx="510" cy="80" r="32" />
-          <circle cx="100" cy="350" r="35" />
-          <circle cx="500" cy="350" r="38" />
-          <circle cx="160" cy="210" r="28" />
-          <circle cx="430" cy="210" r="30" />
-        </g>
-        <circle cx="300" cy="220" r="55" fill={A} />
-        <text x="300" y="226" textAnchor="middle" fill="#fff" fontWeight="800" fontSize="18">
-          MMA
-        </text>
-        <g fill={A} fontWeight="800" fontSize="13" textAnchor="middle">
-          <text x="90" y="95">
-            DR 62
-          </text>
-          <text x="510" y="85">
-            DR 54
-          </text>
-          <text x="100" y="355">
-            DR 47
-          </text>
-          <text x="500" y="355">
-            DR 71
-          </text>
-          <text x="160" y="215">
-            DR 58
-          </text>
-          <text x="430" y="215">
-            DR 66
-          </text>
-        </g>
-      </svg>
-    </div>
-  );
-}
-
-const CSS = `
-*{box-sizing:border-box}.site{font-family:Arial,Helvetica,sans-serif;color:#0b1020;background:#fff}.shell{width:min(1540px,calc(100% - 64px));margin:auto}.nav{height:86px;display:flex;align-items:center;border-bottom:1px solid #e7e8ed}.brand{font-size:26px;font-weight:900;letter-spacing:-1.5px;color:#0b1020;text-decoration:none}.brand span{color:${A}}.navlinks{display:flex;gap:40px;margin-left:72px}.nav a{color:#272b3b;text-decoration:none}.navcta{margin-left:auto!important;background:${A};color:#fff!important;padding:17px 28px;border-radius:7px;font-weight:700}.hero{min-height:820px;position:relative;overflow:hidden;border-bottom:1px solid #e8e9ef}.heroPattern,.final .heroPattern{position:absolute;inset:0;opacity:.7;background:linear-gradient(#fffffff0,#fffffff0),repeating-linear-gradient(90deg,#dde0fa 0,#dde0fa 1px,transparent 1px,transparent 54px),repeating-linear-gradient(0deg,#dde0fa 0,#dde0fa 1px,transparent 1px,transparent 54px)}.heroInner{position:relative;text-align:center;padding-top:120px}.label{font-size:13px;font-weight:800;letter-spacing:2px;color:${A};margin:0 0 30px}.hero h1,.final h2{font-size:clamp(64px,7.4vw,116px);line-height:.98;letter-spacing:-7px;margin:0 auto 35px;max-width:1350px}.hero h1 em,.final h2 em{font-style:normal;color:${A}}.lead{font-size:22px;line-height:1.55;color:#555d73;max-width:820px;margin:0 auto 34px}.primary,.darkButton{display:inline-flex;background:#0d0b0d;color:white;text-decoration:none;padding:21px 38px;border-radius:7px;font-size:18px;font-weight:750}.primary b{margin-left:15px}.guarantee{color:#727789;margin:22px 0 0}.logoStrip{height:94px;display:flex;align-items:center;justify-content:center;gap:42px;background:#fff;border:1px solid #e2e4eb;border-radius:12px;margin-top:78px;font-weight:700;color:#3d4355}.logoStrip i{height:34px;width:1px;background:#e1e2e8}.section{padding-top:120px;padding-bottom:120px}.intro h2,.example h2,.network h2,.results h2,.pricing h2,.faq h2{font-size:clamp(52px,5.6vw,88px);line-height:1.04;letter-spacing:-5px;margin:0 0 65px;max-width:1400px}.section h2 span{color:#b3b4b8}.featureGrid{display:grid;grid-template-columns:repeat(6,1fr);gap:24px}.feature{grid-column:span 2;min-height:590px;border:1px solid #dfe1e7;border-radius:18px;padding:38px;display:flex;flex-direction:column;overflow:hidden}.feature.wide{grid-column:span 3;min-height:660px}.feature h3{font-size:28px;margin:0 0 15px;letter-spacing:-1px}.feature>p{color:#6c707a;font-size:17px;line-height:1.55;max-width:620px;margin:0}.browser,.calendar,.pageMock,.aiMock,.networkVisual{margin-top:auto}.browser{height:330px;border:1px solid #e0e1e6;border-radius:14px;overflow:hidden}.browserBar{height:38px;border-bottom:1px solid #e5e6ea;display:flex;gap:7px;align-items:center;padding:0 14px;background:#fafafa}.browserBar i{width:9px;height:9px;background:#d4d6dc;border-radius:50%}.audit{padding:24px}.audit div{display:grid;grid-template-columns:70px 1fr auto;gap:12px;padding:17px 10px;border-bottom:1px solid #eaebef;color:#666b78}.audit span{color:#eb654e}.audit b{color:${A}}.calendar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.calendar div{min-height:118px;border:1px solid #e0e2e8;border-radius:12px;padding:16px;background:#fff}.calendar b{font-size:20px}.calendar span{display:block;color:${A};margin:14px 0 8px}.calendar small{color:#8a8e98}.pageMock{border:1px solid #e0e2e8;border-radius:14px;padding:24px;background:#fff}.pageMock>div{height:145px;background:linear-gradient(135deg,#e9e9fc,#f8f8fd);border-radius:8px}.pageMock h4{font-size:20px}.pageMock i{display:block;height:9px;background:#e4e5e9;margin:10px 0;border-radius:6px}.pageMock i.short{width:55%}.aiMock{display:grid;gap:12px}.aiMock p{border:1px solid #e0e2e8;border-radius:12px;padding:18px;margin:0;line-height:1.45}.aiMock b,.aiMock span{display:block}.aiMock span{color:#148d68;margin-top:10px}.pale,.results{background:#f7f7f8}.sectionLead{font-size:20px;color:#686e80;line-height:1.55;max-width:850px;text-align:center;margin:-40px auto 55px}.sectionLead.left{text-align:left;margin:-40px 0 0}.dashboard{background:white;border:1px solid #dfe1e7;border-radius:18px;padding:42px;box-shadow:0 30px 80px #14182d0d}.dashTop{display:flex;justify-content:space-between}.dashTop small{color:${A};font-weight:800;letter-spacing:1px}.dashTop h3{font-size:28px;margin:8px 0}.range{border:1px solid #e0e2e8;padding:13px 18px;border-radius:8px;height:max-content}.metrics,.resultCards{display:grid;grid-template-columns:repeat(4,1fr);margin:32px 0;border:1px solid #e0e2e8;border-radius:12px}.metric{padding:28px}.metric+.metric{border-left:1px solid #e0e2e8}.metric strong{display:block;font-size:44px;letter-spacing:-2px}.metric span{color:#737989;font-size:14px}.chart{height:250px;border-left:1px solid #e2e4e9;border-bottom:1px solid #e2e4e9;background:repeating-linear-gradient(0deg,transparent 0,transparent 61px,#edf0f4 62px);padding:10px}.chart svg{width:100%;height:100%}.workRows{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:25px}.workRows span{background:#f6f7f9;border-radius:8px;padding:17px;color:#626877}.workRows b{float:right;color:#171c2b}.network{display:grid;grid-template-columns:.9fr 1.1fr;gap:90px;align-items:center}.network h2{font-size:clamp(52px,5vw,80px)}.network ul{list-style:none;padding:0;display:grid;gap:17px;color:#686e80;font-size:18px;line-height:1.5}.network li:before{content:'✓';display:inline-grid;place-items:center;width:24px;height:24px;border:2px solid ${A};border-radius:50%;color:${A};font-size:12px;font-weight:bold;margin-right:12px}.networkVisual svg{width:100%;height:auto}.networkVisual.mini svg{max-height:330px}.darkButton{margin-top:25px}.results h2{margin-bottom:70px}.resultCards{grid-template-columns:repeat(3,1fr);background:#fff;margin:0}.resultCards .metric{padding:45px}.resultCards .metric strong{font-size:68px}.quote{margin-top:90px;max-width:1100px}.quote p{font-size:44px;line-height:1.2;letter-spacing:-2px;margin:0 0 24px}.quote span{color:#767b89}.pricing{display:grid;grid-template-columns:1fr 620px;gap:90px;align-items:center}.pricing h2{font-size:clamp(52px,5vw,80px);margin-bottom:65px}.priceBox{border:1px solid #dfe1e7;border-radius:18px;padding:42px}.priceBox>div{display:grid;grid-template-columns:1fr auto;align-items:end;border-bottom:1px solid #e2e4e9;padding-bottom:30px}.priceBox small{color:${A};font-weight:bold;letter-spacing:1px}.priceBox strong{font-size:72px;letter-spacing:-4px}.priceBox span{text-align:right;color:#777c89}.priceBox ul{list-style:none;padding:20px 0;display:grid;gap:18px}.priceBox li:before{content:'✓';color:${A};font-weight:bold;margin-right:12px}.priceBox .primary{width:100%;justify-content:center}.faq{max-width:1120px}.faq h2{font-size:70px}.faq details{border-top:1px solid #dedfe4;padding:27px 0}.faq summary{font-size:22px;font-weight:700;list-style:none;cursor:pointer}.faq summary b{float:right}.faq details p{color:#676d7d;font-size:17px;line-height:1.6;max-width:850px}.final{min-height:640px;position:relative;display:grid;place-items:center;text-align:center;overflow:hidden}.final>div:last-child{position:relative}.final h2{font-size:clamp(58px,6vw,96px);margin-bottom:40px}.final>div>p{color:#787d8b}.footer{min-height:140px;border-top:1px solid #e1e3e9;display:flex;align-items:center;gap:40px}.footer p{color:#747986}.footer div{margin-left:auto;display:flex;gap:30px}.footer a{color:#252a39;text-decoration:none}
-@media(max-width:950px){.shell{width:min(100% - 32px,1540px)}.navlinks{display:none}.hero{min-height:720px}.hero h1,.final h2{letter-spacing:-4px}.logoStrip{gap:14px;font-size:12px}.featureGrid{grid-template-columns:1fr}.feature,.feature.wide{grid-column:1;min-height:560px}.network,.pricing{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.metrics .metric:nth-child(3){border-left:0;border-top:1px solid #e0e2e8}.metrics .metric:nth-child(4){border-top:1px solid #e0e2e8}.workRows{grid-template-columns:1fr}.resultCards{grid-template-columns:1fr}.resultCards .metric+.metric{border-left:0;border-top:1px solid #e0e2e8}.section{padding:82px 0}.intro h2,.example h2,.network h2,.results h2,.pricing h2,.faq h2{letter-spacing:-3px}.pricing{gap:45px}}
-@media(max-width:600px){.nav{height:72px}.brand{font-size:21px}.navcta{padding:12px 14px;font-size:13px}.heroInner{padding-top:85px}.hero h1{font-size:52px;letter-spacing:-3px}.lead{font-size:18px}.primary{padding:18px 22px;font-size:15px}.logoStrip{height:auto;display:grid;padding:22px;margin-top:55px}.logoStrip i{display:none}.intro h2,.example h2,.network h2,.results h2,.pricing h2,.faq h2{font-size:44px;letter-spacing:-2px}.feature{padding:24px}.dashboard{padding:20px}.metrics{grid-template-columns:1fr}.metrics .metric+.metric{border-left:0;border-top:1px solid #e0e2e8}.resultCards .metric strong{font-size:50px}.quote p{font-size:32px}.priceBox{padding:24px}.priceBox strong{font-size:58px}.footer{align-items:flex-start;flex-direction:column;padding:38px 0}.footer div{margin-left:0}}
-`;
