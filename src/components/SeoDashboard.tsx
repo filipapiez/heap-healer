@@ -43,6 +43,9 @@ type SemrushSnapshot = {
   lost_backlinks: number | null;
   organic_keywords: number | null;
   organic_traffic: number | null;
+  synced_at: string | null;
+  sync_status: string | null;
+  sync_error: string | null;
 };
 
 const fmt = (value: number) => value.toLocaleString();
@@ -61,6 +64,7 @@ export default function SeoDashboard() {
   const [backlinks, setBacklinks] = useState<Backlink[]>([]);
   const [geo, setGeo] = useState<GeoCheck[]>([]);
   const [semrush, setSemrush] = useState<SemrushSnapshot | null>(null);
+  const [semrushLoading, setSemrushLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -80,6 +84,7 @@ export default function SeoDashboard() {
 
   useEffect(() => {
     if (!clientId) return;
+    setSemrushLoading(true);
     void (async () => {
       const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = await Promise.all([
         seoDb.from("seo_metrics_daily").select("*").eq("client_id", clientId).order("day"),
@@ -101,7 +106,7 @@ export default function SeoDashboard() {
         seoDb
           .from("seo_semrush_snapshots")
           .select(
-            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic",
+            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic,synced_at,sync_status,sync_error",
           )
           .eq("client_id", clientId)
           .order("day", { ascending: false })
@@ -113,6 +118,7 @@ export default function SeoDashboard() {
       setBacklinks((backlinkRows.data ?? []) as Backlink[]);
       setGeo((geoRows.data ?? []) as GeoCheck[]);
       setSemrush((semrushRow.data ?? null) as SemrushSnapshot | null);
+      setSemrushLoading(false);
     })();
   }, [clientId]);
 
