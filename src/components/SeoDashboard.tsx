@@ -251,6 +251,28 @@ export default function SeoDashboard() {
         )}
       </Card>
 
+      <section className="mb-4 grid gap-4 lg:grid-cols-3">
+        <InsightCard
+          label="Domain authority"
+          value="—"
+          detail="Connect an authority-data provider to begin tracking domain strength and referring domains."
+          action="Data source needed"
+        />
+        <InsightCard
+          label="Content opportunities"
+          value={String(pages.filter((item) => !item.indexed).length)}
+          detail="Pages awaiting indexing, plus future keyword and competitor-gap recommendations."
+          action="View pages"
+        />
+        <InsightCard
+          label="GEO score"
+          value={geo.length ? `${Math.round((mentions / geo.length) * 100)}` : "—"}
+          suffix={geo.length ? "/100" : ""}
+          detail="Share of tracked AI-search questions that currently mention your brand."
+          action={`${geo.length - mentions} visibility gaps`}
+        />
+      </section>
+
       <section className="grid gap-4 xl:grid-cols-[3fr_2fr]">
         <TableCard
           title={`Pages (${pages.length})`}
@@ -359,6 +381,33 @@ function Badge({ children, live }: { children: React.ReactNode; live: boolean })
     >
       {children}
     </span>
+  );
+}
+function InsightCard({
+  label,
+  value,
+  suffix = "",
+  detail,
+  action,
+}: {
+  label: string;
+  value: string;
+  suffix?: string;
+  detail: string;
+  action: string;
+}) {
+  return (
+    <Card className="p-5">
+      <div className="label">{label}</div>
+      <div className="mt-3">
+        <strong className="text-4xl tracking-[-.05em]">{value}</strong>
+        <span className="ml-1 text-sm text-[#8a8f9d]">{suffix}</span>
+      </div>
+      <p className="mt-3 min-h-10 text-xs leading-5 text-[#6b7280]">{detail}</p>
+      <div className="mt-4 border-t border-[#ececf2] pt-3 text-xs font-bold text-[#6366f1]">
+        {action} →
+      </div>
+    </Card>
   );
 }
 function TableCard({

@@ -5,20 +5,41 @@ import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { listAccounts, startConnect, disconnectAccount } from "@/lib/accounts.functions";
 
 type Platform =
-  | "youtube" | "x" | "instagram" | "facebook" | "pinterest"
-  | "linkedin" | "tiktok" | "threads" | "bluesky" | "reddit" | "google_business";
+  | "youtube"
+  | "x"
+  | "instagram"
+  | "facebook"
+  | "pinterest"
+  | "linkedin"
+  | "tiktok"
+  | "threads"
+  | "bluesky"
+  | "reddit"
+  | "google_business";
 
-const PLATFORMS: { id: Platform; label: string; icon: string }[] = [
+const ACTIVE_PLATFORMS: { id: Platform; label: string; icon: string; note: string }[] = [
   { id: "youtube", label: "YouTube", icon: "▶" },
-  { id: "x", label: "X (Twitter)", icon: "𝕏" },
   { id: "facebook", label: "Facebook + Instagram", icon: "f" },
   { id: "threads", label: "Threads", icon: "@" },
-  { id: "pinterest", label: "Pinterest", icon: "P" },
   { id: "linkedin", label: "LinkedIn", icon: "in" },
   { id: "tiktok", label: "TikTok", icon: "♪" },
-  { id: "bluesky", label: "Bluesky", icon: "☁" },
-  { id: "reddit", label: "Reddit", icon: "r/" },
-  { id: "google_business", label: "Google Business", icon: "G" },
+].map((item) => ({ ...item, note: "Secure OAuth" }));
+
+const CMS = [
+  { label: "WordPress", icon: "W", note: "Plugin or application password" },
+  { label: "Shopify", icon: "S", note: "Store app authorization" },
+  { label: "Webflow", icon: "w", note: "Workspace OAuth" },
+  { label: "Framer", icon: "F", note: "CMS API token" },
+  { label: "Ghost", icon: "G", note: "Admin API key" },
+  { label: "Notion", icon: "N", note: "Workspace integration" },
+];
+
+const UPCOMING = [
+  { label: "X", icon: "𝕏" },
+  { label: "Pinterest", icon: "P" },
+  { label: "Reddit", icon: "r/" },
+  { label: "Bluesky", icon: "☁" },
+  { label: "Google Business", icon: "G" },
 ];
 
 export const Route = createFileRoute("/_authenticated/accounts")({
@@ -60,39 +81,67 @@ function AccountsPage() {
       setConnecting(platform);
       return startConnect({ data: { platform, origin: window.location.origin } });
     },
-    onSuccess: (r) => { window.location.href = r.url; },
-    onError: (e) => { setConnecting(null); setError(toMessage(e)); console.error("[accounts] connect failed", e); },
+    onSuccess: (r) => {
+      window.location.href = r.url;
+    },
+    onError: (e) => {
+      setConnecting(null);
+      setError(toMessage(e));
+      console.error("[accounts] connect failed", e);
+    },
   });
 
   const remove = useMutation({
     mutationFn: (accountId: string) => disconnectAccount({ data: { accountId } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["accounts"] }),
-    onError: (e) => { setError(toMessage(e)); console.error("[accounts] disconnect failed", e); },
+    onError: (e) => {
+      setError(toMessage(e));
+      console.error("[accounts] disconnect failed", e);
+    },
   });
 
   const accounts = q.data?.accounts ?? [];
-  const connectedPlatforms = new Set(accounts.filter((a) => a.status === "connected").map((a) => a.platform));
+  const connectedPlatforms = new Set(
+    accounts.filter((a) => a.status === "connected").map((a) => a.platform),
+  );
 
   return (
     <div>
       <PageHeader
-        title="Connected accounts"
-        subtitle="Link a platform once — MentionMyApp publishes to it from every post."
+        title="Connections"
+        subtitle="Connect your analytics, publishing channels, and website CMS in one place."
       />
 
       {error && (
         <div className="mb-4 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-800">{error}</div>
       )}
       {notice && (
-        <div className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{notice}</div>
+        <div className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          {notice}
+        </div>
       )}
+
+      <section className="mb-8 rounded-2xl border border-[#e9eaf2] bg-white p-5 shadow-[0_8px_24px_rgba(23,26,43,.04)]">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="font-display text-lg font-bold">Google Search Console</h2>
+            <p className="mt-1 text-sm text-[var(--color-ink-700)]/60">
+              Required for daily clicks, impressions, indexed-page tracking, and the 90-day
+              baseline.
+            </p>
+          </div>
+          <span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+            OAuth setup required
+          </span>
+        </div>
+      </section>
 
       <section className="mb-8">
         <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-700)]/60">
-          Available platforms
+          Publishing channels available now
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {PLATFORMS.map((p) => {
+          {ACTIVE_PLATFORMS.map((p) => {
             const isConnected = connectedPlatforms.has(p.id);
             const isBusy = connecting === p.id && connect.isPending;
             return (
@@ -108,12 +157,50 @@ function AccountsPage() {
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium">{p.label}</div>
                   <div className="text-xs text-[var(--color-ink-700)]/60">
-                    {isBusy ? "Opening…" : isConnected ? "Add another" : "Connect"}
+                    {isBusy ? "Opening…" : isConnected ? "Add another" : p.note}
                   </div>
                 </div>
               </button>
             );
           })}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-700)]/60">
+          Website & CMS publishing
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {CMS.map((item) => (
+            <div key={item.label} className="card flex items-center gap-3 p-4">
+              <div className="grid h-11 w-11 place-items-center rounded-full border border-[#dfe2ec] bg-white font-display text-lg font-bold">
+                {item.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold">{item.label}</div>
+                <div className="text-xs text-[var(--color-ink-700)]/55">{item.note}</div>
+              </div>
+              <span className="rounded-full bg-[#f1f1f7] px-2 py-1 text-[10px] font-bold text-[#777c8c]">
+                Coming next
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wide text-[var(--color-ink-700)]/60">
+          Additional channels
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {UPCOMING.map((item) => (
+            <span
+              key={item.label}
+              className="rounded-full border border-[#e2e4eb] bg-white px-3 py-2 text-xs font-semibold text-[#737889]"
+            >
+              {item.icon} {item.label} · coming soon
+            </span>
+          ))}
         </div>
       </section>
 
@@ -149,7 +236,9 @@ function AccountsPage() {
                     <div className="mt-0.5 text-xs text-rose-700">{a.error_message}</div>
                   )}
                 </div>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusPill(a.status)}`}>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${statusPill(a.status)}`}
+                >
                   {a.status}
                 </span>
                 <button
@@ -175,7 +264,7 @@ function AccountsPage() {
 function labelFor(p: Platform) {
   if (p === "instagram") return "Instagram";
   if (p === "facebook") return "Facebook Page";
-  return PLATFORMS.find((x) => x.id === p)?.label ?? p;
+  return ACTIVE_PLATFORMS.find((x) => x.id === p)?.label ?? p;
 }
 
 function toMessage(e: unknown): string {
@@ -186,16 +275,24 @@ function toMessage(e: unknown): string {
     const anyE = e as { message?: unknown; error?: unknown };
     if (typeof anyE.message === "string") return anyE.message;
     if (typeof anyE.error === "string") return anyE.error;
-    try { return JSON.stringify(e); } catch { return String(e); }
+    try {
+      return JSON.stringify(e);
+    } catch {
+      return String(e);
+    }
   }
   return String(e);
 }
 
 function statusPill(s: string) {
   switch (s) {
-    case "connected": return "bg-emerald-100 text-emerald-800";
-    case "error": return "bg-rose-100 text-rose-800";
-    case "disconnected": return "bg-[var(--color-mist-100)] text-[var(--color-ink-700)]";
-    default: return "bg-amber-100 text-amber-800";
+    case "connected":
+      return "bg-emerald-100 text-emerald-800";
+    case "error":
+      return "bg-rose-100 text-rose-800";
+    case "disconnected":
+      return "bg-[var(--color-mist-100)] text-[var(--color-ink-700)]";
+    default:
+      return "bg-amber-100 text-amber-800";
   }
 }
