@@ -43,6 +43,9 @@ type SemrushSnapshot = {
   lost_backlinks: number | null;
   organic_keywords: number | null;
   organic_traffic: number | null;
+  synced_at: string | null;
+  sync_status: string | null;
+  sync_error: string | null;
 };
 
 const fmt = (value: number) => value.toLocaleString();
@@ -61,6 +64,7 @@ export default function SeoDashboard() {
   const [backlinks, setBacklinks] = useState<Backlink[]>([]);
   const [geo, setGeo] = useState<GeoCheck[]>([]);
   const [semrush, setSemrush] = useState<SemrushSnapshot | null>(null);
+  const [semrushLoading, setSemrushLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -80,6 +84,7 @@ export default function SeoDashboard() {
 
   useEffect(() => {
     if (!clientId) return;
+    setSemrushLoading(true);
     void (async () => {
       const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = await Promise.all([
         seoDb.from("seo_metrics_daily").select("*").eq("client_id", clientId).order("day"),
@@ -101,7 +106,7 @@ export default function SeoDashboard() {
         seoDb
           .from("seo_semrush_snapshots")
           .select(
-            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic",
+            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic,synced_at,sync_status,sync_error",
           )
           .eq("client_id", clientId)
           .order("day", { ascending: false })
@@ -113,6 +118,7 @@ export default function SeoDashboard() {
       setBacklinks((backlinkRows.data ?? []) as Backlink[]);
       setGeo((geoRows.data ?? []) as GeoCheck[]);
       setSemrush((semrushRow.data ?? null) as SemrushSnapshot | null);
+      setSemrushLoading(false);
     })();
   }, [clientId]);
 
@@ -275,18 +281,34 @@ export default function SeoDashboard() {
 
       <section className="mb-4 grid gap-4 lg:grid-cols-3">
         <InsightCard
-          label="Domain authority"
-          value={semrush?.authority_score != null ? String(semrush.authority_score) : "—"}
-          suffix={semrush?.authority_score != null ? "/100" : ""}
+          label="Semrush Authority Score"
+          value={
+            semrushLoading
+              ? "…"
+              : semrush?.sync_status === "success" && semrush.authority_score != null
+                ? String(semrush.authority_score)
+                : "—"
+          }
+          suffix={
+            !semrushLoading && semrush?.sync_status === "success" && semrush.authority_score != null
+              ? "/100"
+              : ""
+          }
           detail={
-            semrush
-              ? `Semrush Authority Score for ${semrush.domain}, updated ${semrush.day}.`
-              : "Awaiting the first Semrush snapshot for this client."
+            semrushLoading
+              ? "Loading latest Semrush snapshot…"
+              : semrush?.sync_status === "failed"
+                ? `Last Semrush sync failed: ${semrush.sync_error ?? "unknown error"}.`
+                : semrush
+                  ? `Semrush Authority Score for ${semrush.domain}.`
+                  : "No Semrush snapshot yet — the daily sync will populate this."
           }
           action={
-            semrush?.referring_domains != null
-              ? `${fmt(semrush.referring_domains)} referring domains`
-              : "Semrush sync pending"
+            semrushLoading
+              ? "Loading…"
+              : semrush?.synced_at
+                ? `Last synced ${new Date(semrush.synced_at).toLocaleString()}`
+                : "Sync pending"
           }
         />
         <InsightCard
@@ -368,12 +390,20 @@ export default function SeoDashboard() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <span className="label">Semrush snapshot</span>
           <span className="text-xs text-[#6b7280]">
-            {semrush
-              ? `${semrush.domain} · updated ${semrush.day}`
-              : "No Semrush data yet for this client"}
+            {semrushLoading
+              ? "Loading…"
+              : semrush?.synced_at
+                ? `${semrush.domain} · last synced ${new Date(semrush.synced_at).toLocaleString()}`
+                : "No Semrush data yet for this client"}
           </span>
         </div>
-        {semrush ? (
+        {semrushLoading ? (
+          <p className="py-4 text-sm text-[#6b7280]">Loading latest Semrush snapshot…</p>
+        ) : semrush?.sync_status === "failed" ? (
+          <p className="py-4 text-sm text-red-600">
+            Last Semrush sync failed: {semrush.sync_error ?? "unknown error"}. It will retry on the next daily run.
+          </p>
+        ) : semrush?.sync_status === "success" ? (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MiniStat label="Authority Score" value={semrush.authority_score} suffix="/100" />
             <MiniStat label="Total backlinks" value={semrush.total_backlinks} />

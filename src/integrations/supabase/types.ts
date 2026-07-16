@@ -459,6 +459,42 @@ export type Database = {
           },
         ]
       }
+      seo_clients: {
+        Row: {
+          baseline_clicks: number
+          baseline_date: string
+          baseline_impressions: number
+          baseline_indexed: number
+          created_at: string
+          id: string
+          name: string
+          report_token: string
+          website: string
+        }
+        Insert: {
+          baseline_clicks?: number
+          baseline_date?: string
+          baseline_impressions?: number
+          baseline_indexed?: number
+          created_at?: string
+          id?: string
+          name: string
+          report_token?: string
+          website: string
+        }
+        Update: {
+          baseline_clicks?: number
+          baseline_date?: string
+          baseline_impressions?: number
+          baseline_indexed?: number
+          created_at?: string
+          id?: string
+          name?: string
+          report_token?: string
+          website?: string
+        }
+        Relationships: []
+      }
       seo_semrush_snapshots: {
         Row: {
           authority_score: number | null
@@ -473,6 +509,9 @@ export type Database = {
           organic_traffic: number | null
           raw: Json | null
           referring_domains: number | null
+          sync_error: string | null
+          sync_status: string
+          synced_at: string
           total_backlinks: number | null
         }
         Insert: {
@@ -488,6 +527,9 @@ export type Database = {
           organic_traffic?: number | null
           raw?: Json | null
           referring_domains?: number | null
+          sync_error?: string | null
+          sync_status?: string
+          synced_at?: string
           total_backlinks?: number | null
         }
         Update: {
@@ -503,6 +545,9 @@ export type Database = {
           organic_traffic?: number | null
           raw?: Json | null
           referring_domains?: number | null
+          sync_error?: string | null
+          sync_status?: string
+          synced_at?: string
           total_backlinks?: number | null
         }
         Relationships: []
