@@ -15,6 +15,7 @@
 // =============================================================
 
 import { useState } from "react";
+import EngineRotator from "@/components/EngineRotator";
 import WorldMap from "@/components/WorldMap";
 
 // ---------- Brand ----------
@@ -207,7 +208,8 @@ export default function LandingPage() {
               maxWidth: 900,
             }}
           >
-            Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span>
+            Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
+            <EngineRotator />
           </h1>
           <p
             style={{
