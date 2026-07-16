@@ -16,16 +16,10 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 const NAV = [
-  { to: "/dashboard", label: "Overview", icon: "◫" },
-  { to: "/new-post", label: "New Post", icon: "＋" },
-  { to: "/media", label: "Media Library", icon: "▤" },
-  { to: "/accounts", label: "Connected Accounts", icon: "⛓" },
-  { to: "/scheduled", label: "Scheduled", icon: "◷" },
-  { to: "/engagement", label: "Engagement", icon: "♥" },
-  { to: "/seo-audit", label: "SEO Audit", icon: "★" },
-  { to: "/history", label: "History", icon: "≡" },
+  { to: "/dashboard", label: "Growth overview", icon: "⌁" },
+  { to: "/seo-audit", label: "SEO audit", icon: "✓" },
+  { to: "/resources", label: "Growth resources", icon: "◇" },
   { to: "/settings", label: "Settings", icon: "⚙" },
-  { to: "/admin", label: "Admin", icon: "▲" },
 ] as const;
 
 function DashboardLayout() {
@@ -47,35 +41,53 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[var(--color-mist-50)] font-body text-[var(--color-ink-900)]">
-      <aside className="flex w-64 shrink-0 flex-col bg-[#0B1020] text-white">
-        <div className="px-5 pb-2 pt-6">
-          <div className="font-display text-xl" style={{ fontWeight: 800 }}>
-            Mention<span style={{ color: "#7C7CF0" }}>My</span>App
+    <div className="flex min-h-screen bg-[#f8f8fa] font-body text-[#111426]">
+      <aside className="flex w-[278px] shrink-0 flex-col border-r border-[#e5e6eb] bg-white">
+        <div className="px-7 pb-5 pt-7">
+          <div
+            className="font-display text-[22px]"
+            style={{ fontWeight: 800, letterSpacing: "-.05em" }}
+          >
+            MentionMy<span style={{ color: "#6366F1" }}>App</span>
           </div>
-          <div className="text-[11px] text-white/40">Compose once. Publish everywhere.</div>
+          <div className="mt-1 text-[11px] font-medium uppercase tracking-[.13em] text-[#969aa8]">
+            Organic growth workspace
+          </div>
         </div>
         <WorkspaceSwitcher />
-        <nav className="mt-2 flex-1 space-y-0.5 px-3">
+        <div className="px-6 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.16em] text-[#a2a6b3]">
+          Workspace
+        </div>
+        <nav className="flex-1 space-y-1 px-4">
           {NAV.map((item) => (
-            <Link key={item.to} to={item.to}
-              activeProps={{ className: "!text-white", style: { background: "rgba(91,91,214,.18)", borderLeft: "3px solid #5B5BD6", paddingLeft: "calc(0.75rem - 3px)" } }}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/5 hover:text-white"
-              style={{ color: "#A9B0CC" }}>
-              <span className="w-4 text-center opacity-80">{item.icon}</span>
+            <Link
+              key={item.to}
+              to={item.to}
+              activeProps={{ className: "!bg-[#efefff] !text-[#4f46e5]" }}
+              className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-[#666c7d] transition-colors hover:bg-[#f5f5f8] hover:text-[#171a2b]"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-lg border border-[#e4e5eb] bg-white text-xs">
+                {item.icon}
+              </span>
               {item.label}
             </Link>
           ))}
         </nav>
-        <div className="border-t border-white/10 p-3 text-xs text-white/50">
-          <div className="truncate">{wsQuery.data?.user.email}</div>
-          <button onClick={signOut} disabled={signingOut}
-            className="mt-2 w-full rounded-md px-2 py-1 text-left text-white/70 hover:bg-white/5 hover:text-white">
+        <div className="m-4 rounded-2xl border border-[#e4e5eb] bg-[#fafafd] p-4 text-xs text-[#737889]">
+          <div className="mb-1 text-[10px] font-bold uppercase tracking-[.12em] text-[#9a9eaa]">
+            Signed in as
+          </div>
+          <div className="truncate font-semibold text-[#262a39]">{wsQuery.data?.user.email}</div>
+          <button
+            onClick={signOut}
+            disabled={signingOut}
+            className="mt-3 text-[#6366f1] hover:underline"
+          >
             {signingOut ? "Signing out…" : "Sign out"}
           </button>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-8">
+      <main className="min-w-0 flex-1 p-8 lg:p-12">
         <Outlet />
       </main>
     </div>
