@@ -104,6 +104,9 @@ async function syncClient(client: Client) {
     organic_keywords: num(ranks.Or),
     organic_traffic: num(ranks.Ot),
     raw: { overview, ranks },
+    synced_at: new Date().toISOString(),
+    sync_status: "success" as const,
+    sync_error: null as string | null,
   };
 
   const { error } = await supabaseAdmin
@@ -111,6 +114,23 @@ async function syncClient(client: Client) {
     .upsert(record as never, { onConflict: "client_id,day" });
   if (error) throw error;
   return record;
+}
+
+async function recordFailure(clientId: string, domain: string, message: string) {
+  const today = new Date().toISOString().slice(0, 10);
+  await supabaseAdmin
+    .from("seo_semrush_snapshots" as never)
+    .upsert(
+      {
+        client_id: clientId,
+        day: today,
+        domain,
+        synced_at: new Date().toISOString(),
+        sync_status: "failed",
+        sync_error: message.slice(0, 1000),
+      } as never,
+      { onConflict: "client_id,day" },
+    );
 }
 
 export async function syncAllSemrushClients() {
@@ -125,6 +145,12 @@ export async function syncAllSemrushClients() {
       results.push({ clientId: client.id, ok: true, domain: snapshot.domain });
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : String(cause);
+      console.error(`[semrush-sync] client ${client.id} failed:`, message);
+      try {
+        await recordFailure(client.id, rootDomain(client.website), message);
+      } catch (recErr) {
+        console.error(`[semrush-sync] failed to record failure for ${client.id}:`, recErr);
+      }
       results.push({ clientId: client.id, ok: false, error: message });
     }
   }
