@@ -4,13 +4,20 @@ const GATEWAY = "https://connector-gateway.lovable.dev/semrush";
 
 type Client = { id: string; website: string };
 
-function rootDomain(website: string) {
-  try {
-    const url = new URL(website.startsWith("http") ? website : `https://${website}`);
-    return url.hostname.replace(/^www\./, "");
-  } catch {
-    return website.replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
-  }
+// Strip protocol, www, path, query, fragment, trailing slash. Return null if the
+// remaining hostname is not a valid public root domain (needs at least one dot
+// and only hostname-legal characters).
+export function normalizeHostname(website: string | null | undefined): string | null {
+  if (!website) return null;
+  let raw = website.trim().toLowerCase();
+  if (!raw) return null;
+  raw = raw.replace(/^[a-z][a-z0-9+.-]*:\/\//, "");
+  raw = raw.split("/")[0].split("?")[0].split("#")[0];
+  raw = raw.replace(/^www\./, "");
+  raw = raw.replace(/\.+$/, "");
+  if (!raw || !/^[a-z0-9.-]+$/.test(raw)) return null;
+  if (!raw.includes(".")) return null;
+  return raw;
 }
 
 async function callSemrush(path: string, params: Record<string, string>) {
@@ -25,14 +32,26 @@ async function callSemrush(path: string, params: Record<string, string>) {
     },
   });
   const body = await res.text();
-  if (!res.ok) throw new Error(`Semrush ${path} failed [${res.status}]: ${body}`);
-  try {
-    return JSON.parse(body) as {
-      data?: { columnNames?: string[]; rows?: (string | number)[][] };
-    };
-  } catch {
-    throw new Error(`Semrush ${path} returned non-JSON: ${body.slice(0, 200)}`);
+  const preview = body.slice(0, 400);
+  if (!res.ok) {
+    console.error("[semrush-sync] gateway error", { endpoint: path, params, status: res.status, body: preview });
+    throw new Error(`Semrush ${path} failed [${res.status}]: ${preview}`);
   }
+  let json: { data?: { columnNames?: string[]; rows?: (string | number)[][] } };
+  try {
+    json = JSON.parse(body);
+  } catch {
+    console.error("[semrush-sync] non-JSON response", { endpoint: path, params, body: preview });
+    throw new Error(`Semrush ${path} returned non-JSON: ${preview}`);
+  }
+  // Semrush wraps in-band errors in columnNames like "ERROR 50 :: NOTHING FOUND".
+  const cols = json.data?.columnNames ?? [];
+  const inBandError = cols.find((c) => c.startsWith("ERROR "));
+  if (inBandError) {
+    console.error("[semrush-sync] provider error", { endpoint: path, params, error: inBandError });
+    throw new Error(`Semrush ${path} provider error: ${inBandError}`);
+  }
+  return json;
 }
 
 function firstRow(payload: {
@@ -54,12 +73,15 @@ const num = (v: string | undefined) => {
 };
 
 async function syncClient(client: Client) {
-  const domain = rootDomain(client.website);
+  const domain = normalizeHostname(client.website);
+  if (!domain) throw new Error(`Invalid website hostname: ${client.website}`);
   const [overviewPayload, ranksPayload] = await Promise.all([
     callSemrush("/backlinks/backlinks_overview", {
       target: domain,
       target_type: "root_domain",
-      export_columns: "ascore,total,domains_num,domains_new,domains_lost",
+      // domains_new/domains_lost are not accepted by backlinks_overview (returns 400).
+      // We derive new/lost link counts by diffing against the prior snapshot below.
+      export_columns: "ascore,total,domains_num",
     }),
     callSemrush("/domains/domain_ranks", {
       domain,
@@ -101,8 +123,9 @@ async function syncClient(client: Client) {
     referring_domains: num(overview.domains_num),
     new_backlinks: newBacklinks,
     lost_backlinks: lostBacklinks,
-    organic_keywords: num(ranks.Or),
-    organic_traffic: num(ranks.Ot),
+    // domain_ranks returns display names, not the request codes.
+    organic_keywords: num(ranks["Organic Keywords"]),
+    organic_traffic: num(ranks["Organic Traffic"]),
     raw: { overview, ranks },
     synced_at: new Date().toISOString(),
     sync_status: "success" as const,
@@ -140,6 +163,12 @@ export async function syncAllSemrushClients() {
   if (error) throw error;
   const results = [];
   for (const client of (data ?? []) as unknown as Client[]) {
+    const domain = normalizeHostname(client.website);
+    if (!domain) {
+      console.warn(`[semrush-sync] skipping client ${client.id}: no valid hostname in ${client.website}`);
+      results.push({ clientId: client.id, ok: false, skipped: true, error: "Invalid website hostname" });
+      continue;
+    }
     try {
       const snapshot = await syncClient(client);
       results.push({ clientId: client.id, ok: true, domain: snapshot.domain });
@@ -147,7 +176,7 @@ export async function syncAllSemrushClients() {
       const message = cause instanceof Error ? cause.message : String(cause);
       console.error(`[semrush-sync] client ${client.id} failed:`, message);
       try {
-        await recordFailure(client.id, rootDomain(client.website), message);
+        await recordFailure(client.id, domain, message);
       } catch (recErr) {
         console.error(`[semrush-sync] failed to record failure for ${client.id}:`, recErr);
       }
