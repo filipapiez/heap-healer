@@ -11,6 +11,7 @@ const STEPS = 6;
 const CHECKOUT_URL =
   "https://buy.stripe.com/14A7sE0dr9sC7jt9eV0oM00?client_reference_id=3368c149-80ef-41e4-89d7-142cd2f92eb6";
 const SECONDARY_CHECKOUT_URL = "https://buy.stripe.com/aFa5kF3Y00ifbpf8KbcAo00";
+const OWNER_EMAIL = "filipapiez@gmail.com";
 const MARKETS = [
   "Global (all countries)",
   "United States",
@@ -279,11 +280,21 @@ export default function SeoWizard() {
   const submit = async () => {
     await persist(STEPS, true);
     setDone(true);
+    const { data } = await supabase.auth.getUser();
+    if (data.user?.email?.toLowerCase() === OWNER_EMAIL) {
+      window.location.assign("/dashboard");
+      return;
+    }
     window.location.assign(CHECKOUT_URL);
   };
   const submitSecondary = async () => {
     await persist(STEPS, true);
     setDone(true);
+    const { data } = await supabase.auth.getUser();
+    if (data.user?.email?.toLowerCase() === OWNER_EMAIL) {
+      window.location.assign("/dashboard");
+      return;
+    }
     window.location.assign(SECONDARY_CHECKOUT_URL);
   };
   const canContinue = useMemo(() => {
@@ -310,7 +321,7 @@ export default function SeoWizard() {
       <style>{`
       .seo-wizard{min-height:100vh;background:#fff;color:${INK};font-family:Inter,system-ui,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(440px,1fr);grid-template-rows:72px minmax(0,1fr)}
       .seo-topbar{grid-column:1/-1;display:flex;align-items:center;padding:0 clamp(24px,4vw,64px);border-bottom:1px solid ${LINE};background:rgba(255,255,255,.94);backdrop-filter:blur(14px);z-index:10}.seo-main{padding:48px clamp(24px,7vw,92px);display:flex;flex-direction:column;justify-content:center;max-width:780px}
-      .seo-brand{display:flex;align-items:center;gap:11px;font-family:Sora,Inter,system-ui,sans-serif;font-weight:850;font-size:21px;letter-spacing:-.04em}.seo-brand-mark{width:39px;height:39px;filter:drop-shadow(0 10px 14px #5b5bd638);animation:brandFloat 4s ease-in-out infinite}.seo-brand em{font-style:normal;color:${ACCENT}}
+      .seo-brand{display:flex;align-items:center;font-family:Sora,Inter,system-ui,sans-serif;font-weight:850;font-size:21px;letter-spacing:-.04em}.seo-brand em{font-style:normal;color:${ACCENT}}
       .seo-progress{height:5px;background:${PANEL};border-radius:99px;overflow:hidden;margin-bottom:18px}.seo-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,${ACCENT},#8b7cf6);transition:width .45s cubic-bezier(.22,1,.36,1)}
       .step-card{animation:stepIn .45s cubic-bezier(.22,1,.36,1)}
       .seo-wizard input,.seo-wizard textarea,.seo-wizard select{box-sizing:border-box;width:100%;border:1.5px solid ${LINE};border-radius:14px;padding:15px 17px;font:inherit;color:${INK};outline:none;background:#fff}
@@ -331,7 +342,6 @@ export default function SeoWizard() {
     `}</style>
       <header className="seo-topbar">
         <div className="seo-brand" aria-label="MentionMyApp">
-          <LogoMark />
           <span>
             MentionMy<em>App</em>
           </span>
@@ -693,29 +703,6 @@ function TrendIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="m4 17 5-5 4 3 7-8M15 7h5v5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function LogoMark() {
-  return (
-    <svg className="seo-brand-mark" viewBox="0 0 40 40" role="img" aria-label="MentionMyApp logo">
-      <defs>
-        <linearGradient id="mma-logo" x1="5" y1="4" x2="35" y2="36" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#7c7cf0" />
-          <stop offset="1" stopColor="#4747c2" />
-        </linearGradient>
-      </defs>
-      <rect width="40" height="40" rx="12" fill="url(#mma-logo)" />
-      <path
-        d="M10 27V14.5c0-1 .8-1.8 1.8-1.8h1.4c.6 0 1.2.3 1.5.9L20 22l5.3-8.4c.3-.6.9-.9 1.5-.9h1.4c1 0 1.8.8 1.8 1.8V27"
-        fill="none"
-        stroke="white"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="30" cy="9" r="4" fill="#7cf0be" stroke="white" strokeWidth="2" />
     </svg>
   );
 }
