@@ -1,0 +1,136 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+type StateRow = {
+  provider: string;
+  workspace_id: string;
+  redirect_origin: string;
+  expires_at: string;
+  metadata?: { website?: string };
+};
+
+type Site = { siteUrl: string; permissionLevel?: string };
+
+function comparable(value: string) {
+  return value
+    .replace(/^sc-domain:/, "")
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/\/$/, "")
+    .toLowerCase();
+}
+
+export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
+  server: {
+    handlers: {
+      GET: async ({ request }) => {
+        const requestUrl = new URL(request.url);
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const finish = (origin: string, status: "ok" | "error", message: string) => {
+          const target = new URL("/accounts", origin);
+          target.searchParams.set("gsc", status);
+          target.searchParams.set("msg", message);
+          return Response.redirect(target, 302);
+        };
+        const code = requestUrl.searchParams.get("code");
+        const state = requestUrl.searchParams.get("state");
+        const oauthError = requestUrl.searchParams.get("error");
+        if (!state) return finish(requestUrl.origin, "error", "missing_state");
+        const { data } = await supabaseAdmin
+          .from("oauth_states" as never)
+          .select("provider,workspace_id,redirect_origin,expires_at,metadata")
+          .eq("state", state)
+          .maybeSingle();
+        const row = data as unknown as StateRow | null;
+        if (!row) return finish(requestUrl.origin, "error", "invalid_state");
+        await supabaseAdmin
+          .from("oauth_states" as never)
+          .delete()
+          .eq("state", state);
+        if (row.provider !== "gsc")
+          return finish(row.redirect_origin, "error", "provider_mismatch");
+        if (new Date(row.expires_at) < new Date())
+          return finish(row.redirect_origin, "error", "state_expired");
+        if (oauthError) return finish(row.redirect_origin, "error", oauthError);
+        if (!code) return finish(row.redirect_origin, "error", "missing_code");
+
+        try {
+          const clientId =
+            process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID ?? process.env.GOOGLE_OAUTH_CLIENT_ID;
+          const clientSecret =
+            process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_SECRET ??
+            process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+          if (!clientId || !clientSecret) throw new Error("Google OAuth is not configured");
+          const redirectUri = `${row.redirect_origin}/api/public/oauth/gsc/callback`;
+          const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+            method: "POST",
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              client_id: clientId,
+              client_secret: clientSecret,
+              code,
+              grant_type: "authorization_code",
+              redirect_uri: redirectUri,
+            }),
+          });
+          if (!tokenResponse.ok)
+            throw new Error(`Google token exchange failed (${tokenResponse.status})`);
+          const tokens = (await tokenResponse.json()) as {
+            access_token?: string;
+            refresh_token?: string;
+          };
+          if (!tokens.access_token) throw new Error("Google did not return an access token");
+          const sitesResponse = await fetch("https://www.googleapis.com/webmasters/v3/sites", {
+            headers: { authorization: `Bearer ${tokens.access_token}` },
+          });
+          if (!sitesResponse.ok)
+            throw new Error(`Search Console site lookup failed (${sitesResponse.status})`);
+          const { siteEntry = [] } = (await sitesResponse.json()) as { siteEntry?: Site[] };
+          const requested = comparable(row.metadata?.website ?? "");
+          const property =
+            siteEntry.find((site) => comparable(site.siteUrl) === requested) ?? siteEntry[0];
+          if (!property)
+            throw new Error("No Search Console properties are available for this Google account");
+          const { data: client } = await supabaseAdmin
+            .from("seo_clients" as never)
+            .select("id")
+            .eq("workspace_id", row.workspace_id)
+            .single();
+          const clientIdRow = (client as unknown as { id: string }).id;
+          const { data: existing } = await supabaseAdmin
+            .from("seo_gsc_connections" as never)
+            .select("refresh_token")
+            .eq("client_id", clientIdRow)
+            .maybeSingle();
+          const refreshToken =
+            tokens.refresh_token ??
+            (existing as unknown as { refresh_token?: string } | null)?.refresh_token;
+          if (!refreshToken)
+            throw new Error(
+              "Google did not return a refresh token; reconnect and approve access again",
+            );
+          const { error } = await supabaseAdmin.from("seo_gsc_connections" as never).upsert(
+            {
+              client_id: clientIdRow,
+              property_url: property.siteUrl,
+              refresh_token: refreshToken,
+              active: true,
+              last_error: null,
+            } as never,
+            { onConflict: "client_id" },
+          );
+          if (error) throw error;
+          const { syncAllGscClients } = await import("@/lib/gsc-sync.server");
+          await syncAllGscClients();
+          return finish(row.redirect_origin, "ok", "Search Console connected");
+        } catch (error) {
+          console.error("[gsc-oauth] callback failed", error);
+          return finish(
+            row.redirect_origin,
+            "error",
+            error instanceof Error ? error.message : "connection_failed",
+          );
+        }
+      },
+    },
+  },
+});

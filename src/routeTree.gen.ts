@@ -41,6 +41,8 @@ import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/p
 import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
 import { Route as ApiPublicOauthMetaCallbackRouteImport } from './routes/api/public/oauth/meta/callback'
 import { Route as ApiPublicOauthLinkedinCallbackRouteImport } from './routes/api/public/oauth/linkedin/callback'
+import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
+import { Route as ApiPublicOauthGithubCallbackRouteImport } from './routes/api/public/oauth/github/callback'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -206,6 +208,18 @@ const ApiPublicOauthLinkedinCallbackRoute =
     path: '/api/public/oauth/linkedin/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOauthGscCallbackRoute =
+  ApiPublicOauthGscCallbackRouteImport.update({
+    id: '/api/public/oauth/gsc/callback',
+    path: '/api/public/oauth/gsc/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicOauthGithubCallbackRoute =
+  ApiPublicOauthGithubCallbackRouteImport.update({
+    id: '/api/public/oauth/github/callback',
+    path: '/api/public/oauth/github/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -234,6 +248,8 @@ export interface FileRoutesByFullPath {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
+  '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -267,6 +283,8 @@ export interface FileRoutesByTo {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
+  '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -302,6 +320,8 @@ export interface FileRoutesById {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
+  '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -337,6 +357,8 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/oauth/github/callback'
+    | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -370,6 +392,8 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/oauth/github/callback'
+    | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -404,6 +428,8 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/oauth/github/callback'
+    | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -428,6 +454,8 @@ export interface RootRouteChildren {
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicSyncGscRoute: typeof ApiPublicSyncGscRoute
+  ApiPublicOauthGithubCallbackRoute: typeof ApiPublicOauthGithubCallbackRoute
+  ApiPublicOauthGscCallbackRoute: typeof ApiPublicOauthGscCallbackRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
   ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
@@ -661,6 +689,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOauthLinkedinCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/gsc/callback': {
+      id: '/api/public/oauth/gsc/callback'
+      path: '/api/public/oauth/gsc/callback'
+      fullPath: '/api/public/oauth/gsc/callback'
+      preLoaderRoute: typeof ApiPublicOauthGscCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/oauth/github/callback': {
+      id: '/api/public/oauth/github/callback'
+      path: '/api/public/oauth/github/callback'
+      fullPath: '/api/public/oauth/github/callback'
+      preLoaderRoute: typeof ApiPublicOauthGithubCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -722,6 +764,8 @@ const rootRouteChildren: RootRouteChildren = {
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicSyncGscRoute: ApiPublicSyncGscRoute,
+  ApiPublicOauthGithubCallbackRoute: ApiPublicOauthGithubCallbackRoute,
+  ApiPublicOauthGscCallbackRoute: ApiPublicOauthGscCallbackRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
   ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,

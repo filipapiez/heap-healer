@@ -13,8 +13,10 @@ type SearchRow = {
 };
 
 async function accessToken(refreshToken: string) {
-  const clientId = process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_SECRET;
+  const clientId =
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID ?? process.env.GOOGLE_OAUTH_CLIENT_ID;
+  const clientSecret =
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_SECRET ?? process.env.GOOGLE_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret)
     throw new Error("Missing Google Search Console OAuth environment variables");
   const response = await fetch("https://oauth2.googleapis.com/token", {
