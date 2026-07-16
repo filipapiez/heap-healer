@@ -3,6 +3,20 @@ import { PageHeader } from "@/components/PageHeader";
 
 const CMS = [
   {
+    label: "Lovable",
+    icon: "L",
+    description:
+      "Connect the GitHub repository behind your Lovable project. SEO changes are delivered on a reviewable pull request before Lovable deploys them.",
+    setup: "GitHub App",
+  },
+  {
+    label: "Cursor",
+    icon: "C",
+    description:
+      "Connect the website repository you edit in Cursor. MentionMyApp creates a branch and pull request with pages, metadata, schema, and internal links.",
+    setup: "GitHub App",
+  },
+  {
     label: "WordPress",
     icon: "W",
     description: "Publish and update SEO pages using a WordPress application password or plugin.",
@@ -88,9 +102,12 @@ function WebsiteConnections() {
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl font-bold">Choose your website platform</h2>
+          <h2 className="font-display text-xl font-bold">
+            Choose your website platform or workflow
+          </h2>
           <p className="mt-1 text-sm text-[var(--color-ink-700)]/55">
-            One CMS connection is enough. Customers do not need to connect every platform.
+            One CMS or repository connection is enough. Customers do not need to connect every
+            platform.
           </p>
         </div>
         <span className="rounded-full border border-[#e1e3eb] bg-white px-3 py-2 text-xs font-semibold text-[#737889]">
