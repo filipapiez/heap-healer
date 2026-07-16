@@ -34,6 +34,7 @@ import { Route as AuthenticatedEngagementRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
+import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
@@ -165,6 +166,11 @@ const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicSyncGscRoute = ApiPublicSyncGscRouteImport.update({
+  id: '/api/public/sync-gsc',
+  path: '/api/public/sync-gsc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
   id: '/api/public/run-scheduled',
   path: '/api/public/run-scheduled',
@@ -227,6 +233,7 @@ export interface FileRoutesByFullPath {
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
+  '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByTo {
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
+  '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -293,6 +301,7 @@ export interface FileRoutesById {
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
+  '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
@@ -327,6 +336,7 @@ export interface FileRouteTypes {
     | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
+    | '/api/public/sync-gsc'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
+    | '/api/public/sync-gsc'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -392,6 +403,7 @@ export interface FileRouteTypes {
     | '/report/$token'
     | '/resources/$slug'
     | '/api/public/run-scheduled'
+    | '/api/public/sync-gsc'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/threads/callback'
@@ -415,6 +427,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
+  ApiPublicSyncGscRoute: typeof ApiPublicSyncGscRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
   ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
@@ -599,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/sync-gsc': {
+      id: '/api/public/sync-gsc'
+      path: '/api/public/sync-gsc'
+      fullPath: '/api/public/sync-gsc'
+      preLoaderRoute: typeof ApiPublicSyncGscRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/run-scheduled': {
       id: '/api/public/run-scheduled'
       path: '/api/public/run-scheduled'
@@ -701,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
+  ApiPublicSyncGscRoute: ApiPublicSyncGscRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
   ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,

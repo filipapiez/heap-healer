@@ -58,4 +58,16 @@ export default {
       });
     }
   },
+  async scheduled(
+    _event: unknown,
+    _env: unknown,
+    ctx: { waitUntil?: (promise: Promise<unknown>) => void },
+  ) {
+    const task = import("./lib/gsc-sync.server")
+      .then(({ syncAllGscClients }) => syncAllGscClients())
+      .then((results) => console.info(`[gsc-sync] synced ${results.length} client(s)`))
+      .catch((error) => console.error("[gsc-sync] daily sync failed", error));
+    if (ctx.waitUntil) ctx.waitUntil(task);
+    else await task;
+  },
 };
