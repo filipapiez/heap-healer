@@ -10,7 +10,10 @@ export const Route = createFileRoute("/_authenticated/settings")({
 });
 
 function SettingsPage() {
-  const { data } = useQuery({ queryKey: ["current-workspace"], queryFn: () => getCurrentWorkspace() });
+  const { data } = useQuery({
+    queryKey: ["current-workspace"],
+    queryFn: () => getCurrentWorkspace(),
+  });
   return (
     <div>
       <PageHeader title="Settings" />
@@ -26,8 +29,14 @@ function SettingsPage() {
         <div className="card p-5">
           <div className="text-sm font-semibold">Security</div>
           <ul className="mt-2 space-y-1 text-xs text-[var(--color-ink-700)]/60">
-            <li>· Social accounts connect via each platform's official authorization — we never store platform passwords.</li>
-            <li>· Platform access tokens are held by the publishing provider, not in this app's database.</li>
+            <li>
+              · Search Console uses read-only Google authorization; CMS credentials are stored
+              server-side and never shown in the browser.
+            </li>
+            <li>
+              · Platform access tokens are held by the publishing provider, not in this app's
+              database.
+            </li>
             <li>· Media files are served through short-lived signed URLs.</li>
             <li>· Every publish attempt is logged with sanitized metadata for auditing.</li>
           </ul>
