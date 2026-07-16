@@ -390,12 +390,20 @@ export default function SeoDashboard() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <span className="label">Semrush snapshot</span>
           <span className="text-xs text-[#6b7280]">
-            {semrush
-              ? `${semrush.domain} · updated ${semrush.day}`
-              : "No Semrush data yet for this client"}
+            {semrushLoading
+              ? "Loading…"
+              : semrush?.synced_at
+                ? `${semrush.domain} · last synced ${new Date(semrush.synced_at).toLocaleString()}`
+                : "No Semrush data yet for this client"}
           </span>
         </div>
-        {semrush ? (
+        {semrushLoading ? (
+          <p className="py-4 text-sm text-[#6b7280]">Loading latest Semrush snapshot…</p>
+        ) : semrush?.sync_status === "failed" ? (
+          <p className="py-4 text-sm text-red-600">
+            Last Semrush sync failed: {semrush.sync_error ?? "unknown error"}. It will retry on the next daily run.
+          </p>
+        ) : semrush?.sync_status === "success" ? (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MiniStat label="Authority Score" value={semrush.authority_score} suffix="/100" />
             <MiniStat label="Total backlinks" value={semrush.total_backlinks} />
