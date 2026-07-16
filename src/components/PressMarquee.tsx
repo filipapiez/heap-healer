@@ -36,7 +36,7 @@ export default function PressMarquee({
 
   return (
     <div
-      style={{ padding: "26px 0 10px" }}
+      style={{ padding: "38px 0 24px", position: "relative" }}
       aria-label={`${label}: ${OUTLETS.map((o) => o.name).join(", ")}`}
     >
       <style>{`

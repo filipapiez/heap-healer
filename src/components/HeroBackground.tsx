@@ -20,18 +20,18 @@ import EngineIcon, { ENGINE_LIST } from "@/components/engineIcons";
 // Deterministic scatter (percent coords, avoids the masked center anyway)
 const TILES: { x: number; y: number; c: number; s: number; d: number }[] = [
   { x: 6, y: 12, c: 4, s: 40, d: 0.0 },
-  { x: 14, y: 58, c: 0, s: 34, d: 1.2 },
-  { x: 9, y: 84, c: 2, s: 38, d: 2.1 },
+  { x: 14, y: 42, c: 0, s: 34, d: 1.2 },
+  { x: 9, y: 28, c: 2, s: 38, d: 2.1 },
   { x: 22, y: 30, c: 3, s: 30, d: 0.6 },
-  { x: 30, y: 74, c: 1, s: 36, d: 1.8 },
+  { x: 30, y: 38, c: 1, s: 36, d: 1.8 },
   { x: 38, y: 10, c: 2, s: 32, d: 2.6 },
-  { x: 48, y: 88, c: 4, s: 34, d: 0.9 },
+  { x: 48, y: 18, c: 4, s: 34, d: 0.9 },
   { x: 60, y: 8, c: 1, s: 38, d: 1.5 },
-  { x: 70, y: 78, c: 3, s: 32, d: 2.9 },
+  { x: 70, y: 34, c: 3, s: 32, d: 2.9 },
   { x: 78, y: 26, c: 0, s: 40, d: 0.4 },
-  { x: 86, y: 62, c: 2, s: 34, d: 2.3 },
+  { x: 86, y: 40, c: 2, s: 34, d: 2.3 },
   { x: 93, y: 16, c: 1, s: 36, d: 1.1 },
-  { x: 94, y: 86, c: 4, s: 30, d: 1.9 },
+  { x: 94, y: 36, c: 4, s: 30, d: 1.9 },
 ];
 
 export default function HeroBackground({
