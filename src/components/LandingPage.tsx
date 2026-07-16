@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import EngineRotator from "@/components/EngineRotator";
+import PressMarquee from "@/components/PressMarquee";
 import WorldMap from "@/components/WorldMap";
 
 // ---------- Brand ----------
@@ -264,6 +265,8 @@ export default function LandingPage() {
           )}
         </div>
       </header>
+
+      <PressMarquee />
 
       {/* ---------- FREE GEO AUDIT WIDGET ---------- */}
       <section className="lp-sec" style={{ padding: "36px 20px 20px" }}>
