@@ -281,18 +281,34 @@ export default function SeoDashboard() {
 
       <section className="mb-4 grid gap-4 lg:grid-cols-3">
         <InsightCard
-          label="Domain authority"
-          value={semrush?.authority_score != null ? String(semrush.authority_score) : "—"}
-          suffix={semrush?.authority_score != null ? "/100" : ""}
+          label="Semrush Authority Score"
+          value={
+            semrushLoading
+              ? "…"
+              : semrush?.sync_status === "success" && semrush.authority_score != null
+                ? String(semrush.authority_score)
+                : "—"
+          }
+          suffix={
+            !semrushLoading && semrush?.sync_status === "success" && semrush.authority_score != null
+              ? "/100"
+              : ""
+          }
           detail={
-            semrush
-              ? `Semrush Authority Score for ${semrush.domain}, updated ${semrush.day}.`
-              : "Awaiting the first Semrush snapshot for this client."
+            semrushLoading
+              ? "Loading latest Semrush snapshot…"
+              : semrush?.sync_status === "failed"
+                ? `Last Semrush sync failed: ${semrush.sync_error ?? "unknown error"}.`
+                : semrush
+                  ? `Semrush Authority Score for ${semrush.domain}.`
+                  : "No Semrush snapshot yet — the daily sync will populate this."
           }
           action={
-            semrush?.referring_domains != null
-              ? `${fmt(semrush.referring_domains)} referring domains`
-              : "Semrush sync pending"
+            semrushLoading
+              ? "Loading…"
+              : semrush?.synced_at
+                ? `Last synced ${new Date(semrush.synced_at).toLocaleString()}`
+                : "Sync pending"
           }
         />
         <InsightCard
