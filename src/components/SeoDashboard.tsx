@@ -276,9 +276,18 @@ export default function SeoDashboard() {
       <section className="mb-4 grid gap-4 lg:grid-cols-3">
         <InsightCard
           label="Domain authority"
-          value="—"
-          detail="Connect an authority-data provider to begin tracking domain strength and referring domains."
-          action="Data source needed"
+          value={semrush?.authority_score != null ? String(semrush.authority_score) : "—"}
+          suffix={semrush?.authority_score != null ? "/100" : ""}
+          detail={
+            semrush
+              ? `Semrush Authority Score for ${semrush.domain}, updated ${semrush.day}.`
+              : "Awaiting the first Semrush snapshot for this client."
+          }
+          action={
+            semrush?.referring_domains != null
+              ? `${fmt(semrush.referring_domains)} referring domains`
+              : "Semrush sync pending"
+          }
         />
         <InsightCard
           label="Content opportunities"
@@ -353,6 +362,32 @@ export default function SeoDashboard() {
             </div>
           ))}
         </div>
+      </Card>
+
+      <Card className="mt-4 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="label">Semrush snapshot</span>
+          <span className="text-xs text-[#6b7280]">
+            {semrush
+              ? `${semrush.domain} · updated ${semrush.day}`
+              : "No Semrush data yet for this client"}
+          </span>
+        </div>
+        {semrush ? (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MiniStat label="Authority Score" value={semrush.authority_score} suffix="/100" />
+            <MiniStat label="Total backlinks" value={semrush.total_backlinks} />
+            <MiniStat label="Referring domains" value={semrush.referring_domains} />
+            <MiniStat label="Organic keywords" value={semrush.organic_keywords} />
+            <MiniStat label="Organic traffic · est." value={semrush.organic_traffic} suffix="/mo" />
+            <MiniStat label="New backlinks · vs last snap" value={semrush.new_backlinks} />
+            <MiniStat label="Lost backlinks · vs last snap" value={semrush.lost_backlinks} />
+          </div>
+        ) : (
+          <p className="py-4 text-sm text-[#6b7280]">
+            The daily Semrush sync will populate Authority Score, backlinks, referring domains, and organic keywords.
+          </p>
+        )}
       </Card>
     </div>
   );
