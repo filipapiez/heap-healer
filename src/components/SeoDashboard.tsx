@@ -402,6 +402,27 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
     </div>
   );
 }
+function MiniStat({
+  label,
+  value,
+  suffix = "",
+}: {
+  label: string;
+  value: number | null;
+  suffix?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-[#e9eaf2] p-4">
+      <div className="label">{label}</div>
+      <div className="mt-2 text-2xl font-extrabold tracking-[-.03em]">
+        {value == null ? "—" : fmt(value)}
+        {value != null && suffix ? (
+          <span className="ml-1 text-xs font-semibold text-[#8a8f9d]">{suffix}</span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 function Stat({
   label,
   value,
