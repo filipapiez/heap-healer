@@ -33,6 +33,17 @@ type GeoCheck = {
   mentioned: boolean;
   cited_url: string | null;
 };
+type SemrushSnapshot = {
+  day: string;
+  domain: string;
+  authority_score: number | null;
+  total_backlinks: number | null;
+  referring_domains: number | null;
+  new_backlinks: number | null;
+  lost_backlinks: number | null;
+  organic_keywords: number | null;
+  organic_traffic: number | null;
+};
 
 const fmt = (value: number) => value.toLocaleString();
 const change = (value: number, baseline: number) =>
@@ -49,6 +60,7 @@ export default function SeoDashboard() {
   const [pages, setPages] = useState<Page[]>([]);
   const [backlinks, setBacklinks] = useState<Backlink[]>([]);
   const [geo, setGeo] = useState<GeoCheck[]>([]);
+  const [semrush, setSemrush] = useState<SemrushSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -69,7 +81,7 @@ export default function SeoDashboard() {
   useEffect(() => {
     if (!clientId) return;
     void (async () => {
-      const [metricRows, pageRows, backlinkRows, geoRows] = await Promise.all([
+      const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = await Promise.all([
         seoDb.from("seo_metrics_daily").select("*").eq("client_id", clientId).order("day"),
         seoDb
           .from("seo_pages")
@@ -86,11 +98,21 @@ export default function SeoDashboard() {
           .select("*")
           .eq("client_id", clientId)
           .order("checked_at", { ascending: false }),
+        seoDb
+          .from("seo_semrush_snapshots")
+          .select(
+            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic",
+          )
+          .eq("client_id", clientId)
+          .order("day", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
       setMetrics((metricRows.data ?? []) as Metric[]);
       setPages((pageRows.data ?? []) as Page[]);
       setBacklinks((backlinkRows.data ?? []) as Backlink[]);
       setGeo((geoRows.data ?? []) as GeoCheck[]);
+      setSemrush((semrushRow.data ?? null) as SemrushSnapshot | null);
     })();
   }, [clientId]);
 
