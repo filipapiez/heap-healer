@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import EngineRotator from "@/components/EngineRotator";
+import HeroBackground from "@/components/HeroBackground";
 import PressMarquee from "@/components/PressMarquee";
 import WorldMap from "@/components/WorldMap";
 
@@ -191,82 +192,87 @@ export default function LandingPage() {
       </nav>
 
       {/* ---------- HERO ---------- */}
-      <header
-        style={{
-          textAlign: "center",
-          padding: "76px 20px 20px",
-          background: `radial-gradient(60% 50% at 50% 0%, ${ACCENT}0D, transparent)`,
-        }}
-      >
-        <div className="lp-sec">
-          <h1
-            className="lp-display"
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        <HeroBackground />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <header
             style={{
-              fontSize: "clamp(38px, 6vw, 68px)",
-              fontWeight: 800,
-              lineHeight: 1.05,
-              margin: "0 auto 20px",
-              maxWidth: 900,
+              textAlign: "center",
+              padding: "76px 20px 20px",
+              background: `radial-gradient(60% 50% at 50% 0%, ${ACCENT}0D, transparent)`,
             }}
           >
-            Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
-            <EngineRotator />
-          </h1>
-          <p
-            style={{
-              fontSize: 18.5,
-              color: MUTED,
-              lineHeight: 1.6,
-              maxWidth: 660,
-              margin: "0 auto 30px",
-            }}
-          >
-            We fix your technical SEO, publish optimized pages that get indexed, build backlinks,
-            and track your visibility inside AI assistants — all done for you.
-          </p>
-          <a href="/grow" className="lp-cta" style={{ fontSize: 16.5, padding: "18px 38px" }}>
-            Start for free
-          </a>
-          <div style={{ marginTop: 16, fontSize: 14.5, color: MUTED }}>
-            If your organic metrics don't improve within 90 days,{" "}
-            <strong style={{ color: INK }}>you get your money back</strong> 🛡
-          </div>
+            <div className="lp-sec">
+              <h1
+                className="lp-display"
+                style={{
+                  fontSize: "clamp(38px, 6vw, 68px)",
+                  fontWeight: 800,
+                  lineHeight: 1.05,
+                  margin: "0 auto 20px",
+                  maxWidth: 900,
+                }}
+              >
+                Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
+                <EngineRotator />
+              </h1>
+              <p
+                style={{
+                  fontSize: 18.5,
+                  color: MUTED,
+                  lineHeight: 1.6,
+                  maxWidth: 660,
+                  margin: "0 auto 30px",
+                }}
+              >
+                We fix your technical SEO, publish optimized pages that get indexed, build
+                backlinks, and track your visibility inside AI assistants — all done for you.
+              </p>
+              <a href="/grow" className="lp-cta" style={{ fontSize: 16.5, padding: "18px 38px" }}>
+                Start for free
+              </a>
+              <div style={{ marginTop: 16, fontSize: 14.5, color: MUTED }}>
+                If your organic metrics don't improve within 90 days,{" "}
+                <strong style={{ color: INK }}>you get your money back</strong> 🛡
+              </div>
 
-          {/* Client logo strip — hidden until CLIENTS has real entries */}
-          {CLIENTS.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent: "center",
-                gap: 0,
-                marginTop: 44,
-                border: `1px solid ${LINE}`,
-                borderRadius: 12,
-                overflow: "hidden",
-              }}
-            >
-              {CLIENTS.map((c) => (
+              {/* Client logo strip — hidden until CLIENTS has real entries */}
+              {CLIENTS.length > 0 && (
                 <div
-                  key={c}
                   style={{
-                    padding: "14px 26px",
-                    borderRight: `1px solid ${LINE}`,
-                    fontFamily: "Georgia, serif",
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "#9AA0AA",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    gap: 0,
+                    marginTop: 44,
+                    border: `1px solid ${LINE}`,
+                    borderRadius: 12,
+                    overflow: "hidden",
                   }}
                 >
-                  {c}
+                  {CLIENTS.map((c) => (
+                    <div
+                      key={c}
+                      style={{
+                        padding: "14px 26px",
+                        borderRight: `1px solid ${LINE}`,
+                        fontFamily: "Georgia, serif",
+                        fontWeight: 700,
+                        fontSize: 14,
+                        color: "#9AA0AA",
+                      }}
+                    >
+                      {c}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
-      </header>
+          </header>
 
-      <PressMarquee />
+          <PressMarquee />
+        </div>
+      </div>
 
       {/* ---------- FREE GEO AUDIT WIDGET ---------- */}
       <section className="lp-sec" style={{ padding: "36px 20px 20px" }}>
