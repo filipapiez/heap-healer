@@ -33,6 +33,17 @@ type GeoCheck = {
   mentioned: boolean;
   cited_url: string | null;
 };
+type SemrushSnapshot = {
+  day: string;
+  domain: string;
+  authority_score: number | null;
+  total_backlinks: number | null;
+  referring_domains: number | null;
+  new_backlinks: number | null;
+  lost_backlinks: number | null;
+  organic_keywords: number | null;
+  organic_traffic: number | null;
+};
 
 const fmt = (value: number) => value.toLocaleString();
 const change = (value: number, baseline: number) =>
@@ -49,6 +60,7 @@ export default function SeoDashboard() {
   const [pages, setPages] = useState<Page[]>([]);
   const [backlinks, setBacklinks] = useState<Backlink[]>([]);
   const [geo, setGeo] = useState<GeoCheck[]>([]);
+  const [semrush, setSemrush] = useState<SemrushSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -69,7 +81,7 @@ export default function SeoDashboard() {
   useEffect(() => {
     if (!clientId) return;
     void (async () => {
-      const [metricRows, pageRows, backlinkRows, geoRows] = await Promise.all([
+      const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = await Promise.all([
         seoDb.from("seo_metrics_daily").select("*").eq("client_id", clientId).order("day"),
         seoDb
           .from("seo_pages")
@@ -86,11 +98,21 @@ export default function SeoDashboard() {
           .select("*")
           .eq("client_id", clientId)
           .order("checked_at", { ascending: false }),
+        seoDb
+          .from("seo_semrush_snapshots")
+          .select(
+            "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic",
+          )
+          .eq("client_id", clientId)
+          .order("day", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
       setMetrics((metricRows.data ?? []) as Metric[]);
       setPages((pageRows.data ?? []) as Page[]);
       setBacklinks((backlinkRows.data ?? []) as Backlink[]);
       setGeo((geoRows.data ?? []) as GeoCheck[]);
+      setSemrush((semrushRow.data ?? null) as SemrushSnapshot | null);
     })();
   }, [clientId]);
 
@@ -254,9 +276,18 @@ export default function SeoDashboard() {
       <section className="mb-4 grid gap-4 lg:grid-cols-3">
         <InsightCard
           label="Domain authority"
-          value="—"
-          detail="Connect an authority-data provider to begin tracking domain strength and referring domains."
-          action="Data source needed"
+          value={semrush?.authority_score != null ? String(semrush.authority_score) : "—"}
+          suffix={semrush?.authority_score != null ? "/100" : ""}
+          detail={
+            semrush
+              ? `Semrush Authority Score for ${semrush.domain}, updated ${semrush.day}.`
+              : "Awaiting the first Semrush snapshot for this client."
+          }
+          action={
+            semrush?.referring_domains != null
+              ? `${fmt(semrush.referring_domains)} referring domains`
+              : "Semrush sync pending"
+          }
         />
         <InsightCard
           label="Content opportunities"
@@ -332,6 +363,32 @@ export default function SeoDashboard() {
           ))}
         </div>
       </Card>
+
+      <Card className="mt-4 p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="label">Semrush snapshot</span>
+          <span className="text-xs text-[#6b7280]">
+            {semrush
+              ? `${semrush.domain} · updated ${semrush.day}`
+              : "No Semrush data yet for this client"}
+          </span>
+        </div>
+        {semrush ? (
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <MiniStat label="Authority Score" value={semrush.authority_score} suffix="/100" />
+            <MiniStat label="Total backlinks" value={semrush.total_backlinks} />
+            <MiniStat label="Referring domains" value={semrush.referring_domains} />
+            <MiniStat label="Organic keywords" value={semrush.organic_keywords} />
+            <MiniStat label="Organic traffic · est." value={semrush.organic_traffic} suffix="/mo" />
+            <MiniStat label="New backlinks · vs last snap" value={semrush.new_backlinks} />
+            <MiniStat label="Lost backlinks · vs last snap" value={semrush.lost_backlinks} />
+          </div>
+        ) : (
+          <p className="py-4 text-sm text-[#6b7280]">
+            The daily Semrush sync will populate Authority Score, backlinks, referring domains, and organic keywords.
+          </p>
+        )}
+      </Card>
     </div>
   );
 }
@@ -342,6 +399,27 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
       className={`rounded-2xl border border-[#e9eaf2] bg-white shadow-[0_8px_24px_rgba(23,26,43,.05)] ${className}`}
     >
       {children}
+    </div>
+  );
+}
+function MiniStat({
+  label,
+  value,
+  suffix = "",
+}: {
+  label: string;
+  value: number | null;
+  suffix?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-[#e9eaf2] p-4">
+      <div className="label">{label}</div>
+      <div className="mt-2 text-2xl font-extrabold tracking-[-.03em]">
+        {value == null ? "—" : fmt(value)}
+        {value != null && suffix ? (
+          <span className="ml-1 text-xs font-semibold text-[#8a8f9d]">{suffix}</span>
+        ) : null}
+      </div>
     </div>
   );
 }

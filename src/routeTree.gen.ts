@@ -34,6 +34,7 @@ import { Route as AuthenticatedEngagementRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
+import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
 import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
@@ -169,6 +170,11 @@ const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicSyncSemrushRoute = ApiPublicSyncSemrushRouteImport.update({
+  id: '/api/public/sync-semrush',
+  path: '/api/public/sync-semrush',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSyncGscRoute = ApiPublicSyncGscRouteImport.update({
   id: '/api/public/sync-gsc',
   path: '/api/public/sync-gsc',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -291,6 +298,7 @@ export interface FileRoutesByTo {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -329,6 +337,7 @@ export interface FileRoutesById {
   '/resources/$slug': typeof ResourcesSlugRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
+  '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
@@ -367,6 +376,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
@@ -403,6 +413,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
@@ -440,6 +451,7 @@ export interface FileRouteTypes {
     | '/resources/$slug'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
+    | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
@@ -467,6 +479,7 @@ export interface RootRouteChildren {
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicSyncGscRoute: typeof ApiPublicSyncGscRoute
+  ApiPublicSyncSemrushRoute: typeof ApiPublicSyncSemrushRoute
   ApiPublicOauthGithubCallbackRoute: typeof ApiPublicOauthGithubCallbackRoute
   ApiPublicOauthGscCallbackRoute: typeof ApiPublicOauthGscCallbackRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
@@ -654,6 +667,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/sync-semrush': {
+      id: '/api/public/sync-semrush'
+      path: '/api/public/sync-semrush'
+      fullPath: '/api/public/sync-semrush'
+      preLoaderRoute: typeof ApiPublicSyncSemrushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sync-gsc': {
       id: '/api/public/sync-gsc'
       path: '/api/public/sync-gsc'
@@ -785,6 +805,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicSyncGscRoute: ApiPublicSyncGscRoute,
+  ApiPublicSyncSemrushRoute: ApiPublicSyncSemrushRoute,
   ApiPublicOauthGithubCallbackRoute: ApiPublicOauthGithubCallbackRoute,
   ApiPublicOauthGscCallbackRoute: ApiPublicOauthGscCallbackRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,

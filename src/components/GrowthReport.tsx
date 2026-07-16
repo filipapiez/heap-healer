@@ -47,7 +47,9 @@ export default function GrowthReport({ token }: { token: string }) {
 
   useEffect(() => {
     void (async () => {
-      const { data, error } = await supabase.rpc("get_growth_report", { token });
+      // get_growth_report RPC is not in the generated types.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc("get_growth_report", { token });
       if (error || !data?.client) setMissing(true);
       else setReport(data as Report);
       setLoading(false);

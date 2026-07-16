@@ -459,6 +459,54 @@ export type Database = {
           },
         ]
       }
+      seo_semrush_snapshots: {
+        Row: {
+          authority_score: number | null
+          client_id: string
+          created_at: string
+          day: string
+          domain: string
+          id: string
+          lost_backlinks: number | null
+          new_backlinks: number | null
+          organic_keywords: number | null
+          organic_traffic: number | null
+          raw: Json | null
+          referring_domains: number | null
+          total_backlinks: number | null
+        }
+        Insert: {
+          authority_score?: number | null
+          client_id: string
+          created_at?: string
+          day: string
+          domain: string
+          id?: string
+          lost_backlinks?: number | null
+          new_backlinks?: number | null
+          organic_keywords?: number | null
+          organic_traffic?: number | null
+          raw?: Json | null
+          referring_domains?: number | null
+          total_backlinks?: number | null
+        }
+        Update: {
+          authority_score?: number | null
+          client_id?: string
+          created_at?: string
+          day?: string
+          domain?: string
+          id?: string
+          lost_backlinks?: number | null
+          new_backlinks?: number | null
+          organic_keywords?: number | null
+          organic_traffic?: number | null
+          raw?: Json | null
+          referring_domains?: number | null
+          total_backlinks?: number | null
+        }
+        Relationships: []
+      }
       tiktok_oauth_tokens: {
         Row: {
           access_token: string
