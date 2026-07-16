@@ -10,14 +10,9 @@
 // =============================================================
 
 import { useEffect, useState } from "react";
+import EngineIcon, { ENGINE_LIST, engineColor, type EngineName } from "@/components/engineIcons";
 
-const ENGINES: { name: string; color: string }[] = [
-  { name: "ChatGPT", color: "#10A37F" },
-  { name: "Claude", color: "#D97757" },
-  { name: "Perplexity", color: "#20808D" },
-  { name: "Gemini", color: "#4285F4" },
-  { name: "Google", color: "#EA4335" },
-];
+const ENGINES: EngineName[] = ENGINE_LIST;
 
 const INTERVAL = 2200; // ms per engine
 
@@ -51,28 +46,19 @@ export default function EngineRotator() {
           .engine-cell.active { animation: none; }
         }
       `}</style>
-      {ENGINES.map((e, i) => (
+      {ENGINES.map((name, i) => (
         <span
-          key={e.name}
+          key={name}
           className={`engine-cell${i === idx ? " active" : ""}`}
           style={{
             visibility: i === idx ? "visible" : "hidden",
-            color: e.color,
+            color: engineColor(name),
             fontWeight: 800,
           }}
           aria-hidden={i !== idx}
         >
-          <span
-            aria-hidden
-            style={{
-              fontSize: "0.55em",
-              transform: "translateY(-0.35em)",
-              display: "inline-block",
-            }}
-          >
-            ✦
-          </span>
-          {e.name}
+          <EngineIcon name={name} size="0.8em" />
+          {name}
         </span>
       ))}
     </span>

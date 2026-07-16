@@ -16,6 +16,7 @@
 
 import { useState } from "react";
 import EngineRotator from "@/components/EngineRotator";
+import EngineIcon, { type EngineName } from "@/components/engineIcons";
 import HeroBackground from "@/components/HeroBackground";
 import PressMarquee from "@/components/PressMarquee";
 import WorldMap from "@/components/WorldMap";
@@ -45,7 +46,7 @@ const CASES: {
 //         stat1: ["3x", "Organic clicks"], stat2: ["41", "Pages indexed"],
 //         quote: "…", person: "Dr. A, Owner" }]
 
-const ENGINES = ["ChatGPT", "Claude", "Perplexity", "Gemini"];
+const ENGINES: EngineName[] = ["ChatGPT", "Claude", "Perplexity", "Gemini"];
 
 const STEPS = [
   {
@@ -300,7 +301,7 @@ export default function LandingPage() {
           >
             {ENGINES.map((e) => (
               <span key={e} className="lp-chip">
-                ✦ {e}
+                <EngineIcon name={e} size={16} /> {e}
               </span>
             ))}
           </div>

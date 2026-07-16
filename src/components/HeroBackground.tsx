@@ -15,7 +15,7 @@
 //   </div>
 // =============================================================
 
-const TILE_COLORS = ["#10A37F", "#D97757", "#20808D", "#4285F4", "#6366F1"];
+import EngineIcon, { ENGINE_LIST } from "@/components/engineIcons";
 
 // Deterministic scatter (percent coords, avoids the masked center anyway)
 const TILES: { x: number; y: number; c: number; s: number; d: number }[] = [
@@ -110,14 +110,11 @@ export default function HeroBackground({
             animationDelay: `${t.d}s`,
           }}
         >
-          <svg width={t.s * 0.44} height={t.s * 0.44} viewBox="0 0 24 24">
-            {/* generic four-point sparkle in an engine brand color */}
-            <path
-              d="M12 2 L14.4 9.6 L22 12 L14.4 14.4 L12 22 L9.6 14.4 L2 12 L9.6 9.6 Z"
-              fill={TILE_COLORS[t.c]}
-              opacity="0.5"
-            />
-          </svg>
+          <EngineIcon
+            name={ENGINE_LIST[t.c % ENGINE_LIST.length]}
+            size={t.s * 0.5}
+            opacity={0.55}
+          />
         </div>
       ))}
     </div>
