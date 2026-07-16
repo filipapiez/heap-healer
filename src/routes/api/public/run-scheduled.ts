@@ -30,9 +30,12 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
         for (const post of due ?? []) {
           // Claim the post
           const { data: claimed } = await supabaseAdmin
-            .from("posts").update({ status: "publishing" })
-            .eq("id", post.id).eq("status", "scheduled")
-            .select("id").maybeSingle();
+            .from("posts")
+            .update({ status: "publishing" })
+            .eq("id", post.id)
+            .eq("status", "scheduled")
+            .select("id")
+            .maybeSingle();
           if (!claimed) continue;
           processed++;
 
@@ -44,16 +47,25 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
 
           const mediaAssetIds = (post.media_asset_ids as string[] | null) ?? [];
 
-          const overrides = (post.per_platform_overrides ?? {}) as Record<string, { caption?: string }>;
-          let published = 0; let failed = 0;
+          const overrides = (post.per_platform_overrides ?? {}) as Record<
+            string,
+            { caption?: string }
+          >;
+          let published = 0;
+          let failed = 0;
 
           for (const t of targets ?? []) {
             const account = t.connected_account as unknown as { id: string; status: string } | null;
             if (!account || account.status !== "connected") {
-              await supabaseAdmin.from("post_targets").update({
-                status: "failed", error_message: "Account no longer connected",
-              }).eq("id", t.id);
-              failed++; continue;
+              await supabaseAdmin
+                .from("post_targets")
+                .update({
+                  status: "failed",
+                  error_message: "Account no longer connected",
+                })
+                .eq("id", t.id);
+              failed++;
+              continue;
             }
             const caption = overrides[t.platform]?.caption ?? post.caption ?? "";
             try {
@@ -63,39 +75,54 @@ export const Route = createFileRoute("/api/public/run-scheduled")({
                 caption,
                 mediaAssetIds,
               });
-              await supabaseAdmin.from("post_targets").update({
-                status: "published",
-                external_post_id: res.external_post_id ?? null,
-                external_url: res.external_url ?? null,
-                published_at: new Date().toISOString(),
-              }).eq("id", t.id);
+              await supabaseAdmin
+                .from("post_targets")
+                .update({
+                  status: "published",
+                  external_post_id: res.external_post_id ?? null,
+                  external_url: res.external_url ?? null,
+                  published_at: new Date().toISOString(),
+                })
+                .eq("id", t.id);
               await supabaseAdmin.from("publish_attempts").insert({
-                post_target_id: t.id, status: "published", response_payload: res as never,
+                post_target_id: t.id,
+                status: "published",
+                response_payload: res as never,
               });
               published++;
             } catch (e) {
               const message = e instanceof Error ? e.message : String(e);
-              await supabaseAdmin.from("post_targets").update({
-                status: "failed", error_message: message,
-              }).eq("id", t.id);
+              await supabaseAdmin
+                .from("post_targets")
+                .update({
+                  status: "failed",
+                  error_message: message,
+                })
+                .eq("id", t.id);
               await supabaseAdmin.from("publish_attempts").insert({
-                post_target_id: t.id, status: "failed", error_message: message,
+                post_target_id: t.id,
+                status: "failed",
+                error_message: message,
               });
               failed++;
             }
           }
 
           const finalStatus =
-            failed === 0 && published > 0 ? "published" :
-            published === 0 ? "failed" : "partial";
-          await supabaseAdmin.from("posts").update({
-            status: finalStatus,
-            published_at: finalStatus !== "failed" ? new Date().toISOString() : null,
-            error_message: finalStatus === "failed" ? "All targets failed" : null,
-          }).eq("id", post.id);
+            failed === 0 && published > 0 ? "published" : published === 0 ? "failed" : "partial";
+          await supabaseAdmin
+            .from("posts")
+            .update({
+              status: finalStatus,
+              published_at: finalStatus !== "failed" ? new Date().toISOString() : null,
+              error_message: finalStatus === "failed" ? "All targets failed" : null,
+            })
+            .eq("id", post.id);
         }
 
-        return Response.json({ ok: true, processed });
+        const { processWebsitePublishJobs } = await import("@/lib/website-publish.server");
+        const websiteJobs = await processWebsitePublishJobs();
+        return Response.json({ ok: true, processed, websiteJobs });
       },
     },
   },

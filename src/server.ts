@@ -63,9 +63,17 @@ export default {
     _env: unknown,
     ctx: { waitUntil?: (promise: Promise<unknown>) => void },
   ) {
-    const task = import("./lib/gsc-sync.server")
-      .then(({ syncAllGscClients }) => syncAllGscClients())
-      .then((results) => console.info(`[gsc-sync] synced ${results.length} client(s)`))
+    const task = Promise.all([
+      import("./lib/gsc-sync.server").then(({ syncAllGscClients }) => syncAllGscClients()),
+      import("./lib/website-publish.server").then(({ processWebsitePublishJobs }) =>
+        processWebsitePublishJobs(),
+      ),
+    ])
+      .then(([results, jobs]) =>
+        console.info(
+          `[scheduled] synced ${results.length} client(s), processed ${jobs} website job(s)`,
+        ),
+      )
       .catch((error) => console.error("[gsc-sync] daily sync failed", error));
     if (ctx.waitUntil) ctx.waitUntil(task);
     else await task;

@@ -76,3 +76,71 @@ export async function listInstallationRepositories(installationId: number) {
   };
   return data.repositories ?? [];
 }
+
+async function installationToken(installationId: number) {
+  const response = await fetch(
+    `https://api.github.com/app/installations/${installationId}/access_tokens`,
+    {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${await appJwt()}`,
+        accept: "application/vnd.github+json",
+        "user-agent": "MentionMyApp",
+      },
+    },
+  );
+  if (!response.ok) throw new Error(`GitHub installation token failed (${response.status})`);
+  return ((await response.json()) as { token: string }).token;
+}
+
+export async function openSeoPullRequest(input: {
+  installationId: number;
+  repository: string;
+  title: string;
+  slug: string;
+  html: string;
+  base?: string;
+}) {
+  const token = await installationToken(input.installationId);
+  const headers = {
+    authorization: `Bearer ${token}`,
+    accept: "application/vnd.github+json",
+    "content-type": "application/json",
+    "user-agent": "MentionMyApp",
+  };
+  const api = `https://api.github.com/repos/${input.repository}`;
+  const repoResponse = await fetch(api, { headers });
+  if (!repoResponse.ok) throw new Error(`GitHub repository lookup failed (${repoResponse.status})`);
+  const repo = (await repoResponse.json()) as { default_branch: string };
+  const base = input.base ?? repo.default_branch;
+  const refResponse = await fetch(`${api}/git/ref/heads/${encodeURIComponent(base)}`, { headers });
+  if (!refResponse.ok) throw new Error(`GitHub branch lookup failed (${refResponse.status})`);
+  const ref = (await refResponse.json()) as { object: { sha: string } };
+  const branch = `mentionmyapp/seo-${input.slug}-${Date.now()}`;
+  const createRef = await fetch(`${api}/git/refs`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: ref.object.sha }),
+  });
+  if (!createRef.ok) throw new Error(`GitHub branch creation failed (${createRef.status})`);
+  const path = `content/seo/${input.slug}.html`;
+  const content = btoa(unescape(encodeURIComponent(input.html)));
+  const commit = await fetch(`${api}/contents/${path}`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ message: `Add SEO page: ${input.title}`, content, branch }),
+  });
+  if (!commit.ok) throw new Error(`GitHub content commit failed (${commit.status})`);
+  const pull = await fetch(`${api}/pulls`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      title: input.title,
+      head: branch,
+      base,
+      body: "SEO page prepared by MentionMyApp. Review the content and merge to deploy through your existing workflow.",
+    }),
+  });
+  if (!pull.ok) throw new Error(`GitHub pull request failed (${pull.status})`);
+  return (await pull.json()) as { number: number; html_url: string };
+}

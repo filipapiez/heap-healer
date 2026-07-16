@@ -39,6 +39,7 @@ import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/r
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
 import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
+import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/public/oauth/shopify/callback'
 import { Route as ApiPublicOauthMetaCallbackRouteImport } from './routes/api/public/oauth/meta/callback'
 import { Route as ApiPublicOauthLinkedinCallbackRouteImport } from './routes/api/public/oauth/linkedin/callback'
 import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
@@ -196,6 +197,12 @@ const ApiPublicOauthThreadsCallbackRoute =
     path: '/api/public/oauth/threads/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOauthShopifyCallbackRoute =
+  ApiPublicOauthShopifyCallbackRouteImport.update({
+    id: '/api/public/oauth/shopify/callback',
+    path: '/api/public/oauth/shopify/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOauthMetaCallbackRoute =
   ApiPublicOauthMetaCallbackRouteImport.update({
     id: '/api/public/oauth/meta/callback',
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
@@ -287,6 +295,7 @@ export interface FileRoutesByTo {
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
@@ -324,6 +333,7 @@ export interface FileRoutesById {
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
   '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
   '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
+  '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
   '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
   '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
   '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
@@ -361,6 +371,7 @@ export interface FileRouteTypes {
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/shopify/callback'
     | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/tiktok/callback'
     | '/api/public/oauth/youtube/callback'
@@ -396,6 +407,7 @@ export interface FileRouteTypes {
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/shopify/callback'
     | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/tiktok/callback'
     | '/api/public/oauth/youtube/callback'
@@ -432,6 +444,7 @@ export interface FileRouteTypes {
     | '/api/public/oauth/gsc/callback'
     | '/api/public/oauth/linkedin/callback'
     | '/api/public/oauth/meta/callback'
+    | '/api/public/oauth/shopify/callback'
     | '/api/public/oauth/threads/callback'
     | '/api/public/oauth/tiktok/callback'
     | '/api/public/oauth/youtube/callback'
@@ -458,6 +471,7 @@ export interface RootRouteChildren {
   ApiPublicOauthGscCallbackRoute: typeof ApiPublicOauthGscCallbackRoute
   ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
   ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
+  ApiPublicOauthShopifyCallbackRoute: typeof ApiPublicOauthShopifyCallbackRoute
   ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
   ApiPublicOauthTiktokCallbackRoute: typeof ApiPublicOauthTiktokCallbackRoute
   ApiPublicOauthYoutubeCallbackRoute: typeof ApiPublicOauthYoutubeCallbackRoute
@@ -675,6 +689,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOauthThreadsCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/oauth/shopify/callback': {
+      id: '/api/public/oauth/shopify/callback'
+      path: '/api/public/oauth/shopify/callback'
+      fullPath: '/api/public/oauth/shopify/callback'
+      preLoaderRoute: typeof ApiPublicOauthShopifyCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/oauth/meta/callback': {
       id: '/api/public/oauth/meta/callback'
       path: '/api/public/oauth/meta/callback'
@@ -768,6 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicOauthGscCallbackRoute: ApiPublicOauthGscCallbackRoute,
   ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
   ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
+  ApiPublicOauthShopifyCallbackRoute: ApiPublicOauthShopifyCallbackRoute,
   ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,
   ApiPublicOauthTiktokCallbackRoute: ApiPublicOauthTiktokCallbackRoute,
   ApiPublicOauthYoutubeCallbackRoute: ApiPublicOauthYoutubeCallbackRoute,

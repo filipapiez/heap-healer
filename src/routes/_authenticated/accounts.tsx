@@ -3,9 +3,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import {
+  connectWordpress,
   getWebsiteConnectionStatus,
+  selectGithubRepository,
   startGithubInstallation,
   startGscConnection,
+  startShopifyConnection,
 } from "@/lib/website-connections.functions";
 
 const CMS = [
@@ -70,7 +73,7 @@ export const Route = createFileRoute("/_authenticated/accounts")({
 
 function WebsiteConnections() {
   const params = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
-  const callbackStatus = params.get("gsc") ?? params.get("github");
+  const callbackStatus = params.get("gsc") ?? params.get("github") ?? params.get("shopify");
   const callbackMessage = params.get("msg");
   const status = useQuery({
     queryKey: ["website-connections"],
@@ -78,6 +81,8 @@ function WebsiteConnections() {
   });
   const [website, setWebsite] = useState("");
   const [error, setError] = useState("");
+  const [wp, setWp] = useState({ siteUrl: "", username: "", applicationPassword: "" });
+  const [shop, setShop] = useState("");
   const gsc = useMutation({
     mutationFn: () => startGscConnection({ data: { origin: window.location.origin, website } }),
     onSuccess: ({ url }) => window.location.assign(url),
@@ -86,6 +91,21 @@ function WebsiteConnections() {
   const github = useMutation({
     mutationFn: () => startGithubInstallation({ data: { origin: window.location.origin } }),
     onSuccess: ({ url }) => window.location.assign(url),
+    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+  });
+  const wordpress = useMutation({
+    mutationFn: () => connectWordpress({ data: wp }),
+    onSuccess: () => status.refetch(),
+    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+  });
+  const shopify = useMutation({
+    mutationFn: () => startShopifyConnection({ data: { origin: window.location.origin, shop } }),
+    onSuccess: ({ url }) => window.location.assign(url),
+    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+  });
+  const chooseRepo = useMutation({
+    mutationFn: (repository: string) => selectGithubRepository({ data: { repository } }),
+    onSuccess: () => status.refetch(),
     onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
   });
   const gscRow = status.data?.gsc as
@@ -209,25 +229,84 @@ function WebsiteConnections() {
         ))}
       </section>
 
+      <section className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-[#e1e3eb] bg-white p-5">
+          <h3 className="font-display text-lg font-bold">Connect WordPress</h3>
+          <p className="mt-1 text-xs text-[#737889]">
+            Use a revocable Application Password—not the normal login password.
+          </p>
+          <div className="mt-4 grid gap-2">
+            <input
+              className="rounded-xl border border-[#dfe1eb] px-3 py-2.5 text-sm"
+              placeholder="https://example.com"
+              value={wp.siteUrl}
+              onChange={(event) => setWp({ ...wp, siteUrl: event.target.value })}
+            />
+            <input
+              className="rounded-xl border border-[#dfe1eb] px-3 py-2.5 text-sm"
+              placeholder="WordPress username"
+              value={wp.username}
+              onChange={(event) => setWp({ ...wp, username: event.target.value })}
+            />
+            <input
+              type="password"
+              className="rounded-xl border border-[#dfe1eb] px-3 py-2.5 text-sm"
+              placeholder="Application Password"
+              value={wp.applicationPassword}
+              onChange={(event) => setWp({ ...wp, applicationPassword: event.target.value })}
+            />
+            <button
+              onClick={() => wordpress.mutate()}
+              disabled={
+                wordpress.isPending || !wp.siteUrl || !wp.username || !wp.applicationPassword
+              }
+              className="rounded-xl bg-[#111426] px-4 py-3 text-sm font-bold text-white disabled:opacity-40"
+            >
+              {wordpress.isPending ? "Testing connection…" : "Test and connect WordPress"}
+            </button>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-[#e1e3eb] bg-white p-5">
+          <h3 className="font-display text-lg font-bold">Connect Shopify</h3>
+          <p className="mt-1 text-xs text-[#737889]">
+            Customers approve access in Shopify. No password is shared.
+          </p>
+          <div className="mt-4 grid gap-2">
+            <input
+              className="rounded-xl border border-[#dfe1eb] px-3 py-2.5 text-sm"
+              placeholder="your-store.myshopify.com"
+              value={shop}
+              onChange={(event) => setShop(event.target.value)}
+            />
+            <button
+              onClick={() => shopify.mutate()}
+              disabled={shopify.isPending || !shop}
+              className="rounded-xl bg-[#111426] px-4 py-3 text-sm font-bold text-white disabled:opacity-40"
+            >
+              {shopify.isPending ? "Opening Shopify…" : "Connect Shopify securely"}
+            </button>
+          </div>
+        </div>
+      </section>
+
       {!!status.data?.repositories.length && (
         <section className="mt-6 rounded-2xl border border-[#e1e3eb] bg-white p-5">
-          <h3 className="font-display text-lg font-bold">Connected repositories</h3>
+          <h3 className="font-display text-lg font-bold">Choose delivery repositories</h3>
           <p className="mt-1 text-sm text-[#737889]">
             MentionMyApp can open SEO pull requests only in the repositories selected during GitHub
             installation.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {status.data.repositories.map((repo) => (
-              <a
+              <button
                 key={repo.id}
-                href={repo.html_url}
-                target="_blank"
-                rel="noreferrer"
+                onClick={() => chooseRepo.mutate(repo.full_name)}
                 className="rounded-lg border border-[#e1e3eb] px-3 py-2 text-xs font-semibold hover:border-[#6366f1]"
               >
                 {repo.full_name}
                 {repo.private ? " · private" : ""}
-              </a>
+                {" +"}
+              </button>
             ))}
           </div>
         </section>
