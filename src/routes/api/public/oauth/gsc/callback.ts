@@ -18,6 +18,25 @@ function comparable(value: string) {
     .toLowerCase();
 }
 
+function errorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const value = error as {
+      message?: unknown;
+      details?: unknown;
+      hint?: unknown;
+      code?: unknown;
+    };
+    const parts = [value.message, value.details, value.hint]
+      .filter((part): part is string => typeof part === "string" && part.trim().length > 0)
+      .map((part) => part.trim());
+    if (parts.length) return [...new Set(parts)].join(" ");
+    if (typeof value.code === "string") return `Connection failed (${value.code})`;
+  }
+  return "Search Console connection failed. Please try again.";
+}
+
 export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
   server: {
     handlers: {
@@ -134,16 +153,19 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
             { onConflict: "client_id" },
           );
           if (error) throw error;
-          const { syncAllGscClients } = await import("@/lib/gsc-sync.server");
-          await syncAllGscClients();
+          // Saving the authorization is the success condition. A first metrics pull can fail
+          // independently (for example while Google propagates property access), and the daily
+          // sync records that failure on the connection for a later retry.
+          try {
+            const { syncAllGscClients } = await import("@/lib/gsc-sync.server");
+            await syncAllGscClients();
+          } catch (syncError) {
+            console.error("[gsc-oauth] initial sync failed", syncError);
+          }
           return finish(row.redirect_origin, "ok", "Search Console connected");
         } catch (error) {
           console.error("[gsc-oauth] callback failed", error);
-          return finish(
-            row.redirect_origin,
-            "error",
-            error instanceof Error ? error.message : "connection_failed",
-          );
+          return finish(row.redirect_origin, "error", errorMessage(error));
         }
       },
     },
