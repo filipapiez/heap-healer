@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
 
@@ -27,6 +28,7 @@ const WORK = [
 ];
 
 function GrowthDashboard() {
+  const [rangeDays, setRangeDays] = useState(90);
   const { data } = useQuery({
     queryKey: ["current-workspace"],
     queryFn: () => getCurrentWorkspace(),
@@ -37,12 +39,13 @@ function GrowthDashboard() {
     queryFn: () => getGrowthDashboardData(),
   });
   const metrics = growth?.metrics ?? [];
-  const recent = metrics.slice(-28);
+  const recent = metrics.slice(-rangeDays);
   const organicClicks = recent.reduce((sum, row) => sum + (row.clicks ?? 0), 0);
   const impressions = recent.reduce((sum, row) => sum + (row.impressions ?? 0), 0);
   const indexedPages = [...metrics].reverse().find((row) => row.indexed_pages != null)?.indexed_pages;
   const format = (value: number) => new Intl.NumberFormat("en-US", { notation: value >= 10000 ? "compact" : "standard", maximumFractionDigits: 1 }).format(value);
   const connected = Boolean(growth?.connected);
+  const rangeLabel = rangeDays === 488 ? "Last 16 months" : `Last ${rangeDays} days`;
 
   return (
     <div className="mx-auto max-w-[1480px]">
@@ -58,7 +61,19 @@ function GrowthDashboard() {
             {workspace} · measured against your day-one baseline
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <select
+            value={rangeDays}
+            onChange={(event) => setRangeDays(Number(event.target.value))}
+            className="rounded-xl border border-[#dedfe6] bg-white px-4 py-3 text-sm font-bold text-[#242838]"
+            aria-label="Reporting range"
+          >
+            <option value={28}>Last 28 days</option>
+            <option value={90}>Last 90 days</option>
+            <option value={180}>Last 6 months</option>
+            <option value={365}>Last 12 months</option>
+            <option value={488}>Last 16 months</option>
+          </select>
           <Link
             to="/seo-audit"
             className="rounded-xl border border-[#dedfe6] bg-white px-5 py-3 text-sm font-bold text-[#242838]"
@@ -75,8 +90,8 @@ function GrowthDashboard() {
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Organic clicks" value={isLoading ? "…" : connected ? format(organicClicks) : "—"} change={connected ? "Last 28 days" : "Connect Search Console"} />
-        <Stat label="Impressions" value={isLoading ? "…" : connected ? format(impressions) : "—"} change={connected ? "Last 28 days" : "Baseline not connected"} />
+        <Stat label="Organic clicks" value={isLoading ? "…" : connected ? format(organicClicks) : "—"} change={connected ? rangeLabel : "Connect Search Console"} />
+        <Stat label="Impressions" value={isLoading ? "…" : connected ? format(impressions) : "—"} change={connected ? rangeLabel : "Baseline not connected"} />
         <Stat label="Backlinks live" value={format(growth?.backlinksLive ?? 0)} change="Verified live placements" />
         <Stat label="AI mentions" value={format(growth?.aiMentions ?? 0)} change="Tracked checks mentioning you" />
       </section>
@@ -93,10 +108,10 @@ function GrowthDashboard() {
               </h2>
             </div>
             <span className="rounded-lg border border-[#e4e5ea] px-3 py-2 text-xs text-[#777c8c]">
-              Last 90 days
+              {rangeLabel}
             </span>
           </div>
-          <PerformanceChart metrics={metrics} connected={connected} />
+          <PerformanceChart metrics={metrics} connected={connected} rangeDays={rangeDays} />
           <div className="mt-4 flex gap-6 text-xs text-[#777c8c]">
             <span>
               <i className="mr-2 inline-block h-2 w-2 rounded-full bg-[#6366f1]" />
@@ -212,13 +227,15 @@ function Stat({ label, value, change }: { label: string; value: string; change: 
 function PerformanceChart({
   metrics,
   connected,
+  rangeDays,
 }: {
   metrics: Array<{ day: string; clicks: number | null; impressions: number | null }>;
   connected: boolean;
+  rangeDays: number;
 }) {
   const width = 900;
   const height = 280;
-  const points = metrics.slice(-90);
+  const points = metrics.slice(-rangeDays);
   const path = (key: "clicks" | "impressions") => {
     if (!points.length) return "";
     const max = Math.max(1, ...points.map((row) => row[key] ?? 0));
@@ -236,7 +253,7 @@ function PerformanceChart({
   return (
     <div className="relative mt-10 h-[290px] overflow-hidden border-b border-l border-[#e5e6eb] bg-[repeating-linear-gradient(0deg,transparent_0,transparent_71px,#eff0f4_72px)]">
       {points.length > 0 ? (
-        <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 h-full w-full" preserveAspectRatio="none" role="img" aria-label="Search Console clicks and impressions over the last 90 days">
+        <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 h-full w-full" preserveAspectRatio="none" role="img" aria-label={`Search Console clicks and impressions over the selected ${rangeDays}-day range`}>
           <path d={impressionsPath} fill="none" stroke="#a6a8ef" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           <path d={clicksPath} fill="none" stroke="#6366f1" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

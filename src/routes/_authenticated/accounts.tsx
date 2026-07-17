@@ -126,6 +126,7 @@ function WebsiteConnections() {
   const gscRow = status.data?.gsc as
     { property_url?: string; last_synced_at?: string; last_error?: string } | null | undefined;
   const githubRow = status.data?.github;
+  const githubConfigured = status.data?.githubConfigured ?? false;
 
   useEffect(() => {
     if (gscRow?.property_url) setWebsite(gscRow.property_url);
@@ -229,7 +230,13 @@ function WebsiteConnections() {
               <span
                 className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${item.github && githubRow ? "bg-emerald-50 text-emerald-700" : "bg-[#f2f2f7] text-[#777c8c]"}`}
               >
-                {item.github ? (githubRow ? "Connected" : "Available") : "Coming next"}
+                {item.github
+                  ? githubRow
+                    ? "Connected"
+                    : githubConfigured
+                      ? "Available"
+                      : "Setup required"
+                  : "Coming next"}
               </span>
             </div>
             <h3 className="font-display text-lg font-bold">{item.label}</h3>
@@ -242,10 +249,14 @@ function WebsiteConnections() {
                 <button
                   type="button"
                   onClick={() => github.mutate()}
-                  disabled={github.isPending}
+                  disabled={github.isPending || !githubConfigured}
                   className="text-xs font-bold text-[#6366f1] disabled:opacity-50"
                 >
-                  {githubRow ? "Manage repositories →" : "Connect GitHub →"}
+                  {!githubConfigured
+                    ? "Owner setup required"
+                    : githubRow
+                      ? "Manage repositories →"
+                      : "Connect GitHub →"}
                 </button>
               ) : (
                 <span className="text-xs font-bold text-[#9a9eaa]">Connect soon</span>

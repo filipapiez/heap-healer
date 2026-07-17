@@ -103,6 +103,7 @@ export default function SeoDashboard() {
 
   useEffect(() => {
     if (!clientId) return;
+    setError("");
     setSemrushLoading(true);
     void (async () => {
       const results = await Promise.all([
@@ -133,17 +134,26 @@ export default function SeoDashboard() {
           .maybeSingle(),
       ]);
       const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = results;
-      const loadError = results.find((result) => result.error)?.error;
-      if (loadError) {
-        setError(loadError.message);
+      if (metricRows.error) {
+        setError(metricRows.error.message);
         setSemrushLoading(false);
         return;
       }
       setMetrics((metricRows.data ?? []) as Metric[]);
-      setPages((pageRows.data ?? []) as Page[]);
-      setBacklinks((backlinkRows.data ?? []) as Backlink[]);
-      setGeo((geoRows.data ?? []) as GeoCheck[]);
-      setSemrush((semrushRow.data ?? null) as SemrushSnapshot | null);
+      // Pages, backlinks, GEO, and Semrush are progressive features. A missing
+      // optional table must not take down the core Search Console report.
+      if (pageRows.error) console.warn("[seo-growth] pages unavailable", pageRows.error.message);
+      if (backlinkRows.error)
+        console.warn("[seo-growth] backlinks unavailable", backlinkRows.error.message);
+      if (geoRows.error) console.warn("[seo-growth] GEO checks unavailable", geoRows.error.message);
+      if (semrushRow.error)
+        console.warn("[seo-growth] Semrush unavailable", semrushRow.error.message);
+      setPages((pageRows.error ? [] : (pageRows.data ?? [])) as Page[]);
+      setBacklinks((backlinkRows.error ? [] : (backlinkRows.data ?? [])) as Backlink[]);
+      setGeo((geoRows.error ? [] : (geoRows.data ?? [])) as GeoCheck[]);
+      setSemrush(
+        (semrushRow.error ? null : (semrushRow.data ?? null)) as SemrushSnapshot | null,
+      );
       setSemrushLoading(false);
     })();
   }, [clientId]);

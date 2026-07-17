@@ -58,7 +58,18 @@ export const getWebsiteConnectionStatus = createServerFn({ method: "GET" })
       .select("id,platform,external_id,display_name,status,last_tested_at,last_error,metadata")
       .eq("workspace_id", workspaceId)
       .neq("status", "disconnected");
-    return { gsc: gsc ?? null, github: githubRow, repositories, delivery: delivery ?? [] };
+    const githubConfigured = Boolean(
+      process.env.GITHUB_APP_SLUG &&
+        process.env.GITHUB_APP_ID &&
+        process.env.GITHUB_APP_PRIVATE_KEY,
+    );
+    return {
+      gsc: gsc ?? null,
+      github: githubRow,
+      githubConfigured,
+      repositories,
+      delivery: delivery ?? [],
+    };
   });
 
 export const startGscConnection = createServerFn({ method: "POST" })
@@ -165,6 +176,14 @@ export const startGithubInstallation = createServerFn({ method: "POST" })
     const workspaceId = await activeWorkspace(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { requireGithubAppSlug } = await import("@/lib/github-app.server");
+    let appSlug: string;
+    try {
+      appSlug = requireGithubAppSlug();
+    } catch {
+      throw new Error(
+        "GitHub publishing is not available yet. Finish the GitHub App setup in Lovable Cloud first.",
+      );
+    }
     const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
     const origin = new URL(data.origin).origin;
     const { error } = await supabaseAdmin.from("oauth_states" as never).insert({
@@ -176,7 +195,7 @@ export const startGithubInstallation = createServerFn({ method: "POST" })
     } as never);
     if (error) throw error;
     return {
-      url: `https://github.com/apps/${requireGithubAppSlug()}/installations/new?state=${encodeURIComponent(state)}`,
+      url: `https://github.com/apps/${appSlug}/installations/new?state=${encodeURIComponent(state)}`,
     };
   });
 
