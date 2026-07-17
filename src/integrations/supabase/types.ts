@@ -236,7 +236,6 @@ export type Database = {
         Row: {
           created_at: string
           expires_at: string
-          metadata: Json
           provider: string
           redirect_origin: string
           state: string
@@ -246,7 +245,6 @@ export type Database = {
         Insert: {
           created_at?: string
           expires_at?: string
-          metadata?: Json
           provider: string
           redirect_origin: string
           state: string
@@ -256,7 +254,6 @@ export type Database = {
         Update: {
           created_at?: string
           expires_at?: string
-          metadata?: Json
           provider?: string
           redirect_origin?: string
           state?: string
@@ -473,6 +470,7 @@ export type Database = {
           name: string
           report_token: string
           website: string
+          workspace_id: string | null
         }
         Insert: {
           baseline_clicks?: number
@@ -484,6 +482,7 @@ export type Database = {
           name: string
           report_token?: string
           website: string
+          workspace_id?: string | null
         }
         Update: {
           baseline_clicks?: number
@@ -495,8 +494,17 @@ export type Database = {
           name?: string
           report_token?: string
           website?: string
+          workspace_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seo_clients_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seo_semrush_snapshots: {
         Row: {
