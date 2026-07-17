@@ -12,6 +12,25 @@ type SearchRow = {
   impressions?: number;
 };
 
+function errorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
+    const value = error as {
+      message?: unknown;
+      details?: unknown;
+      hint?: unknown;
+      code?: unknown;
+    };
+    const parts = [value.message, value.details, value.hint]
+      .filter((part): part is string => typeof part === "string" && part.trim().length > 0)
+      .map((part) => part.trim());
+    if (parts.length) return [...new Set(parts)].join(" ");
+    if (typeof value.code === "string") return `Database error (${value.code})`;
+  }
+  return "Search Console sync failed";
+}
+
 async function accessToken(refreshToken: string) {
   const clientId =
     process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID ?? process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -108,7 +127,7 @@ export async function syncAllGscClients() {
         ok: true,
       });
     } catch (cause) {
-      const message = cause instanceof Error ? cause.message : String(cause);
+      const message = errorMessage(cause);
       await supabaseAdmin
         .from("seo_gsc_connections" as never)
         .update({ last_error: message } as never)
