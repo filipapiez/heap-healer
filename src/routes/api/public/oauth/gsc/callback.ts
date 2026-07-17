@@ -81,8 +81,17 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
           const sitesResponse = await fetch("https://www.googleapis.com/webmasters/v3/sites", {
             headers: { authorization: `Bearer ${tokens.access_token}` },
           });
-          if (!sitesResponse.ok)
-            throw new Error(`Search Console site lookup failed (${sitesResponse.status})`);
+          if (!sitesResponse.ok) {
+            const failure = (await sitesResponse.json().catch(() => null)) as {
+              error?: { message?: string };
+            } | null;
+            const detail = failure?.error?.message?.trim();
+            throw new Error(
+              detail
+                ? `Search Console: ${detail}`
+                : `Search Console site lookup failed (${sitesResponse.status})`,
+            );
+          }
           const { siteEntry = [] } = (await sitesResponse.json()) as { siteEntry?: Site[] };
           const { data: client } = await supabaseAdmin
             .from("seo_clients" as never)
