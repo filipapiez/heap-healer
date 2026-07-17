@@ -5,7 +5,6 @@ type StateRow = {
   workspace_id: string;
   redirect_origin: string;
   expires_at: string;
-  metadata?: { website?: string };
 };
 
 type Site = { siteUrl: string; permissionLevel?: string };
@@ -37,7 +36,7 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
         if (!state) return finish(requestUrl.origin, "error", "missing_state");
         const { data } = await supabaseAdmin
           .from("oauth_states" as never)
-          .select("provider,workspace_id,redirect_origin,expires_at,metadata")
+          .select("provider,workspace_id,redirect_origin,expires_at")
           .eq("state", state)
           .maybeSingle();
         const row = data as unknown as StateRow | null;
@@ -85,17 +84,19 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
           if (!sitesResponse.ok)
             throw new Error(`Search Console site lookup failed (${sitesResponse.status})`);
           const { siteEntry = [] } = (await sitesResponse.json()) as { siteEntry?: Site[] };
-          const requested = comparable(row.metadata?.website ?? "");
-          const property =
-            siteEntry.find((site) => comparable(site.siteUrl) === requested) ?? siteEntry[0];
-          if (!property)
-            throw new Error("No Search Console properties are available for this Google account");
           const { data: client } = await supabaseAdmin
             .from("seo_clients" as never)
-            .select("id")
+            .select("id,website")
             .eq("workspace_id", row.workspace_id)
             .single();
-          const clientIdRow = (client as unknown as { id: string }).id;
+          const clientRow = client as unknown as { id: string; website: string };
+          const requested = comparable(clientRow.website);
+          const property = siteEntry.find((site) => comparable(site.siteUrl) === requested);
+          if (!property)
+            throw new Error(
+              `The Google account does not have access to the Search Console property for ${clientRow.website}`,
+            );
+          const clientIdRow = clientRow.id;
           const { data: existing } = await supabaseAdmin
             .from("seo_gsc_connections" as never)
             .select("refresh_token")

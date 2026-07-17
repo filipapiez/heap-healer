@@ -97,7 +97,6 @@ export const startGscConnection = createServerFn({ method: "POST" })
       workspace_id: workspaceId,
       user_id: context.userId,
       redirect_origin: origin,
-      metadata: { website: data.website },
     } as never);
     if (error) throw error;
     const redirectUri = `${origin}/api/public/oauth/gsc/callback`;
