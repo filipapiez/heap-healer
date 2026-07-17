@@ -68,6 +68,12 @@ export const startGscConnection = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const workspaceId = await activeWorkspace(context);
+    const clientId =
+      process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID ?? process.env.GOOGLE_OAUTH_CLIENT_ID;
+    if (!clientId)
+      throw new Error(
+        "Google Search Console is not configured yet. Add the Google OAuth client ID and secret in Lovable Cloud, then publish again.",
+      );
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: workspace } = await context.supabase
       .from("workspaces")
@@ -94,9 +100,6 @@ export const startGscConnection = createServerFn({ method: "POST" })
       metadata: { website: data.website },
     } as never);
     if (error) throw error;
-    const clientId =
-      process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_ID ?? process.env.GOOGLE_OAUTH_CLIENT_ID;
-    if (!clientId) throw new Error("Google Search Console OAuth client is not configured");
     const redirectUri = `${origin}/api/public/oauth/gsc/callback`;
     const params = new URLSearchParams({
       client_id: clientId,

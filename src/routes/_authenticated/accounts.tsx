@@ -66,6 +66,21 @@ const CMS = [
   },
 ];
 
+function errorMessage(cause: unknown): string {
+  if (cause instanceof Error && cause.message) return cause.message;
+  if (typeof cause === "string" && cause.trim()) return cause;
+  if (cause && typeof cause === "object") {
+    const value = cause as Record<string, unknown>;
+    for (const key of ["message", "error", "data", "cause"]) {
+      if (key in value) {
+        const nested = errorMessage(value[key]);
+        if (nested !== "Something went wrong. Please try again.") return nested;
+      }
+    }
+  }
+  return "Something went wrong. Please try again.";
+}
+
 export const Route = createFileRoute("/_authenticated/accounts")({
   head: () => ({ meta: [{ title: "Website connections — MentionMyApp" }] }),
   component: WebsiteConnections,
@@ -86,27 +101,27 @@ function WebsiteConnections() {
   const gsc = useMutation({
     mutationFn: () => startGscConnection({ data: { origin: window.location.origin, website } }),
     onSuccess: ({ url }) => window.location.assign(url),
-    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+    onError: (cause) => setError(errorMessage(cause)),
   });
   const github = useMutation({
     mutationFn: () => startGithubInstallation({ data: { origin: window.location.origin } }),
     onSuccess: ({ url }) => window.location.assign(url),
-    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+    onError: (cause) => setError(errorMessage(cause)),
   });
   const wordpress = useMutation({
     mutationFn: () => connectWordpress({ data: wp }),
     onSuccess: () => status.refetch(),
-    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+    onError: (cause) => setError(errorMessage(cause)),
   });
   const shopify = useMutation({
     mutationFn: () => startShopifyConnection({ data: { origin: window.location.origin, shop } }),
     onSuccess: ({ url }) => window.location.assign(url),
-    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+    onError: (cause) => setError(errorMessage(cause)),
   });
   const chooseRepo = useMutation({
     mutationFn: (repository: string) => selectGithubRepository({ data: { repository } }),
     onSuccess: () => status.refetch(),
-    onError: (cause) => setError(cause instanceof Error ? cause.message : String(cause)),
+    onError: (cause) => setError(errorMessage(cause)),
   });
   const gscRow = status.data?.gsc as
     { property_url?: string; last_synced_at?: string; last_error?: string } | null | undefined;
@@ -120,6 +135,7 @@ function WebsiteConnections() {
       />
       {(callbackMessage || error) && (
         <div
+          role="alert"
           className={`mb-5 rounded-xl border px-4 py-3 text-sm ${callbackStatus === "error" || error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}
         >
           {error || callbackMessage}
