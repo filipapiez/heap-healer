@@ -547,6 +547,41 @@ export type Database = {
           },
         ]
       }
+      seo_metrics_daily: {
+        Row: {
+          clicks: number
+          client_id: string
+          day: string
+          id: number
+          impressions: number
+          indexed_pages: number | null
+        }
+        Insert: {
+          clicks?: number
+          client_id: string
+          day: string
+          id?: never
+          impressions?: number
+          indexed_pages?: number | null
+        }
+        Update: {
+          clicks?: number
+          client_id?: string
+          day?: string
+          id?: never
+          impressions?: number
+          indexed_pages?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_metrics_daily_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "seo_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_semrush_snapshots: {
         Row: {
           authority_score: number | null
