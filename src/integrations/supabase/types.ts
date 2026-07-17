@@ -236,7 +236,6 @@ export type Database = {
         Row: {
           created_at: string
           expires_at: string
-          metadata: Json
           provider: string
           redirect_origin: string
           state: string
@@ -246,7 +245,6 @@ export type Database = {
         Insert: {
           created_at?: string
           expires_at?: string
-          metadata?: Json
           provider: string
           redirect_origin: string
           state: string
@@ -256,7 +254,6 @@ export type Database = {
         Update: {
           created_at?: string
           expires_at?: string
-          metadata?: Json
           provider?: string
           redirect_origin?: string
           state?: string
