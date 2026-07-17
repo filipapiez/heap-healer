@@ -506,6 +506,47 @@ export type Database = {
           },
         ]
       }
+      seo_gsc_connections: {
+        Row: {
+          active: boolean
+          client_id: string
+          created_at: string
+          last_error: string | null
+          last_synced_at: string | null
+          property_url: string
+          refresh_token: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          client_id: string
+          created_at?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          property_url: string
+          refresh_token: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          client_id?: string
+          created_at?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          property_url?: string
+          refresh_token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_gsc_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "seo_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_semrush_snapshots: {
         Row: {
           authority_score: number | null
