@@ -93,12 +93,17 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
             );
           }
           const { siteEntry = [] } = (await sitesResponse.json()) as { siteEntry?: Site[] };
-          const { data: client } = await supabaseAdmin
+          const { data: client, error: clientError } = await supabaseAdmin
             .from("seo_clients" as never)
             .select("id,website")
             .eq("workspace_id", row.workspace_id)
-            .single();
-          const clientRow = client as unknown as { id: string; website: string };
+            .maybeSingle();
+          if (clientError) throw clientError;
+          const clientRow = client as unknown as { id: string; website: string } | null;
+          if (!clientRow)
+            throw new Error(
+              "No SEO customer record exists for this workspace. Return to Connections and reconnect Search Console.",
+            );
           const requested = comparable(clientRow.website);
           const property = siteEntry.find((site) => comparable(site.siteUrl) === requested);
           if (!property)

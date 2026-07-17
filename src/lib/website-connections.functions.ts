@@ -80,7 +80,9 @@ export const startGscConnection = createServerFn({ method: "POST" })
       .select("name")
       .eq("id", workspaceId)
       .single();
-    await supabaseAdmin.from("seo_clients" as never).upsert(
+    const { data: seoClient, error: seoClientError } = await supabaseAdmin
+      .from("seo_clients" as never)
+      .upsert(
       {
         workspace_id: workspaceId,
         name: workspace?.name ?? "Website",
@@ -88,7 +90,12 @@ export const startGscConnection = createServerFn({ method: "POST" })
         baseline_date: new Date().toISOString().slice(0, 10),
       } as never,
       { onConflict: "workspace_id" },
-    );
+      )
+      .select("id")
+      .single();
+    if (seoClientError) throw seoClientError;
+    if (!(seoClient as unknown as { id?: string } | null)?.id)
+      throw new Error("Could not create the SEO customer record for this workspace");
     const state = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, "");
     const origin = new URL(data.origin).origin;
     const { error } = await supabaseAdmin.from("oauth_states" as never).insert({
