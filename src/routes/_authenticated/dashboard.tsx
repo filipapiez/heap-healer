@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
+import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Growth dashboard — MentionMyApp" }] }),
@@ -31,6 +32,17 @@ function GrowthDashboard() {
     queryFn: () => getCurrentWorkspace(),
   });
   const workspace = data?.workspace?.name ?? "Your workspace";
+  const { data: growth, isLoading } = useQuery({
+    queryKey: ["growth-dashboard"],
+    queryFn: () => getGrowthDashboardData(),
+  });
+  const metrics = growth?.metrics ?? [];
+  const recent = metrics.slice(-28);
+  const organicClicks = recent.reduce((sum, row) => sum + (row.clicks ?? 0), 0);
+  const impressions = recent.reduce((sum, row) => sum + (row.impressions ?? 0), 0);
+  const indexedPages = [...metrics].reverse().find((row) => row.indexed_pages != null)?.indexed_pages;
+  const format = (value: number) => new Intl.NumberFormat("en-US", { notation: value >= 10000 ? "compact" : "standard", maximumFractionDigits: 1 }).format(value);
+  const connected = Boolean(growth?.connected);
 
   return (
     <div className="mx-auto max-w-[1480px]">
@@ -63,10 +75,10 @@ function GrowthDashboard() {
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Organic clicks" value="—" change="Connect Search Console" />
-        <Stat label="Indexed pages" value="—" change="Baseline not connected" />
-        <Stat label="Backlinks live" value="0" change="Placements will appear here" />
-        <Stat label="AI mentions" value="0" change="Tracking starts after audit" />
+        <Stat label="Organic clicks" value={isLoading ? "…" : connected ? format(organicClicks) : "—"} change={connected ? "Last 28 days" : "Connect Search Console"} />
+        <Stat label="Impressions" value={isLoading ? "…" : connected ? format(impressions) : "—"} change={connected ? "Last 28 days" : "Baseline not connected"} />
+        <Stat label="Backlinks live" value={format(growth?.backlinksLive ?? 0)} change="Verified live placements" />
+        <Stat label="AI mentions" value={format(growth?.aiMentions ?? 0)} change="Tracked checks mentioning you" />
       </section>
 
       <section className="mt-5 grid gap-5 xl:grid-cols-[1.65fr_.85fr]">
@@ -84,41 +96,7 @@ function GrowthDashboard() {
               Last 90 days
             </span>
           </div>
-          <div className="relative mt-10 h-[290px] overflow-hidden border-b border-l border-[#e5e6eb] bg-[repeating-linear-gradient(0deg,transparent_0,transparent_71px,#eff0f4_72px)]">
-            <svg
-              viewBox="0 0 900 280"
-              className="absolute inset-0 h-full w-full"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M0 250 C110 248 155 230 235 234 S370 202 445 207 S590 150 660 162 S790 78 900 58"
-                fill="none"
-                stroke="#6366f1"
-                strokeWidth="6"
-                strokeLinecap="round"
-              />
-              <path
-                d="M0 250 C110 248 155 230 235 234 S370 202 445 207 S590 150 660 162 S790 78 900 58 L900 280 L0 280Z"
-                fill="#6366f112"
-              />
-              <path
-                d="M0 258 C125 254 210 245 300 247 S480 218 560 221 S730 170 900 138"
-                fill="none"
-                stroke="#a6a8ef"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute inset-0 grid place-items-center">
-              <Link
-                to="/seo-audit"
-                className="rounded-xl border border-[#dedfe7] bg-white px-5 py-3 text-sm font-bold shadow-sm"
-              >
-                Connect your baseline →
-              </Link>
-            </div>
-          </div>
+          <PerformanceChart metrics={metrics} connected={connected} />
           <div className="mt-4 flex gap-6 text-xs text-[#777c8c]">
             <span>
               <i className="mr-2 inline-block h-2 w-2 rounded-full bg-[#6366f1]" />
@@ -139,15 +117,16 @@ function GrowthDashboard() {
             Growth is measured from a clear baseline.
           </h2>
           <p className="mt-3 text-sm leading-6 text-[#b8bdd0]">
-            Connect Search Console to start the measurement period and verify every result in your
-            own data.
+            {connected
+              ? `Connected to ${growth?.propertyUrl ?? "Search Console"}. Every result is verified in your own data.`
+              : "Connect Search Console to start the measurement period and verify every result in your own data."}
           </p>
           <div className="my-7 h-px bg-white/10" />
           <div className="flex items-end justify-between">
             <div>
-              <strong className="block text-5xl tracking-[-.06em]">Day 0</strong>
+              <strong className="block text-5xl tracking-[-.06em]">{growth?.baselineDate ? `Day ${Math.max(0, Math.floor((Date.now() - new Date(growth.baselineDate).getTime()) / 86400000))}` : "Day 0"}</strong>
               <span className="mt-1 block text-xs text-[#9ea4bd]">
-                Begins after baseline approval
+                {growth?.lastSyncedAt ? `Synced ${new Date(growth.lastSyncedAt).toLocaleString()}` : "Begins after baseline approval"}
               </span>
             </div>
             <span className="grid h-12 w-12 place-items-center rounded-full bg-[#6366f1] text-lg">
@@ -227,6 +206,55 @@ function Stat({ label, value, change }: { label: string; value: string; change: 
       <strong className="mt-5 block font-display text-4xl tracking-[-.06em]">{value}</strong>
       <div className="mt-3 text-xs text-[#7e8392]">{change}</div>
     </article>
+  );
+}
+
+function PerformanceChart({
+  metrics,
+  connected,
+}: {
+  metrics: Array<{ day: string; clicks: number | null; impressions: number | null }>;
+  connected: boolean;
+}) {
+  const width = 900;
+  const height = 280;
+  const points = metrics.slice(-90);
+  const path = (key: "clicks" | "impressions") => {
+    if (!points.length) return "";
+    const max = Math.max(1, ...points.map((row) => row[key] ?? 0));
+    return points
+      .map((row, index) => {
+        const x = points.length === 1 ? width / 2 : (index / (points.length - 1)) * width;
+        const y = height - 18 - ((row[key] ?? 0) / max) * (height - 42);
+        return `${index ? "L" : "M"}${x.toFixed(1)} ${y.toFixed(1)}`;
+      })
+      .join(" ");
+  };
+  const clicksPath = path("clicks");
+  const impressionsPath = path("impressions");
+
+  return (
+    <div className="relative mt-10 h-[290px] overflow-hidden border-b border-l border-[#e5e6eb] bg-[repeating-linear-gradient(0deg,transparent_0,transparent_71px,#eff0f4_72px)]">
+      {points.length > 0 ? (
+        <svg viewBox={`0 0 ${width} ${height}`} className="absolute inset-0 h-full w-full" preserveAspectRatio="none" role="img" aria-label="Search Console clicks and impressions over the last 90 days">
+          <path d={impressionsPath} fill="none" stroke="#a6a8ef" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={clicksPath} fill="none" stroke="#6366f1" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ) : (
+        <div className="absolute inset-0 grid place-items-center text-center">
+          {connected ? (
+            <div>
+              <strong className="block text-sm text-[#242838]">Search Console is connected</strong>
+              <span className="mt-2 block text-xs text-[#777c8c]">No performance rows were returned for this date range yet.</span>
+            </div>
+          ) : (
+            <Link to="/accounts" className="rounded-xl border border-[#dedfe7] bg-white px-5 py-3 text-sm font-bold shadow-sm">
+              Connect your baseline →
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 
