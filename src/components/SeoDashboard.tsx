@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Client = {
   id: string;
+  workspace_id: string | null;
   name: string;
   website: string;
   baseline_date: string;
@@ -70,9 +71,26 @@ export default function SeoDashboard() {
 
   useEffect(() => {
     void (async () => {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        setError(userError?.message ?? "You must be signed in to view SEO Growth");
+        setLoading(false);
+        return;
+      }
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("current_workspace_id")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      if (profileError || !profile?.current_workspace_id) {
+        setError(profileError?.message ?? "No active workspace was found");
+        setLoading(false);
+        return;
+      }
       const { data, error: loadError } = await seoDb
         .from("seo_clients")
         .select("*")
+        .eq("workspace_id", profile.current_workspace_id)
         .order("created_at");
       if (loadError) setError(loadError.message);
       const rows = (data ?? []) as Client[];
@@ -86,7 +104,7 @@ export default function SeoDashboard() {
     if (!clientId) return;
     setSemrushLoading(true);
     void (async () => {
-      const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = await Promise.all([
+      const results = await Promise.all([
         seoDb.from("seo_metrics_daily").select("*").eq("client_id", clientId).order("day"),
         seoDb
           .from("seo_pages")
@@ -113,6 +131,13 @@ export default function SeoDashboard() {
           .limit(1)
           .maybeSingle(),
       ]);
+      const [metricRows, pageRows, backlinkRows, geoRows, semrushRow] = results;
+      const loadError = results.find((result) => result.error)?.error;
+      if (loadError) {
+        setError(loadError.message);
+        setSemrushLoading(false);
+        return;
+      }
       setMetrics((metricRows.data ?? []) as Metric[]);
       setPages((pageRows.data ?? []) as Page[]);
       setBacklinks((backlinkRows.data ?? []) as Backlink[]);
@@ -124,9 +149,10 @@ export default function SeoDashboard() {
 
   const client = clients.find((item) => item.id === clientId);
   const latest = metrics.at(-1);
+  const last28 = metrics.slice(-28);
   const indexedNow = latest?.indexed_pages ?? client?.baseline_indexed ?? 0;
-  const clicksNow = latest?.clicks ?? client?.baseline_clicks ?? 0;
-  const impressionsNow = latest?.impressions ?? client?.baseline_impressions ?? 0;
+  const clicksNow = last28.reduce((total, item) => total + item.clicks, 0);
+  const impressionsNow = last28.reduce((total, item) => total + item.impressions, 0);
   const liveLinks = backlinks.filter((item) => item.status === "live").length;
   const mentions = geo.filter((item) => item.mentioned).length;
   const day = client
