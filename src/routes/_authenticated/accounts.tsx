@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
@@ -127,6 +127,10 @@ function WebsiteConnections() {
     { property_url?: string; last_synced_at?: string; last_error?: string } | null | undefined;
   const githubRow = status.data?.github;
 
+  useEffect(() => {
+    if (gscRow?.property_url) setWebsite(gscRow.property_url);
+  }, [gscRow?.property_url]);
+
   return (
     <div className="max-w-7xl">
       <PageHeader
@@ -176,9 +180,15 @@ function WebsiteConnections() {
             <input
               value={website}
               onChange={(event) => setWebsite(event.target.value)}
+              disabled={Boolean(gscRow?.property_url)}
               placeholder="https://yourwebsite.com"
-              className="w-full rounded-xl border border-[#dfe1eb] px-4 py-3 text-sm outline-none focus:border-[#6366f1]"
+              className="w-full rounded-xl border border-[#dfe1eb] px-4 py-3 text-sm outline-none focus:border-[#6366f1] disabled:cursor-not-allowed disabled:bg-[#f5f5f8] disabled:text-[#737889]"
             />
+            {gscRow?.property_url && (
+              <p className="text-xs text-[#737889]">
+                This workspace is locked to this Search Console property.
+              </p>
+            )}
             <button
               type="button"
               disabled={gsc.isPending || !website}

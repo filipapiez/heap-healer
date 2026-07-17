@@ -64,7 +64,7 @@ export const getWebsiteConnectionStatus = createServerFn({ method: "GET" })
 export const startGscConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({ origin: z.string().url(), website: z.string().url() }).parse(input),
+    z.object({ origin: z.string().url(), website: z.string().min(1) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const workspaceId = await activeWorkspace(context);
@@ -75,6 +75,44 @@ export const startGscConnection = createServerFn({ method: "POST" })
         "Google Search Console is not configured yet. Add the Google OAuth client ID and secret in Lovable Cloud, then publish again.",
       );
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: existingClient } = await supabaseAdmin
+      .from("seo_clients" as never)
+      .select("id,website")
+      .eq("workspace_id", workspaceId)
+      .maybeSingle();
+    const existingClientRow = existingClient as unknown as {
+      id: string;
+      website: string;
+    } | null;
+    const { data: existingConnection } = existingClientRow
+      ? await supabaseAdmin
+          .from("seo_gsc_connections" as never)
+          .select("property_url")
+          .eq("client_id", existingClientRow.id)
+          .eq("active", true)
+          .maybeSingle()
+      : { data: null };
+    const lockedProperty = (existingConnection as unknown as { property_url?: string } | null)
+      ?.property_url;
+    const comparableDomain = (value: string) =>
+      value
+        .replace(/^sc-domain:/, "")
+        .replace(/^https?:\/\//, "")
+        .replace(/^www\./, "")
+        .replace(/\/.*$/, "")
+        .toLowerCase();
+    if (lockedProperty && comparableDomain(lockedProperty) !== comparableDomain(data.website)) {
+      throw new Error(
+        `This workspace is locked to ${lockedProperty}. Create another workspace to connect a different domain.`,
+      );
+    }
+    if (!lockedProperty) {
+      try {
+        new URL(data.website);
+      } catch {
+        throw new Error("Enter a valid website URL before connecting Search Console.");
+      }
+    }
     const { data: workspace } = await context.supabase
       .from("workspaces")
       .select("name")
@@ -86,7 +124,7 @@ export const startGscConnection = createServerFn({ method: "POST" })
       {
         workspace_id: workspaceId,
         name: workspace?.name ?? "Website",
-        website: data.website,
+        website: existingClientRow?.website ?? data.website,
         baseline_date: new Date().toISOString().slice(0, 10),
       } as never,
       { onConflict: "workspace_id" },

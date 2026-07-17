@@ -59,7 +59,10 @@ async function syncConnection(connection: GscConnection) {
   const end = new Date();
   end.setUTCDate(end.getUTCDate() - 1);
   const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 31);
+  // Search Console exposes up to 16 months of performance history. Import the
+  // full window so customers can switch between meaningful reporting ranges
+  // immediately after connecting instead of waiting months for daily rows.
+  start.setUTCMonth(start.getUTCMonth() - 16);
   const iso = (date: Date) => date.toISOString().slice(0, 10);
   const response = await fetch(
     `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(connection.property_url)}/searchAnalytics/query`,

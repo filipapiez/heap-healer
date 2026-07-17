@@ -58,6 +58,7 @@ const change = (value: number, baseline: number) =>
 const seoDb = supabase as any;
 
 export default function SeoDashboard() {
+  const [rangeDays, setRangeDays] = useState(90);
   const [clients, setClients] = useState<Client[]>([]);
   const [clientId, setClientId] = useState("");
   const [metrics, setMetrics] = useState<Metric[]>([]);
@@ -149,17 +150,17 @@ export default function SeoDashboard() {
 
   const client = clients.find((item) => item.id === clientId);
   const latest = metrics.at(-1);
-  const last28 = metrics.slice(-28);
+  const rangeMetrics = metrics.slice(-rangeDays);
   const indexedNow = latest?.indexed_pages ?? client?.baseline_indexed ?? 0;
-  const clicksNow = last28.reduce((total, item) => total + item.clicks, 0);
-  const impressionsNow = last28.reduce((total, item) => total + item.impressions, 0);
+  const clicksNow = rangeMetrics.reduce((total, item) => total + item.clicks, 0);
+  const impressionsNow = rangeMetrics.reduce((total, item) => total + item.impressions, 0);
   const liveLinks = backlinks.filter((item) => item.status === "live").length;
   const mentions = geo.filter((item) => item.mentioned).length;
   const day = client
     ? Math.min(90, Math.max(1, Math.floor((Date.now() - +new Date(client.baseline_date)) / 864e5)))
     : 1;
   const chart = useMemo(() => {
-    if (!metrics.length) return { impressions: "", clicks: "", area: "" };
+    if (!rangeMetrics.length) return { impressions: "", clicks: "", area: "" };
     const width = 720;
     const height = 170;
     const line = (values: number[]) => {
@@ -172,13 +173,13 @@ export default function SeoDashboard() {
         })
         .join(" ");
     };
-    const impressions = line(metrics.map((item) => item.impressions));
+    const impressions = line(rangeMetrics.map((item) => item.impressions));
     return {
       impressions,
-      clicks: line(metrics.map((item) => item.clicks)),
+      clicks: line(rangeMetrics.map((item) => item.clicks)),
       area: `${impressions} L 720 170 L 0 170 Z`,
     };
-  }, [metrics]);
+  }, [rangeMetrics]);
 
   if (loading) return <State title="Loading SEO growth…" />;
   if (error) return <State title="SEO Growth could not load" detail={error} />;
@@ -205,11 +206,23 @@ export default function SeoDashboard() {
             {client.website} · baseline {client.baseline_date}
           </p>
         </div>
+        <select
+          value={rangeDays}
+          onChange={(event) => setRangeDays(Number(event.target.value))}
+          className="ml-auto rounded-xl border border-[#e9eaf2] bg-white px-4 py-3 text-sm font-semibold"
+          aria-label="Reporting range"
+        >
+          <option value={28}>Last 28 days</option>
+          <option value={90}>Last 90 days</option>
+          <option value={180}>Last 6 months</option>
+          <option value={365}>Last 12 months</option>
+          <option value={488}>Last 16 months</option>
+        </select>
         {clients.length > 1 && (
           <select
             value={clientId}
             onChange={(event) => setClientId(event.target.value)}
-            className="ml-auto rounded-xl border border-[#e9eaf2] bg-white px-4 py-3 text-sm font-semibold"
+            className="rounded-xl border border-[#e9eaf2] bg-white px-4 py-3 text-sm font-semibold"
           >
             {clients.map((item) => (
               <option key={item.id} value={item.id}>
@@ -249,14 +262,14 @@ export default function SeoDashboard() {
           note={`${pages.filter((item) => !item.indexed).length} awaiting index`}
         />
         <Stat
-          label="Impressions · 28d"
+          label={`Impressions · ${rangeDays === 488 ? "16mo" : rangeDays === 365 ? "12mo" : rangeDays === 180 ? "6mo" : `${rangeDays}d`}`}
           value={fmt(impressionsNow)}
           delta={change(impressionsNow, client.baseline_impressions)}
           note={`day one: ${fmt(client.baseline_impressions)}`}
           suffix="%"
         />
         <Stat
-          label="Clicks · 28d"
+          label={`Clicks · ${rangeDays === 488 ? "16mo" : rangeDays === 365 ? "12mo" : rangeDays === 180 ? "6mo" : `${rangeDays}d`}`}
           value={fmt(clicksNow)}
           delta={change(clicksNow, client.baseline_clicks)}
           note={`day one: ${fmt(client.baseline_clicks)}`}
@@ -281,7 +294,7 @@ export default function SeoDashboard() {
           <span className="label">Impressions & clicks since baseline</span>
           <span className="text-xs text-[#6b7280]">Indigo: impressions · Ink: clicks</span>
         </div>
-        {metrics.length ? (
+        {rangeMetrics.length ? (
           <svg
             viewBox="0 0 720 170"
             className="w-full"
