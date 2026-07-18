@@ -30,7 +30,7 @@ export const seedDirectories = createServerFn({ method: "POST" })
       domain_authority: d.domain_authority ?? null,
       notes: d.notes ?? null,
     }));
-    const { error } = await supabase.from("directories").upsert(rows, { onConflict: "slug" });
+    const { error } = await supabase.from("directories").upsert(rows as never, { onConflict: "slug" });
     if (error) throw error;
     return { seeded: rows.length };
   });
@@ -148,7 +148,7 @@ export const updateSubmission = createServerFn({ method: "POST" })
     }
     if (data.live_url !== undefined) patch.live_url = data.live_url || null;
     if (data.notes !== undefined) patch.notes = data.notes ?? null;
-    const { error } = await supabase.from("directory_submissions").update(patch).eq("id", data.submissionId);
+    const { error } = await supabase.from("directory_submissions").update(patch as never).eq("id", data.submissionId);
     if (error) throw error;
     return { ok: true };
   });
