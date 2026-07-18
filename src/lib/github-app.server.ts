@@ -186,34 +186,40 @@ export async function openSeoPullRequest(input: {
   if (!repoResponse.ok) throw new Error(`GitHub repository lookup failed (${repoResponse.status})`);
   const repo = (await repoResponse.json()) as { default_branch: string };
   const base = input.base ?? repo.default_branch;
-  const refResponse = await fetch(`${api}/git/ref/heads/${encodeURIComponent(base)}`, { headers });
-  if (!refResponse.ok) throw new Error(`GitHub branch lookup failed (${refResponse.status})`);
-  const ref = (await refResponse.json()) as { object: { sha: string } };
-  const branch = `mentionmyapp/seo-${input.slug}-${Date.now()}`;
-  const createRef = await fetch(`${api}/git/refs`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: ref.object.sha }),
-  });
-  if (!createRef.ok) throw new Error(`GitHub branch creation failed (${createRef.status})`);
   const path = `content/seo/${input.slug}.html`;
   const content = btoa(unescape(encodeURIComponent(input.html)));
+  // Check if file already exists on base branch so we can supply the required sha for updates.
+  const existing = await fetch(
+    `${api}/contents/${path}?ref=${encodeURIComponent(base)}`,
+    { headers },
+  );
+  let sha: string | undefined;
+  if (existing.ok) {
+    const existingJson = (await existing.json()) as { sha?: string };
+    sha = existingJson.sha;
+  } else if (existing.status !== 404) {
+    throw new Error(`GitHub content lookup failed (${existing.status})`);
+  }
   const commit = await fetch(`${api}/contents/${path}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify({ message: `Add SEO page: ${input.title}`, content, branch }),
-  });
-  if (!commit.ok) throw new Error(`GitHub content commit failed (${commit.status})`);
-  const pull = await fetch(`${api}/pulls`, {
-    method: "POST",
-    headers,
     body: JSON.stringify({
-      title: input.title,
-      head: branch,
-      base,
-      body: "SEO page prepared by MentionMyApp. Review the content and merge to deploy through your existing workflow.",
+      message: `Publish SEO page: ${input.title}`,
+      content,
+      branch: base,
+      ...(sha ? { sha } : {}),
     }),
   });
-  if (!pull.ok) throw new Error(`GitHub pull request failed (${pull.status})`);
-  return (await pull.json()) as { number: number; html_url: string };
+  if (!commit.ok) throw new Error(`GitHub content commit failed (${commit.status})`);
+  const commitJson = (await commit.json()) as {
+    commit?: { sha?: string; html_url?: string };
+    content?: { html_url?: string };
+  };
+  return {
+    number: 0,
+    html_url:
+      commitJson.commit?.html_url ??
+      commitJson.content?.html_url ??
+      `https://github.com/${input.repository}/blob/${base}/${path}`,
+  };
 }
