@@ -76,6 +76,41 @@ export type Database = {
           },
         ]
       }
+      github_app_installations: {
+        Row: {
+          account_login: string | null
+          account_type: string | null
+          created_at: string
+          installation_id: number
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          account_login?: string | null
+          account_type?: string | null
+          created_at?: string
+          installation_id: number
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          account_login?: string | null
+          account_type?: string | null
+          created_at?: string
+          installation_id?: number
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "github_app_installations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       linkedin_oauth_tokens: {
         Row: {
           access_token: string
@@ -709,6 +744,128 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      website_connections: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          encrypted_credentials: string | null
+          external_id: string
+          id: string
+          last_error: string | null
+          last_tested_at: string | null
+          metadata: Json
+          platform: string
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          encrypted_credentials?: string | null
+          external_id: string
+          id?: string
+          last_error?: string | null
+          last_tested_at?: string | null
+          metadata?: Json
+          platform: string
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          encrypted_credentials?: string | null
+          external_id?: string
+          id?: string
+          last_error?: string | null
+          last_tested_at?: string | null
+          metadata?: Json
+          platform?: string
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_connections_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      website_publish_jobs: {
+        Row: {
+          connection_id: string
+          created_at: string
+          error_message: string | null
+          excerpt: string | null
+          external_id: string | null
+          external_url: string | null
+          html: string
+          id: string
+          metadata: Json
+          processed_at: string | null
+          publish_mode: string
+          slug: string
+          status: string
+          title: string
+          workspace_id: string
+        }
+        Insert: {
+          connection_id: string
+          created_at?: string
+          error_message?: string | null
+          excerpt?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          html: string
+          id?: string
+          metadata?: Json
+          processed_at?: string | null
+          publish_mode?: string
+          slug: string
+          status?: string
+          title: string
+          workspace_id: string
+        }
+        Update: {
+          connection_id?: string
+          created_at?: string
+          error_message?: string | null
+          excerpt?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          html?: string
+          id?: string
+          metadata?: Json
+          processed_at?: string | null
+          publish_mode?: string
+          slug?: string
+          status?: string
+          title?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_publish_jobs_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "website_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "website_publish_jobs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       workspace_members: {
         Row: {
