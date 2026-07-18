@@ -1,75 +1,56 @@
 
-# SocialFlow — port to Lovable Cloud + TanStack Start
+# Directory Backlink Builder
 
-Rebuild the app you designed for Next.js on this project's actual stack. The product concept, screens, and Zernio integration stay identical. The plumbing changes.
+Ship a system that queues 15 SaaS/startup directories per week, auto-submits to the ones with usable APIs/forms, and gives you a one-click "Open & submit" dashboard for the rest.
 
-## What changes and why
+## What ships
 
-| Original | Replacement | Reason |
-|---|---|---|
-| Next.js App Router + `"use client"` | TanStack Start file routes in `src/routes/` | This project's framework |
-| NextAuth (Google) | Lovable Cloud auth: email/password + Google | Native to this stack; no external accounts |
-| Prisma + self-hosted Postgres | Supabase Postgres via migrations, `has_role`, RLS | Managed DB with row-level security |
-| S3 + presigned PUT | Supabase Storage (`media` private bucket) | Native to this stack |
-| Redis + BullMQ worker | Supabase cron + `createServerFn` publish job | No persistent processes on Cloudflare Workers |
-| FFmpeg via `child_process` | Deferred (see "Watermark rendering" below) | `child_process` doesn't work in the Worker runtime |
-| Next `route.ts` API handlers | `createServerFn` (app-internal) + `/api/public/zernio` (webhook) | Native TSS pattern |
+**1. Seed directory list (~200 entries)**
+- Curated JSON at `src/data/directories.ts` — name, URL, submit URL, category, tier, submission method (`api` | `form` | `email` | `manual`), auto-submit config, DA estimate.
+- Categories: SaaS, AI tools, startup, launch platforms (Product Hunt-alikes), indie hackers, no-code, tools directories.
 
-## Watermark rendering — decision needed after slice 1
+**2. Database (one migration)**
+- `directories` — the catalog, seeded from the JSON on first run.
+- `directory_submissions` — one row per (workspace, directory): status (`queued` | `auto_submitted` | `pending_action` | `submitted` | `live` | `rejected` | `skipped`), scheduled_for, submitted_at, live_url, notes.
+- `directory_submission_queue_runs` — weekly cron log.
+- All tables workspace-scoped, RLS, standard GRANTs.
 
-FFmpeg cannot run in this project's server runtime. Three options — I'll ask which one you want before slice 3:
+**3. Weekly queue job**
+- `pg_cron` → `POST /api/public/queue-directories` (Bearer `CRON_SECRET`) every Monday 9am UTC.
+- Picks the top 15 unsubmitted directories per workspace (by tier, then DA), inserts `queued` rows.
+- When seed list runs low (<30 unsubmitted remaining per workspace), flags the workspace so the UI shows a "refreshing seed list" banner and I add more manually. No AI discovery yet — you said "we're going to keep looking for new ones", so I'll drop new curated batches into `directories.ts` as we go. If you later want an AI discovery cron, we bolt it on.
 
-- **A. External render worker** you host (a small Fly.io / Railway container) that this app calls over HTTPS. Keeps the exact FFmpeg pipeline. Requires a second deploy target.
-- **B. Skip burn-in watermark**, publish the original video as-is. Ship faster; loses the watermarking feature.
-- **C. Zernio-side overlay** if their API supports a logo/watermark parameter — I'll check their docs during slice 2. If yes, no separate service needed.
+**4. Auto-submit path**
+- `src/lib/directory-submit.server.ts` handles the ~15-20% of directories with usable endpoints:
+  - `api` — POST to their public submission API (e.g. some indie directories accept JSON).
+  - `form` — server-side form POST with your workspace's saved profile (name, tagline, URL, logo, category, email).
+  - Failures → mark `pending_action` so it falls back to the manual queue.
+- Rate-limited per directory host.
 
-## Delivery slices
+**5. Workspace directory profile**
+- New `workspace_directory_profile` row (name, tagline 60ch, description 160ch + long, logo URL, category, contact email, pricing model, launch date).
+- Filled once, reused for every submission. Auto-submit fails without it.
 
-Each slice ends with a working, testable app. I'll pause between slices for you to click through the preview.
+**6. Dashboard: `/backlinks`**
+- **This week** — 15 cards, each: directory name/logo, DA, status badge, primary action.
+  - Auto-submitted → "View listing" link.
+  - Pending action → "Open & submit" (opens submit URL in new tab, pre-fills clipboard with your profile fields, then a "Mark submitted" button).
+  - Rejected → reason + retry.
+- **All time** — filterable table with live_url, submitted_at, status.
+- **Profile** — edit the shared submission profile.
+- Counters roll up into the existing SEO Growth dashboard ("Backlinks in progress" / "Live").
 
-**Slice 1 — Foundation** (this slice, no confirmation needed)
-- Enable Lovable Cloud
-- Auth: email/password + Google, `/auth` public route, `_authenticated` gate, sign-out
-- Schema + RLS: `workspaces`, `workspace_members` (with `role` enum), `user_roles` (app-level admin), `has_role()` SECURITY DEFINER, `current_workspace` per-user pointer
-- `WorkspaceSwitcher` + `/api/workspaces` server fns
-- Dashboard shell: sidebar nav, all 8 routes as stubs, design tokens (`mist`, `ink`, `signal`, Sora + Inter) wired into `styles.css`
-- `Overview` page shows real workspace name and empty-state copy
+**7. Semrush cross-check**
+- Existing daily Semrush sync already pulls referring domains. Add a matcher: when a submitted directory's root domain appears in Semrush's referring domains list, auto-flip status to `live` and store the backlink URL.
 
-**Slice 2 — Zernio connect + accounts**
-- Secrets: `ZERNIO_SECRET_KEY`, `ZERNIO_WEBHOOK_SECRET` (I'll request via `add_secret` once slice 1 lands; demo/mock mode works without them)
-- `connected_accounts` table + RLS
-- Provider adapter (real + mock), capability list per platform
-- `/accounts` page: `ConnectPanel`, OAuth start server fns per platform, Bluesky credentials modal, sync + disconnect
-- `/api/public/zernio` webhook route with HMAC verify + `account.connected` / `account.disconnected` handling
+## Cadence
 
-**Slice 3 — Compose + publish**
-- `media_assets` table, `media` private Storage bucket, signed URL helpers
-- `/media` library page
-- `posts` + `post_targets` + `publish_attempts` tables
-- `PostComposer` 3-step wizard (media/watermark/compose/review) — watermark UI conditional on chosen render path from decision above
-- `/api/posts` + `/api/posts/:id/publish` server fns, per-platform validation
-- Publish path calls Zernio directly for immediate publishes
-- `/scheduled`, `/history`, `/history/:id` pages
-- Webhook handles `post.published`, `post.partial`, `post.failed`, `post.cancelled`
+15/week × ~200 seed = ~13 weeks of runway. I'll add curated batches (target: another 100 every 6-8 weeks) as we approach the tail. If you want continuous AI discovery instead, we swap the manual refresh for a discovery cron later — one file change.
 
-**Slice 4 — Engagement + polish**
-- `/engagement` dashboard: overview metrics, comments threads with reply, DM inbox (read-only)
-- `/settings`, `/admin` config-status page
-- Scheduled publishing via Supabase cron hitting a server fn (or drop scheduling if cron isn't practical — we'll decide)
-- SEO metadata per route, error/notfound components everywhere
+## Not in this plan
 
-## Technical notes
+- HARO/Qwoted responder (separate build if you want it).
+- Broken-link outreach (separate build).
+- Captcha solving for auto-submit (out of scope — those go to the manual queue).
 
-- Server fns live in `src/lib/*.functions.ts`. Zernio + admin helpers in `*.server.ts`. Handlers read `process.env.*` inside `.handler()` only.
-- Roles: workspace-scoped role on `workspace_members` for owner/admin/member; separate `user_roles` for app-level admin (per platform rules). Admin page uses `has_role`.
-- `role` and workspace context resolved per request via a `requireWorkspace` server-fn middleware that reads the `current_workspace_id` off the auth user's row and checks membership.
-- Storage: `media` bucket private, signed download URLs, direct upload via `supabase.storage.from('media').upload(...)` from the browser after a server fn issues a signed upload URL.
-- No `.env` for secrets — I'll use `add_secret` / `generate_secret` when we reach the pieces that need them.
-
-## What ships at the end
-
-Same product you spec'd: multi-brand workspaces, connect 11 platforms via Zernio (or demo mode), compose once and publish everywhere, per-platform overrides, scheduling, unified engagement dashboard — running on this stack with no external Node host required (except optionally the FFmpeg worker if you pick option A).
-
-## Confirm to start
-
-Reply "go" and I'll ship slice 1. When it's up, I'll ask about the watermark render decision before starting slice 3.
+Reply "go" and I'll ship it.
