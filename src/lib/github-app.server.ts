@@ -5,12 +5,49 @@ function base64url(input: string | Uint8Array) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
+// Wrap a PKCS#1 RSAPrivateKey (DER) in a PKCS#8 PrivateKeyInfo envelope.
+// GitHub Apps hand out PKCS#1 (-----BEGIN RSA PRIVATE KEY-----); Web Crypto only accepts PKCS#8.
+function pkcs1ToPkcs8(pkcs1: Uint8Array): Uint8Array {
+  // PKCS#8 prefix: SEQUENCE { version(0), AlgorithmIdentifier(rsaEncryption, NULL), OCTET STRING { pkcs1 } }
+  const rsaOid = new Uint8Array([
+    0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00,
+  ]);
+  const version = new Uint8Array([0x02, 0x01, 0x00]);
+  const encodeLen = (n: number): Uint8Array => {
+    if (n < 0x80) return new Uint8Array([n]);
+    const bytes: number[] = [];
+    let x = n;
+    while (x > 0) { bytes.unshift(x & 0xff); x >>= 8; }
+    return new Uint8Array([0x80 | bytes.length, ...bytes]);
+  };
+  const octetLen = encodeLen(pkcs1.length);
+  const octetString = new Uint8Array(1 + octetLen.length + pkcs1.length);
+  octetString[0] = 0x04;
+  octetString.set(octetLen, 1);
+  octetString.set(pkcs1, 1 + octetLen.length);
+  const inner = new Uint8Array(version.length + rsaOid.length + octetString.length);
+  inner.set(version, 0);
+  inner.set(rsaOid, version.length);
+  inner.set(octetString, version.length + rsaOid.length);
+  const seqLen = encodeLen(inner.length);
+  const out = new Uint8Array(1 + seqLen.length + inner.length);
+  out[0] = 0x30;
+  out.set(seqLen, 1);
+  out.set(inner, 1 + seqLen.length);
+  return out;
+}
+
 async function appJwt() {
   const appId = process.env.GITHUB_APP_ID;
   const pem = process.env.GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, "\n");
   if (!appId || !pem) throw new Error("GITHUB_APP_ID / GITHUB_APP_PRIVATE_KEY are not configured");
-  const body = pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\s/g, "");
-  const raw = Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
+  const isPkcs1 = /-----BEGIN RSA PRIVATE KEY-----/.test(pem);
+  const body = pem.replace(
+    /-----BEGIN (?:RSA )?PRIVATE KEY-----|-----END (?:RSA )?PRIVATE KEY-----|\s/g,
+    "",
+  );
+  const der = Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
+  const raw = isPkcs1 ? pkcs1ToPkcs8(der) : der;
   const key = await crypto.subtle.importKey(
     "pkcs8",
     raw,
