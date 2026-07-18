@@ -5,6 +5,27 @@ function base64url(input: string | Uint8Array) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
+function cleanGithubPrivateKey(value: string) {
+  return value
+    .trim()
+    .replace(/^GITHUB_APP_PRIVATE_KEY\s*=\s*/, "")
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/\\r\\n|\\n|\\r/g, "\n");
+}
+
+function pemBodyToDer(pem: string) {
+  const body = pem.replace(
+    /-----BEGIN [^-]+-----|-----END [^-]+-----|\s/g,
+    "",
+  );
+  if (!body) throw new Error("GitHub App private key is empty");
+  try {
+    return Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
+  } catch {
+    throw new Error("GitHub App private key is not valid base64 PEM data");
+  }
+}
+
 // Wrap a PKCS#1 RSAPrivateKey (DER) in a PKCS#8 PrivateKeyInfo envelope.
 // GitHub Apps hand out PKCS#1 (-----BEGIN RSA PRIVATE KEY-----); Web Crypto only accepts PKCS#8.
 function pkcs1ToPkcs8(pkcs1: Uint8Array): Uint8Array {
@@ -39,22 +60,37 @@ function pkcs1ToPkcs8(pkcs1: Uint8Array): Uint8Array {
 
 async function appJwt() {
   const appId = process.env.GITHUB_APP_ID;
-  const pem = process.env.GITHUB_APP_PRIVATE_KEY?.replace(/\\n/g, "\n");
-  if (!appId || !pem) throw new Error("GITHUB_APP_ID / GITHUB_APP_PRIVATE_KEY are not configured");
-  const isPkcs1 = /-----BEGIN RSA PRIVATE KEY-----/.test(pem);
-  const body = pem.replace(
-    /-----BEGIN (?:RSA )?PRIVATE KEY-----|-----END (?:RSA )?PRIVATE KEY-----|\s/g,
-    "",
-  );
-  const der = Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
-  const raw = (isPkcs1 ? pkcs1ToPkcs8(der) : der).slice().buffer;
-  const key = await crypto.subtle.importKey(
-    "pkcs8",
-    raw,
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
+  const rawPem = process.env.GITHUB_APP_PRIVATE_KEY;
+  if (!appId || !rawPem)
+    throw new Error("GITHUB_APP_ID / GITHUB_APP_PRIVATE_KEY are not configured");
+  const pem = cleanGithubPrivateKey(rawPem);
+  const der = pemBodyToDer(pem);
+  const candidates = /-----BEGIN RSA PRIVATE KEY-----/.test(pem)
+    ? [pkcs1ToPkcs8(der)]
+    : [der, pkcs1ToPkcs8(der)];
+
+  let key: CryptoKey | undefined;
+  let importError: unknown;
+  for (const candidate of candidates) {
+    try {
+      key = await crypto.subtle.importKey(
+        "pkcs8",
+        candidate.slice().buffer,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        false,
+        ["sign"],
+      );
+      break;
+    } catch (error) {
+      importError = error;
+    }
+  }
+  if (!key) {
+    console.error("[github-app] private key import failed", importError);
+    throw new Error(
+      "GitHub App private key could not be read. Download a fresh private key from the GitHub App and save the full PEM text.",
+    );
+  }
   const now = Math.floor(Date.now() / 1000);
   const header = base64url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
   const payload = base64url(JSON.stringify({ iat: now - 60, exp: now + 540, iss: appId }));
