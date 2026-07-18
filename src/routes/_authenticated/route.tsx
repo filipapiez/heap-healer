@@ -18,6 +18,7 @@ export const Route = createFileRoute("/_authenticated")({
 const NAV = [
   { to: "/dashboard", label: "Growth overview", icon: "⌁" },
   { to: "/seo-audit", label: "SEO Growth", icon: "↗" },
+  { to: "/backlinks", label: "Backlink builder", icon: "🔗" },
   { to: "/accounts", label: "Connections", icon: "⛓" },
   { to: "/resources", label: "Growth resources", icon: "◇" },
   { to: "/settings", label: "Settings", icon: "⚙" },

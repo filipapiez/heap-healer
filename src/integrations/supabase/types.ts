@@ -76,6 +76,138 @@ export type Database = {
           },
         ]
       }
+      directories: {
+        Row: {
+          active: boolean
+          auto_submit_config: Json | null
+          category: string
+          created_at: string
+          domain_authority: number | null
+          homepage_url: string
+          id: string
+          name: string
+          notes: string | null
+          slug: string
+          submission_method: string
+          submit_url: string
+          tier: number
+        }
+        Insert: {
+          active?: boolean
+          auto_submit_config?: Json | null
+          category: string
+          created_at?: string
+          domain_authority?: number | null
+          homepage_url: string
+          id?: string
+          name: string
+          notes?: string | null
+          slug: string
+          submission_method?: string
+          submit_url: string
+          tier?: number
+        }
+        Update: {
+          active?: boolean
+          auto_submit_config?: Json | null
+          category?: string
+          created_at?: string
+          domain_authority?: number | null
+          homepage_url?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          slug?: string
+          submission_method?: string
+          submit_url?: string
+          tier?: number
+        }
+        Relationships: []
+      }
+      directory_queue_runs: {
+        Row: {
+          errors: Json | null
+          id: string
+          ran_at: string
+          submissions_auto: number
+          submissions_queued: number
+          workspaces_processed: number
+        }
+        Insert: {
+          errors?: Json | null
+          id?: string
+          ran_at?: string
+          submissions_auto?: number
+          submissions_queued?: number
+          workspaces_processed?: number
+        }
+        Update: {
+          errors?: Json | null
+          id?: string
+          ran_at?: string
+          submissions_auto?: number
+          submissions_queued?: number
+          workspaces_processed?: number
+        }
+        Relationships: []
+      }
+      directory_submissions: {
+        Row: {
+          auto_result: Json | null
+          created_at: string
+          directory_id: string
+          id: string
+          live_url: string | null
+          notes: string | null
+          scheduled_for: string
+          status: string
+          submitted_at: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          auto_result?: Json | null
+          created_at?: string
+          directory_id: string
+          id?: string
+          live_url?: string | null
+          notes?: string | null
+          scheduled_for?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          auto_result?: Json | null
+          created_at?: string
+          directory_id?: string
+          id?: string
+          live_url?: string | null
+          notes?: string | null
+          scheduled_for?: string
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "directory_submissions_directory_id_fkey"
+            columns: ["directory_id"]
+            isOneToOne: false
+            referencedRelation: "directories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "directory_submissions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       github_app_installations: {
         Row: {
           account_login: string | null
@@ -862,6 +994,68 @@ export type Database = {
             foreignKeyName: "website_publish_jobs_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspace_directory_profile: {
+        Row: {
+          category: string | null
+          contact_email: string | null
+          created_at: string
+          founder_name: string | null
+          launch_date: string | null
+          logo_url: string | null
+          long_description: string | null
+          pricing_model: string | null
+          product_name: string | null
+          short_description: string | null
+          tagline: string | null
+          twitter_handle: string | null
+          updated_at: string
+          website_url: string | null
+          workspace_id: string
+        }
+        Insert: {
+          category?: string | null
+          contact_email?: string | null
+          created_at?: string
+          founder_name?: string | null
+          launch_date?: string | null
+          logo_url?: string | null
+          long_description?: string | null
+          pricing_model?: string | null
+          product_name?: string | null
+          short_description?: string | null
+          tagline?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          website_url?: string | null
+          workspace_id: string
+        }
+        Update: {
+          category?: string | null
+          contact_email?: string | null
+          created_at?: string
+          founder_name?: string | null
+          launch_date?: string | null
+          logo_url?: string | null
+          long_description?: string | null
+          pricing_model?: string | null
+          product_name?: string | null
+          short_description?: string | null
+          tagline?: string | null
+          twitter_handle?: string | null
+          updated_at?: string
+          website_url?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_directory_profile_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
             referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },

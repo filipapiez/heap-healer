@@ -32,11 +32,13 @@ import { Route as AuthenticatedMediaRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedEngagementRouteImport } from './routes/_authenticated/engagement'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBacklinksRouteImport } from './routes/_authenticated/backlinks'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
 import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
+import { Route as ApiPublicQueueDirectoriesRouteImport } from './routes/api/public/queue-directories'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
 import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
@@ -160,6 +162,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBacklinksRoute = AuthenticatedBacklinksRouteImport.update({
+  id: '/backlinks',
+  path: '/backlinks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -185,6 +192,12 @@ const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
   path: '/api/public/run-scheduled',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicQueueDirectoriesRoute =
+  ApiPublicQueueDirectoriesRouteImport.update({
+    id: '/api/public/queue-directories',
+    path: '/api/public/queue-directories',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOauthYoutubeCallbackRoute =
   ApiPublicOauthYoutubeCallbackRouteImport.update({
     id: '/api/public/oauth/youtube/callback',
@@ -249,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -259,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -286,6 +301,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -296,6 +312,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -325,6 +342,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/engagement': typeof AuthenticatedEngagementRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
@@ -335,6 +353,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -364,6 +383,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accounts'
     | '/admin'
+    | '/backlinks'
     | '/dashboard'
     | '/engagement'
     | '/history'
@@ -374,6 +394,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -401,6 +422,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accounts'
     | '/admin'
+    | '/backlinks'
     | '/dashboard'
     | '/engagement'
     | '/history'
@@ -411,6 +433,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -439,6 +462,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/accounts'
     | '/_authenticated/admin'
+    | '/_authenticated/backlinks'
     | '/_authenticated/dashboard'
     | '/_authenticated/engagement'
     | '/_authenticated/history'
@@ -449,6 +473,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -477,6 +502,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ReportTokenRoute: typeof ReportTokenRoute
+  ApiPublicQueueDirectoriesRoute: typeof ApiPublicQueueDirectoriesRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicSyncGscRoute: typeof ApiPublicSyncGscRoute
   ApiPublicSyncSemrushRoute: typeof ApiPublicSyncSemrushRoute
@@ -653,6 +679,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/backlinks': {
+      id: '/_authenticated/backlinks'
+      path: '/backlinks'
+      fullPath: '/backlinks'
+      preLoaderRoute: typeof AuthenticatedBacklinksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -686,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/run-scheduled'
       fullPath: '/api/public/run-scheduled'
       preLoaderRoute: typeof ApiPublicRunScheduledRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/queue-directories': {
+      id: '/api/public/queue-directories'
+      path: '/api/public/queue-directories'
+      fullPath: '/api/public/queue-directories'
+      preLoaderRoute: typeof ApiPublicQueueDirectoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/oauth/youtube/callback': {
@@ -750,6 +790,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBacklinksRoute: typeof AuthenticatedBacklinksRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEngagementRoute: typeof AuthenticatedEngagementRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
@@ -763,6 +804,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountsRoute: AuthenticatedAccountsRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBacklinksRoute: AuthenticatedBacklinksRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEngagementRoute: AuthenticatedEngagementRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
@@ -803,6 +845,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ReportTokenRoute: ReportTokenRoute,
+  ApiPublicQueueDirectoriesRoute: ApiPublicQueueDirectoriesRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicSyncGscRoute: ApiPublicSyncGscRoute,
   ApiPublicSyncSemrushRoute: ApiPublicSyncSemrushRoute,
@@ -818,13 +861,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
