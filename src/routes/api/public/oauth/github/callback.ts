@@ -15,13 +15,25 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
           return Response.redirect(target, 302);
         };
         if (!state || !installationId)
-          return finish(url.origin, "error", "missing_installation_or_state");
-        const { data } = await supabaseAdmin
+          if (!installationId) return finish(url.origin, "error", "missing_installation");
+        // GitHub's post-install "Setup URL" redirect only sends installation_id +
+        // setup_action, not our `state`. Fall back to the most recent pending
+        // github_app oauth_state row when state is absent.
+        const query = supabaseAdmin
           .from("oauth_states" as never)
-          .select("provider,workspace_id,redirect_origin,expires_at")
-          .eq("state", state)
-          .maybeSingle();
+          .select("state,provider,workspace_id,redirect_origin,expires_at")
+          .eq("provider", "github_app")
+          .order("created_at", { ascending: false })
+          .limit(1);
+        const { data } = state
+          ? await supabaseAdmin
+              .from("oauth_states" as never)
+              .select("state,provider,workspace_id,redirect_origin,expires_at")
+              .eq("state", state)
+              .maybeSingle()
+          : await query.maybeSingle();
         const row = data as unknown as {
+          state: string;
           provider: string;
           workspace_id: string;
           redirect_origin: string;
@@ -31,7 +43,7 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
         await supabaseAdmin
           .from("oauth_states" as never)
           .delete()
-          .eq("state", state);
+          .eq("state", row.state);
         if (row.provider !== "github_app")
           return finish(row.redirect_origin, "error", "provider_mismatch");
         if (new Date(row.expires_at) < new Date())
