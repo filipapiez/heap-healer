@@ -37,6 +37,7 @@ import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticat
 import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
 import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
+import { Route as ApiPublicQueueDirectoriesRouteImport } from './routes/api/public/queue-directories'
 import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
 import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
 import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
@@ -185,6 +186,12 @@ const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
   path: '/api/public/run-scheduled',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicQueueDirectoriesRoute =
+  ApiPublicQueueDirectoriesRouteImport.update({
+    id: '/api/public/queue-directories',
+    path: '/api/public/queue-directories',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicOauthYoutubeCallbackRoute =
   ApiPublicOauthYoutubeCallbackRouteImport.update({
     id: '/api/public/oauth/youtube/callback',
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -296,6 +304,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -335,6 +344,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/report/$token': typeof ReportTokenRoute
   '/resources/$slug': typeof ResourcesSlugRoute
+  '/api/public/queue-directories': typeof ApiPublicQueueDirectoriesRoute
   '/api/public/run-scheduled': typeof ApiPublicRunScheduledRoute
   '/api/public/sync-gsc': typeof ApiPublicSyncGscRoute
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -449,6 +461,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/report/$token'
     | '/resources/$slug'
+    | '/api/public/queue-directories'
     | '/api/public/run-scheduled'
     | '/api/public/sync-gsc'
     | '/api/public/sync-semrush'
@@ -477,6 +490,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ReportTokenRoute: typeof ReportTokenRoute
+  ApiPublicQueueDirectoriesRoute: typeof ApiPublicQueueDirectoriesRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
   ApiPublicSyncGscRoute: typeof ApiPublicSyncGscRoute
   ApiPublicSyncSemrushRoute: typeof ApiPublicSyncSemrushRoute
@@ -688,6 +702,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRunScheduledRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/queue-directories': {
+      id: '/api/public/queue-directories'
+      path: '/api/public/queue-directories'
+      fullPath: '/api/public/queue-directories'
+      preLoaderRoute: typeof ApiPublicQueueDirectoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/oauth/youtube/callback': {
       id: '/api/public/oauth/youtube/callback'
       path: '/api/public/oauth/youtube/callback'
@@ -803,6 +824,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ReportTokenRoute: ReportTokenRoute,
+  ApiPublicQueueDirectoriesRoute: ApiPublicQueueDirectoriesRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
   ApiPublicSyncGscRoute: ApiPublicSyncGscRoute,
   ApiPublicSyncSemrushRoute: ApiPublicSyncSemrushRoute,
