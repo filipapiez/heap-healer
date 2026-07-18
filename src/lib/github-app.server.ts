@@ -47,7 +47,7 @@ async function appJwt() {
     "",
   );
   const der = Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
-  const raw = isPkcs1 ? pkcs1ToPkcs8(der) : der;
+  const raw = (isPkcs1 ? pkcs1ToPkcs8(der) : der).slice().buffer;
   const key = await crypto.subtle.importKey(
     "pkcs8",
     raw,
