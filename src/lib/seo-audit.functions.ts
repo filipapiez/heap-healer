@@ -582,7 +582,7 @@ Cost: ${cost}.`;
 export const runSeoAudit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => SeoAuditInputSchema.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const categories = categoriesMap();
     const weights: number[] = [];
     const normalizedUrl = normalizeWebsite(data.websiteUrl);
@@ -753,6 +753,30 @@ export const runSeoAudit = createServerFn({ method: "POST" })
     const cost = costForScore(score);
     const tone = toneForScore(score);
     const domain = rootDomain(baseUrl);
+
+    // Persistence is deliberately best-effort: the user should still receive
+    // an audit if dashboard history is temporarily unavailable.
+    try {
+      const { data: profile, error: profileError } = await context.supabase
+        .from("profiles")
+        .select("current_workspace_id")
+        .eq("id", context.userId)
+        .maybeSingle();
+      if (profileError) throw profileError;
+      if (profile?.current_workspace_id) {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { error: persistError } = await supabaseAdmin.from("seo_audit_runs" as never).insert({
+          workspace_id: profile.current_workspace_id,
+          website: normalizedUrl,
+          score,
+          checks_passed: good.length,
+          checks_failed: issues.length,
+        } as never);
+        if (persistError) throw persistError;
+      }
+    } catch (persistError) {
+      console.error("[seo-audit] failed to persist run", persistError);
+    }
 
     return {
       websiteUrl: normalizedUrl,

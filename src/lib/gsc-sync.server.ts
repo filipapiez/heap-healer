@@ -108,10 +108,26 @@ async function syncConnection(connection: GscConnection) {
       .upsert(rows as never, { onConflict: "client_id,day" });
     if (error) throw error;
   }
-  await supabaseAdmin
+  const baselineRows = rows.slice(-28);
+  const baselineClicks = baselineRows.reduce((sum, row) => sum + row.clicks, 0);
+  const baselineImpressions = baselineRows.reduce((sum, row) => sum + row.impressions, 0);
+  const capturedAt = new Date().toISOString();
+  const { error: baselineError } = await supabaseAdmin
+    .from("seo_clients" as never)
+    .update({
+      baseline_clicks: baselineClicks,
+      baseline_impressions: baselineImpressions,
+      baseline_date: capturedAt.slice(0, 10),
+      baseline_captured_at: capturedAt,
+    } as never)
+    .eq("id", connection.client_id)
+    .is("baseline_captured_at", null);
+  if (baselineError) throw baselineError;
+  const { error: connectionError } = await supabaseAdmin
     .from("seo_gsc_connections" as never)
     .update({ last_synced_at: new Date().toISOString(), last_error: null } as never)
     .eq("client_id", connection.client_id);
+  if (connectionError) throw connectionError;
   return rows.length;
 }
 
