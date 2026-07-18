@@ -14,8 +14,7 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
           target.searchParams.set("msg", message);
           return Response.redirect(target, 302);
         };
-        if (!state || !installationId)
-          if (!installationId) return finish(url.origin, "error", "missing_installation");
+        if (!installationId) return finish(url.origin, "error", "missing_installation");
         // GitHub's post-install "Setup URL" redirect only sends installation_id +
         // setup_action, not our `state`. Fall back to the most recent pending
         // github_app oauth_state row when state is absent.
