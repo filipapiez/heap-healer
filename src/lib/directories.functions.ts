@@ -78,6 +78,27 @@ export const saveDirectoryProfile = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Return a long-lived signed URL for a file in the private brand-assets bucket.
+ *  Directories/clipboards need a stable, publicly-fetchable logo URL, and the
+ *  workspace-policy forbids public buckets, so we sign for ~10 years. */
+export const signBrandAssetUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ path: z.string().min(1).max(500) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const workspaceId = await getActiveWorkspaceId(supabase, userId);
+    if (!data.path.startsWith(`logos/${workspaceId}/`)) {
+      throw new Error("Path must live under this workspace");
+    }
+    const { data: signed, error } = await supabase.storage
+      .from("brand-assets")
+      .createSignedUrl(data.path, 60 * 60 * 24 * 365 * 10);
+    if (error || !signed?.signedUrl) throw error ?? new Error("Failed to sign URL");
+    return { url: signed.signedUrl };
+  });
+
 /** Everything the /backlinks dashboard needs in one call. */
 export const listBacklinkQueue = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

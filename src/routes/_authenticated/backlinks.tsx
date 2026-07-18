@@ -10,6 +10,7 @@ import {
   triggerAutoSubmit,
   updateSubmission,
 } from "@/lib/directories.functions";
+import { LogoUploader } from "@/components/LogoUploader";
 
 export const Route = createFileRoute("/_authenticated/backlinks")({
   head: () => ({ meta: [{ title: "Backlink builder — MentionMyApp" }] }),
@@ -304,6 +305,8 @@ function HistoryTable({ rows }: { rows: Submission[] }) {
 
 function ProfileForm({ initial }: { initial: any }) {
   const qc = useQueryClient();
+  const queueData = qc.getQueryData<any>(["backlink-queue"]);
+  const workspaceId: string | undefined = queueData?.workspaceId;
   const [form, setForm] = useState({
     product_name: initial?.product_name ?? "",
     tagline: initial?.tagline ?? "",
@@ -340,7 +343,17 @@ function ProfileForm({ initial }: { initial: any }) {
       <Field label="Tagline (≤120 chars)" value={form.tagline} onChange={set("tagline")} />
       <Field label="Category" value={form.category} onChange={set("category")} placeholder="AI, SaaS, marketing…" />
       <Field label="Contact email" value={form.contact_email} onChange={set("contact_email")} type="email" />
-      <Field label="Logo URL" value={form.logo_url} onChange={set("logo_url")} placeholder="https://…" />
+      <div>
+        {workspaceId ? (
+          <LogoUploader
+            workspaceId={workspaceId}
+            value={form.logo_url}
+            onChange={(url) => setForm((f) => ({ ...f, logo_url: url }))}
+          />
+        ) : (
+          <Field label="Logo URL" value={form.logo_url} onChange={set("logo_url")} placeholder="https://…" />
+        )}
+      </div>
       <Field label="Pricing model" value={form.pricing_model} onChange={set("pricing_model")} placeholder="Free, Freemium, Paid" />
       <Field label="Twitter/X handle" value={form.twitter_handle} onChange={set("twitter_handle")} placeholder="@handle" />
       <div className="md:col-span-2">
