@@ -85,10 +85,10 @@ export const Route = createFileRoute("/api/public/queue-directories")({
                   directory_id: d.id,
                   status,
                   scheduled_for: new Date().toISOString().slice(0, 10),
-                  auto_result,
+                  auto_result: auto_result as never,
                   notes,
                   submitted_at,
-                });
+                } as never);
               if (insErr) {
                 errors.push({ workspace: ws.id, directory: d.slug, error: insErr.message });
               } else {
@@ -105,8 +105,8 @@ export const Route = createFileRoute("/api/public/queue-directories")({
           workspaces_processed: workspacesProcessed,
           submissions_queued: submissionsQueued,
           submissions_auto: submissionsAuto,
-          errors: errors.length ? errors : null,
-        });
+          errors: (errors.length ? errors : null) as never,
+        } as never);
 
         return Response.json({
           ok: true,
