@@ -8,12 +8,21 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/public/queue-directories")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
-        const secret = process.env.CRON_SECRET;
-        if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
-          return new Response("Unauthorized", { status: 401 });
-        }
+      POST: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        // Idempotency guard: skip if we've already run in the last 20 hours.
+        const { data: lastRun } = await supabaseAdmin
+          .from("directory_queue_runs")
+          .select("ran_at")
+          .order("ran_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (lastRun) {
+          const ageMs = Date.now() - new Date((lastRun as any).ran_at).getTime();
+          if (ageMs < 20 * 60 * 60 * 1000) {
+            return Response.json({ ok: true, skipped: "ran recently" });
+          }
+        }
         const { attemptAutoSubmit } = await import("@/lib/directory-submit.server");
 
         const runStart = new Date().toISOString();
