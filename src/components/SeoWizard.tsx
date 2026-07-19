@@ -248,7 +248,11 @@ const EMPTY: Lead = {
 
 export default function SeoWizard() {
   const [step, setStep] = useState(1);
-  const [lead, setLead] = useState<Lead>(EMPTY);
+  const [lead, setLead] = useState<Lead>(() => {
+    if (typeof window === "undefined") return EMPTY;
+    const site = new URLSearchParams(window.location.search).get("site")?.trim();
+    return site ? { ...EMPTY, website: site } : EMPTY;
+  });
   const [leadId] = useState(() => crypto.randomUUID());
   const [audienceInput, setAudienceInput] = useState("");
   const [competitorInput, setCompetitorInput] = useState("");
@@ -274,7 +278,11 @@ export default function SeoWizard() {
       return true;
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "We could not save your audit request";
+        error instanceof Error
+          ? error.message
+          : error && typeof error === "object" && "message" in error
+            ? String((error as { message?: unknown }).message)
+            : "We could not save your audit request";
       setSaveError(`${message}. Please try again before continuing.`);
       return false;
     } finally {

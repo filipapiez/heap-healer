@@ -30,7 +30,7 @@ const CMS: WebsitePlatform[] = [
     brand: "lovable",
     github: true,
     description:
-      "Connect the GitHub repository behind your Lovable project. MentionMyApp opens reviewable pull requests that Lovable deploys through your normal workflow.",
+      "Connect the GitHub repository behind your Lovable project. MentionMyApp commits approved SEO pages and metadata directly to the selected repository.",
     setup: "GitHub App",
   },
   {
@@ -38,7 +38,7 @@ const CMS: WebsitePlatform[] = [
     brand: "cursor",
     github: true,
     description:
-      "Connect the website repository you edit in Cursor. We create a branch and pull request with pages, metadata, schema, and internal links.",
+      "Connect the website repository you edit in Cursor. We can push pages, metadata, schema, and internal links directly to the selected branch.",
     setup: "GitHub App",
   },
   {
@@ -684,8 +684,7 @@ function WebsiteConnections() {
         <section className="mt-6 rounded-2xl border border-[#e1e3eb] bg-white p-5">
           <h3 className="font-display text-lg font-bold">Choose delivery repositories</h3>
           <p className="mt-1 text-sm text-[#737889]">
-            MentionMyApp can open SEO pull requests only in the repositories selected during GitHub
-            installation.
+            MentionMyApp can publish only into repositories selected during GitHub installation.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {status.data.repositories.map((repo) => {
