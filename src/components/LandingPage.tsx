@@ -222,16 +222,15 @@ export default function LandingPage() {
                   maxWidth: 900,
                 }}
               >
-                Audit, publish, and measure{" "}
-                <span style={{ color: ACCENT }}>organic growth with evidence</span>
+                Fix your SEO and grow your{" "}
+                <span style={{ color: ACCENT }}>organic traffic automatically</span>
               </h1>
               <div
                 className="lp-display"
                 style={{
                   margin: "2px auto 22px",
-                  fontSize: "clamp(38px, 6vw, 68px)",
-                  fontWeight: 800,
-                  lineHeight: 1.05,
+                  fontSize: "clamp(20px, 2.4vw, 28px)",
+                  fontWeight: 600,
                   color: INK,
                   letterSpacing: "-0.01em",
                 }}
