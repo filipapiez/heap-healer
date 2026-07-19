@@ -628,6 +628,7 @@ export type Database = {
       }
       seo_clients: {
         Row: {
+          baseline_captured_at: string | null
           baseline_clicks: number
           baseline_date: string
           baseline_impressions: number
@@ -640,6 +641,7 @@ export type Database = {
           workspace_id: string | null
         }
         Insert: {
+          baseline_captured_at?: string | null
           baseline_clicks?: number
           baseline_date?: string
           baseline_impressions?: number
@@ -652,6 +654,7 @@ export type Database = {
           workspace_id?: string | null
         }
         Update: {
+          baseline_captured_at?: string | null
           baseline_clicks?: number
           baseline_date?: string
           baseline_impressions?: number
@@ -713,6 +716,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seo_leads: {
+        Row: {
+          business_desc: string | null
+          competitors: string[] | null
+          completed: boolean | null
+          created_at: string
+          current_step: number | null
+          email: string | null
+          gsc_connected: boolean | null
+          id: string
+          indexed_pages: string | null
+          language: string | null
+          monthly_clicks: string | null
+          name: string | null
+          target_audience: string[] | null
+          target_market: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          business_desc?: string | null
+          competitors?: string[] | null
+          completed?: boolean | null
+          created_at?: string
+          current_step?: number | null
+          email?: string | null
+          gsc_connected?: boolean | null
+          id: string
+          indexed_pages?: string | null
+          language?: string | null
+          monthly_clicks?: string | null
+          name?: string | null
+          target_audience?: string[] | null
+          target_market?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          business_desc?: string | null
+          competitors?: string[] | null
+          completed?: boolean | null
+          created_at?: string
+          current_step?: number | null
+          email?: string | null
+          gsc_connected?: boolean | null
+          id?: string
+          indexed_pages?: string | null
+          language?: string | null
+          monthly_clicks?: string | null
+          name?: string | null
+          target_audience?: string[] | null
+          target_market?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       seo_metrics_daily: {
         Row: {
