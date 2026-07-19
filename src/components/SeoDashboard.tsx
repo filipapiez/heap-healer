@@ -57,8 +57,10 @@ type SemrushSnapshot = {
 };
 
 const fmt = (value: number) => value.toLocaleString();
-const change = (value: number, baseline: number) =>
-  baseline ? Math.round(((value - baseline) / baseline) * 100) : value ? 100 : 0;
+// Only show a % delta once we have a real baseline to compare against. With
+// baseline=0 any current value would render as "+100%", which is misleading.
+const change = (value: number, baseline: number): number | null =>
+  baseline ? Math.round(((value - baseline) / baseline) * 100) : null;
 const backlinkSource = (item: VerifiedDirectorySubmission) => {
   try {
     return new URL(item.live_url).hostname;
@@ -592,7 +594,7 @@ function Stat({
 }: {
   label: string;
   value: string;
-  delta: number;
+  delta: number | null;
   note: string;
   suffix?: string;
 }) {
@@ -601,9 +603,15 @@ function Stat({
       <div className="label">{label}</div>
       <div className="mt-2 flex flex-wrap items-baseline gap-2">
         <strong className="text-3xl tracking-[-.04em]">{value}</strong>
-        {delta > 0 && (
+        {delta != null && delta > 0 && (
           <span className="text-xs font-bold text-green-600">
             ▲ +{delta}
+            {suffix}
+          </span>
+        )}
+        {delta != null && delta < 0 && (
+          <span className="text-xs font-bold text-rose-600">
+            ▼ {delta}
             {suffix}
           </span>
         )}
