@@ -49,7 +49,6 @@ export default function EngineRotator() {
           white-space: nowrap;
         }
         .engine-rotator__logo {
-          height: 0.92em;
           width: auto;
           display: block;
           object-fit: contain;
@@ -70,7 +69,12 @@ export default function EngineRotator() {
             style={{ visibility: active ? "visible" : "hidden" }}
             aria-hidden="true"
           >
-            <img src={engine.src} alt={engine.name} className="engine-rotator__logo" />
+            <img
+              src={engine.src}
+              alt={engine.name}
+              className="engine-rotator__logo"
+              style={{ height: `${engine.scale}em` }}
+            />
           </span>
         );
       })}
