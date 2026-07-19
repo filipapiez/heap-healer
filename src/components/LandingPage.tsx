@@ -222,10 +222,10 @@ export default function LandingPage() {
                   maxWidth: 1040,
                 }}
               >
-                Grow organic traffic{" "}
-                <span style={{ color: ACCENT }}>on autopilot</span>
+                Grow organic traffic
                 <span style={{ display: "block" }}>
-                  from <EngineRotator />
+                  <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
+                  <EngineRotator />
                 </span>
               </h1>
               <p
