@@ -223,8 +223,17 @@ export default function LandingPage() {
                 }}
               >
                 Grow organic traffic
-                <span style={{ display: "block" }}>
-                  <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
+                <span
+                  style={{
+                    display: "flex",
+                    flexWrap: "nowrap",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.32em",
+                  }}
+                >
+                  <span style={{ color: ACCENT }}>on autopilot</span>
+                  <span>from</span>
                   <EngineRotator />
                 </span>
               </h1>
