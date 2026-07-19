@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import WorldMap from "@/components/WorldMap";
 
@@ -258,6 +258,11 @@ export default function SeoWizard() {
   const set = <K extends keyof Lead>(key: K, value: Lead[K]) =>
     setLead((old) => ({ ...old, [key]: value }));
 
+  useEffect(() => {
+    const site = new URLSearchParams(window.location.search).get("site")?.trim();
+    if (site) setLead((old) => (old.website ? old : { ...old, website: site }));
+  }, []);
+
   const persist = async (nextStep: number, completed = false) => {
     setSaving(true);
     setSaveError("");
@@ -274,7 +279,11 @@ export default function SeoWizard() {
       return true;
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "We could not save your audit request";
+        error instanceof Error
+          ? error.message
+          : error && typeof error === "object" && "message" in error
+            ? String((error as { message?: unknown }).message)
+            : "We could not save your audit request";
       setSaveError(`${message}. Please try again before continuing.`);
       return false;
     } finally {

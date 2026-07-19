@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Check,
@@ -12,6 +12,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
+import { runSeoAudit } from "@/lib/seo-audit.functions";
 
 export const Route = createFileRoute("/_authenticated/seo-audit")({
   head: () => ({ meta: [{ title: "Technical audit — MentionMyApp" }] }),
@@ -19,9 +20,17 @@ export const Route = createFileRoute("/_authenticated/seo-audit")({
 });
 
 function TechnicalAuditPage() {
+  const queryClient = useQueryClient();
   const growthQuery = useQuery({
     queryKey: ["growth-dashboard"],
     queryFn: () => getGrowthDashboardData(),
+  });
+  const auditMutation = useMutation({
+    mutationFn: (websiteUrl: string) =>
+      runSeoAudit({ data: { websiteUrl, githubUrl: "", gbpUrl: "" } }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["growth-dashboard"] });
+    },
   });
   const growth = growthQuery.data;
   const audit = growth?.workPlan.audit;
@@ -68,14 +77,25 @@ function TechnicalAuditPage() {
           >
             <Share2 className="h-4 w-4" /> View analytics
           </Link>
-          <Link
-            to="/grow"
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#18161b] px-3 text-xs font-semibold text-white shadow-sm"
+          <button
+            type="button"
+            disabled={!growth?.website || auditMutation.isPending}
+            onClick={() => growth?.website && auditMutation.mutate(growth.website)}
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#18161b] px-3 text-xs font-semibold text-white shadow-sm disabled:opacity-45"
           >
-            <RefreshCw className="h-4 w-4" /> Run new audit
-          </Link>
+            <RefreshCw className={`h-4 w-4 ${auditMutation.isPending ? "animate-spin" : ""}`} />{" "}
+            {auditMutation.isPending ? "Auditing…" : "Run audit"}
+          </button>
         </div>
       </header>
+
+      {auditMutation.isError && (
+        <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {auditMutation.error instanceof Error
+            ? auditMutation.error.message
+            : "The audit could not run. Please try again."}
+        </div>
+      )}
 
       {growthQuery.isLoading ? (
         <div className="grid min-h-[420px] place-items-center rounded-2xl border border-[#e4e3e7] bg-white text-sm text-[#85818b]">
@@ -169,12 +189,23 @@ function TechnicalAuditPage() {
               MentionMyApp will crawl the public website and save a truthful score with the number
               of checks passing and failing.
             </p>
-            <Link
-              to="/grow"
-              className="mt-5 inline-flex h-10 items-center rounded-full bg-[#18161b] px-5 text-sm font-semibold text-white"
-            >
-              Start audit
-            </Link>
+            {growth?.website ? (
+              <button
+                type="button"
+                disabled={auditMutation.isPending}
+                onClick={() => auditMutation.mutate(growth.website!)}
+                className="mt-5 inline-flex h-10 items-center rounded-full bg-[#18161b] px-5 text-sm font-semibold text-white disabled:opacity-45"
+              >
+                {auditMutation.isPending ? "Auditing…" : "Start audit"}
+              </button>
+            ) : (
+              <Link
+                to="/accounts"
+                className="mt-5 inline-flex h-10 items-center rounded-full bg-[#18161b] px-5 text-sm font-semibold text-white"
+              >
+                Connect website
+              </Link>
+            )}
           </div>
         </section>
       )}

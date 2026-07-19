@@ -198,6 +198,10 @@ export default function SeoDashboard() {
   const clicksNow = comparisonMetrics.reduce((total, item) => total + item.clicks, 0);
   const impressionsNow = comparisonMetrics.reduce((total, item) => total + item.impressions, 0);
   const liveLinks = backlinks.filter((item) => item.status === "live").length;
+  const semrushReady = semrush?.sync_status === "success";
+  const semrushBacklinks = semrushReady ? semrush.total_backlinks : null;
+  const semrushReferringDomains = semrushReady ? semrush.referring_domains : null;
+  const shownBacklinks = semrushBacklinks ?? liveLinks;
   const mentions = geo.filter((item) => item.mentioned).length;
   const day = client
     ? Math.min(90, Math.max(1, Math.floor((Date.now() - +new Date(client.baseline_date)) / 864e5)))
@@ -350,16 +354,20 @@ export default function SeoDashboard() {
           suffix="%"
         />
         <Stat
-          label="Backlinks live"
-          value={fmt(liveLinks)}
-          delta={liveLinks}
-          note={`${backlinks.length - liveLinks} pending`}
+          label="Backlinks"
+          value={fmt(shownBacklinks)}
+          delta={semrushBacklinks == null ? liveLinks : null}
+          note={
+            semrushBacklinks == null
+              ? `${backlinks.length - liveLinks} pending verified placements`
+              : `${fmt(liveLinks)} verified placements · Semrush total`
+          }
         />
         <Stat
-          label="AI mentions"
-          value={geo.length ? `${mentions}/${geo.length}` : "—"}
-          delta={mentions}
-          note={geo.length ? "tracked queries" : "tracking provider not connected"}
+          label="Referring domains"
+          value={semrushReferringDomains == null ? "—" : fmt(semrushReferringDomains)}
+          delta={null}
+          note={semrushReady ? "current Semrush snapshot" : "sync Semrush to populate"}
         />
       </section>
 
@@ -431,7 +439,18 @@ export default function SeoDashboard() {
                 setSemrushSyncMsg("");
                 try {
                   const r = await syncMyWorkspaceSemrush();
-                  setSemrushSyncMsg(`Synced ${r.domain}. Refresh to see the new numbers.`);
+                  const { data, error } = await seoDb
+                    .from("seo_semrush_snapshots")
+                    .select(
+                      "day,domain,authority_score,total_backlinks,referring_domains,new_backlinks,lost_backlinks,organic_keywords,organic_traffic,synced_at,sync_status,sync_error",
+                    )
+                    .eq("client_id", clientId)
+                    .order("day", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                  if (error) throw error;
+                  setSemrush((data ?? null) as SemrushSnapshot | null);
+                  setSemrushSyncMsg(`Synced ${r.domain}.`);
                 } catch (e) {
                   setSemrushSyncMsg(e instanceof Error ? e.message : String(e));
                 } finally {
@@ -504,7 +523,7 @@ export default function SeoDashboard() {
         <div className="mb-4 flex justify-between gap-3">
           <span className="label">AI search visibility (GEO)</span>
           <span className="text-xs text-[#6b7280]">
-            {mentions} of {geo.length} queries mention the brand
+            {geo.length ? `${mentions} of ${geo.length} queries mention the brand` : "No AI checks saved yet"}
           </span>
         </div>
         {geo.length ? (
@@ -526,8 +545,8 @@ export default function SeoDashboard() {
           </div>
         ) : (
           <p className="rounded-xl border border-dashed border-[#d9dbe7] p-6 text-sm text-[#6b7280]">
-            No AI visibility checks have been collected. This section stays pending until a provider
-            is connected and real query results are saved.
+            AI visibility will show real saved checks once monitoring starts. Until then it stays
+            empty instead of guessing or showing fake progress.
           </p>
         )}
       </Card>

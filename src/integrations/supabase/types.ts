@@ -626,6 +626,94 @@ export type Database = {
           },
         ]
       }
+      seo_audit_runs: {
+        Row: {
+          checks_failed: number
+          checks_passed: number
+          created_at: string
+          error: string | null
+          id: string
+          result: Json
+          score: number | null
+          status: string
+          website: string
+          workspace_id: string
+        }
+        Insert: {
+          checks_failed?: number
+          checks_passed?: number
+          created_at?: string
+          error?: string | null
+          id?: string
+          result?: Json
+          score?: number | null
+          status?: string
+          website: string
+          workspace_id: string
+        }
+        Update: {
+          checks_failed?: number
+          checks_passed?: number
+          created_at?: string
+          error?: string | null
+          id?: string
+          result?: Json
+          score?: number | null
+          status?: string
+          website?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_audit_runs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_backlinks: {
+        Row: {
+          anchor: string | null
+          authority: number | null
+          client_id: string
+          created_at: string
+          id: string
+          source_domain: string
+          status: string
+          target_url: string | null
+        }
+        Insert: {
+          anchor?: string | null
+          authority?: number | null
+          client_id: string
+          created_at?: string
+          id?: string
+          source_domain: string
+          status?: string
+          target_url?: string | null
+        }
+        Update: {
+          anchor?: string | null
+          authority?: number | null
+          client_id?: string
+          created_at?: string
+          id?: string
+          source_domain?: string
+          status?: string
+          target_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_backlinks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "seo_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_clients: {
         Row: {
           baseline_captured_at: string | null
@@ -672,6 +760,44 @@ export type Database = {
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_geo_checks: {
+        Row: {
+          checked_at: string
+          cited_url: string | null
+          client_id: string
+          engine: string
+          id: string
+          mentioned: boolean
+          query: string
+        }
+        Insert: {
+          checked_at?: string
+          cited_url?: string | null
+          client_id: string
+          engine: string
+          id?: string
+          mentioned?: boolean
+          query: string
+        }
+        Update: {
+          checked_at?: string
+          cited_url?: string | null
+          client_id?: string
+          engine?: string
+          id?: string
+          mentioned?: boolean
+          query?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_geo_checks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "seo_clients"
             referencedColumns: ["id"]
           },
         ]
@@ -802,6 +928,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "seo_metrics_daily_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "seo_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_pages: {
+        Row: {
+          clicks: number
+          client_id: string
+          id: string
+          impressions: number
+          indexed: boolean
+          keyword: string | null
+          published_at: string
+          url: string
+        }
+        Insert: {
+          clicks?: number
+          client_id: string
+          id?: string
+          impressions?: number
+          indexed?: boolean
+          keyword?: string | null
+          published_at?: string
+          url: string
+        }
+        Update: {
+          clicks?: number
+          client_id?: string
+          id?: string
+          impressions?: number
+          indexed?: boolean
+          keyword?: string | null
+          published_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_pages_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "seo_clients"
