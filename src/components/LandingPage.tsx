@@ -228,11 +228,12 @@ export default function LandingPage() {
               <div
                 className="lp-display"
                 style={{
-                  minHeight: 34,
-                  margin: "-5px auto 18px",
-                  color: "#858A99",
-                  fontSize: "clamp(17px, 2.1vw, 23px)",
+                  minHeight: 42,
+                  margin: "2px auto 22px",
+                  color: "#4a5060",
+                  fontSize: "clamp(20px, 2.6vw, 30px)",
                   fontWeight: 700,
+                  letterSpacing: "-0.01em",
                 }}
               >
                 Build visibility across <EngineRotator />
