@@ -215,28 +215,19 @@ export default function LandingPage() {
               <h1
                 className="lp-display"
                 style={{
-                  fontSize: "clamp(38px, 6vw, 68px)",
+                  fontSize: "clamp(40px, 6.4vw, 76px)",
                   fontWeight: 800,
-                  lineHeight: 1.05,
-                  margin: "0 auto 20px",
-                  maxWidth: 900,
+                  lineHeight: 1.08,
+                  margin: "0 auto 24px",
+                  maxWidth: 1040,
                 }}
               >
-                Fix your SEO and grow your{" "}
-                <span style={{ color: ACCENT }}>organic traffic automatically</span>
+                Grow organic traffic{" "}
+                <span style={{ color: ACCENT }}>on autopilot</span>
+                <span style={{ display: "block" }}>
+                  from <EngineRotator />
+                </span>
               </h1>
-              <div
-                className="lp-display"
-                style={{
-                  margin: "2px auto 22px",
-                  fontSize: "clamp(20px, 2.4vw, 28px)",
-                  fontWeight: 600,
-                  color: INK,
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                Build visibility across <EngineRotator />
-              </div>
               <p
                 style={{
                   fontSize: 18.5,
