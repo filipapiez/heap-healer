@@ -126,6 +126,7 @@ function DashboardLayout() {
       <div className="px-8 pb-8">
         <Link
           to="/accounts"
+          search={{ focus: publishingReady ? "publishing" : deliveryConnected ? "repositories" : "setup" }}
           onClick={() => setMobileOpen(false)}
           className="block rounded-2xl border border-[#e6e6e9] bg-white p-4 shadow-[0_10px_24px_rgba(16,24,40,.08)] transition hover:-translate-y-0.5"
         >
