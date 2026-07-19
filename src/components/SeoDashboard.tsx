@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { syncMyWorkspaceSemrush } from "@/lib/growth-dashboard.functions";
 
 type Client = {
   id: string;
@@ -83,6 +84,8 @@ export default function SeoDashboard() {
   const [geo, setGeo] = useState<GeoCheck[]>([]);
   const [semrush, setSemrush] = useState<SemrushSnapshot | null>(null);
   const [semrushLoading, setSemrushLoading] = useState(true);
+  const [semrushSyncing, setSemrushSyncing] = useState(false);
+  const [semrushSyncMsg, setSemrushSyncMsg] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -420,6 +423,28 @@ export default function SeoDashboard() {
                 ? `Last synced ${new Date(semrush.synced_at).toLocaleString()}`
                 : "Sync pending"
           }
+          footer={
+            <button
+              type="button"
+              onClick={async () => {
+                setSemrushSyncing(true);
+                setSemrushSyncMsg("");
+                try {
+                  const r = await syncMyWorkspaceSemrush();
+                  setSemrushSyncMsg(`Synced ${r.domain}. Refresh to see the new numbers.`);
+                } catch (e) {
+                  setSemrushSyncMsg(e instanceof Error ? e.message : String(e));
+                } finally {
+                  setSemrushSyncing(false);
+                }
+              }}
+              disabled={semrushSyncing}
+              className="mt-2 rounded-md border border-[#e5e7eb] px-2.5 py-1 text-[11px] font-semibold text-[#374151] hover:bg-[#f9fafb] disabled:opacity-50"
+            >
+              {semrushSyncing ? "Syncing…" : "Sync Semrush now"}
+            </button>
+          }
+          footerNote={semrushSyncMsg}
         />
         <InsightCard
           label="Content opportunities"
@@ -635,12 +660,16 @@ function InsightCard({
   suffix = "",
   detail,
   action,
+  footer,
+  footerNote,
 }: {
   label: string;
   value: string;
   suffix?: string;
   detail: string;
   action: string;
+  footer?: React.ReactNode;
+  footerNote?: string;
 }) {
   return (
     <Card className="p-5">
@@ -653,6 +682,8 @@ function InsightCard({
       <div className="mt-4 border-t border-[#ececf2] pt-3 text-xs font-bold text-[#6366f1]">
         {action} →
       </div>
+      {footer}
+      {footerNote ? <div className="mt-2 text-[11px] text-[#6b7280]">{footerNote}</div> : null}
     </Card>
   );
 }
