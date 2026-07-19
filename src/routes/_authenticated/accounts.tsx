@@ -106,6 +106,7 @@ function WebsiteConnections() {
   const params = new URLSearchParams(typeof window === "undefined" ? "" : window.location.search);
   const callbackStatus = params.get("gsc") ?? params.get("github") ?? params.get("shopify");
   const callbackMessage = params.get("msg");
+  const focus = params.get("focus");
   const status = useQuery({
     queryKey: WEBSITE_CONNECTION_QUERY_KEY,
     queryFn: () => getWebsiteConnectionStatus(),
@@ -209,6 +210,8 @@ function WebsiteConnections() {
   );
   const connectionSummary = summarizeWebsiteConnections(status.data);
   const connectedPublishingCount = connectionSummary.publishingProviderCount;
+  const focusRepositories = focus === "repositories" && !!status.data?.repositories.length;
+  const focusSetup = focus === "setup" || (focus === "repositories" && !status.data?.repositories.length);
   const statusError = status.isError ? errorMessage(status.error) : "";
   const justConnectedGsc = params.get("gsc") === "ok";
   const baselineQuery = useQuery({
@@ -258,6 +261,19 @@ function WebsiteConnections() {
           className={`mb-5 rounded-xl border px-4 py-3 text-sm ${callbackStatus === "error" || error || statusError ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}
         >
           {error || statusError || callbackMessage}
+        </div>
+      )}
+
+      {(focusSetup || focusRepositories) && (
+        <div className="mb-5 rounded-2xl border border-[#d8d7ff] bg-[#f6f6ff] px-5 py-4 shadow-[0_8px_24px_rgba(99,102,241,.1)]">
+          <div className="text-[10px] font-bold uppercase tracking-[.15em] text-[#5558d8]">
+            Next step
+          </div>
+          <p className="mt-1 text-sm font-semibold text-[#242838]">
+            {focusRepositories
+              ? "Choose the repository MentionMyApp should publish into."
+              : "Connect Search Console first, then connect GitHub or another publishing destination."}
+          </p>
         </div>
       )}
 
@@ -451,7 +467,9 @@ function WebsiteConnections() {
           MentionMyApp may access.
         </p>
       </div>
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section
+        className={`grid scroll-mt-24 gap-4 rounded-2xl md:grid-cols-2 xl:grid-cols-3 ${focusSetup ? "border border-[#d8d7ff] bg-[#f9f9ff] p-3 ring-2 ring-[#6366f1]/15" : ""}`}
+      >
         {CMS.map((item) => {
           const hasGithubAccess = Boolean(item.github && githubRow);
           const platformConnected =
@@ -681,7 +699,9 @@ function WebsiteConnections() {
       </section>
 
       {!!status.data?.repositories.length && (
-        <section className="mt-6 rounded-2xl border border-[#e1e3eb] bg-white p-5">
+        <section
+          className={`mt-6 scroll-mt-24 rounded-2xl border bg-white p-5 ${focusRepositories ? "border-[#6366f1] shadow-[0_12px_32px_rgba(99,102,241,.16)] ring-2 ring-[#6366f1]/20" : "border-[#e1e3eb]"}`}
+        >
           <h3 className="font-display text-lg font-bold">Choose delivery repositories</h3>
           <p className="mt-1 text-sm text-[#737889]">
             MentionMyApp can publish only into repositories selected during GitHub installation.
