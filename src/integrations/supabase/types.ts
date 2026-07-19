@@ -626,47 +626,8 @@ export type Database = {
           },
         ]
       }
-      seo_audit_runs: {
-        Row: {
-          checks_failed: number
-          checks_passed: number
-          created_at: string
-          id: string
-          score: number
-          website: string
-          workspace_id: string
-        }
-        Insert: {
-          checks_failed?: number
-          checks_passed?: number
-          created_at?: string
-          id?: string
-          score: number
-          website: string
-          workspace_id: string
-        }
-        Update: {
-          checks_failed?: number
-          checks_passed?: number
-          created_at?: string
-          id?: string
-          score?: number
-          website?: string
-          workspace_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "seo_audit_runs_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       seo_clients: {
         Row: {
-          baseline_captured_at: string | null
           baseline_clicks: number
           baseline_date: string
           baseline_impressions: number
@@ -679,7 +640,6 @@ export type Database = {
           workspace_id: string | null
         }
         Insert: {
-          baseline_captured_at?: string | null
           baseline_clicks?: number
           baseline_date?: string
           baseline_impressions?: number
@@ -692,7 +652,6 @@ export type Database = {
           workspace_id?: string | null
         }
         Update: {
-          baseline_captured_at?: string | null
           baseline_clicks?: number
           baseline_date?: string
           baseline_impressions?: number
