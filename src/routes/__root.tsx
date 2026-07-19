@@ -78,23 +78,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MentionMyApp — SEO growth backed by a 90-day guarantee" },
+      { title: "MentionMyApp — verified SEO growth workflows" },
       {
         name: "description",
         content:
-          "Technical SEO, indexing fixes, and search-focused pages measured transparently in Google Search Console.",
+          "Technical SEO audits, approved website publishing, verified backlinks, and transparent Google Search Console reporting.",
       },
       { property: "og:title", content: "MentionMyApp — measurable SEO growth" },
       {
         property: "og:description",
-        content: "Fix technical SEO, improve indexing, and build pages around real search demand.",
+        content:
+          "Audit technical SEO, publish approved changes, and measure verified search growth.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "MentionMyApp — measurable SEO growth" },
       {
         name: "twitter:description",
-        content: "Technical SEO, indexing, and content built around real search demand.",
+        content: "Technical audits, approved publishing, and verified Search Console reporting.",
       },
       {
         property: "og:image",

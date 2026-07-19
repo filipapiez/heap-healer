@@ -15,10 +15,8 @@
 // =============================================================
 
 import { useState } from "react";
-import EngineRotator from "@/components/EngineRotator";
 import EngineIcon, { type EngineName } from "@/components/engineIcons";
 import HeroBackground from "@/components/HeroBackground";
-import PressMarquee from "@/components/PressMarquee";
 import WorldMap from "@/components/WorldMap";
 
 // ---------- Brand ----------
@@ -51,66 +49,74 @@ const ENGINES: EngineName[] = ["ChatGPT", "Claude", "Perplexity", "Gemini"];
 const STEPS = [
   {
     n: "01",
-    t: "Business & gap analysis",
-    d: "We analyze your business, audience, and competitors to find the searches you should own — on Google and inside AI answers.",
-    chips: ["Keyword discovery", "Competitor gaps"],
+    t: "Audit the foundation",
+    d: "Crawl your site and turn technical SEO, metadata, schema, and internal-link findings into a prioritized work plan.",
+    chips: ["Technical audit", "URL-level findings"],
   },
   {
     n: "02",
-    t: "Fix, publish, promote",
-    d: "Technical SEO repaired, new optimized pages published and indexed every month, backlinks built, AI visibility pushed.",
-    chips: ["Technical fixes", "New indexed pages", "Backlinks"],
+    t: "Approve and deliver",
+    d: "Send approved pages through a supported website connection and work through an assisted directory-placement queue.",
+    chips: ["Approved publishing", "Verified backlinks"],
   },
   {
     n: "03",
-    t: "Prove it grew",
-    d: "Day-one Search Console baseline, a live growth report you can open anytime, and the day-90 check: no growth, full refund.",
-    chips: ["Live report", "90-day guarantee"],
+    t: "Measure verified growth",
+    d: "Save a 28-day Search Console baseline, sync real clicks and impressions, and compare the latest 28 days on the same basis.",
+    chips: ["Verified reporting", "Comparable baseline"],
   },
 ];
 
 const FEATURES = [
   {
-    t: "Branded SEO Content",
-    d: "Articles and landing pages aligned to your brand voice, structured to rank on Google and get cited by AI assistants.",
-    icon: "✍️",
-    wide: true,
-  },
-  {
-    t: "30-Day Content Strategy",
-    d: "A full month of topics planned from ranking and citation trends — every piece has a target query and a job.",
-    icon: "🗓",
-    wide: true,
-  },
-  {
-    t: "Automated Publishing",
-    d: "Publishes to your CMS — WordPress, Webflow, Shopify and more. No integration work on your side.",
-    icon: "🚀",
-  },
-  {
-    t: "Authority Backlinks",
-    d: "Contextual links from relevant, real websites. Strengthens authority for both search and AI rankings.",
-    icon: "🔗",
-  },
-  {
-    t: "Technical GEO Audit",
-    d: "Scans for gaps in schema, metadata, speed, and structure that hold back visibility — then we fix them.",
+    t: "Technical SEO Audit",
+    d: "Crawls your site and records actionable checks for crawlability, metadata, schema, and internal links.",
     icon: "🔧",
+    wide: true,
+    status: "Available",
   },
   {
-    t: "LLM Visibility Tracking",
-    d: "Tracks your brand across ChatGPT, Perplexity, and AI Overviews. Measures citation growth over time.",
-    icon: "👁",
-  },
-  {
-    t: "Live Growth Report",
-    d: "Impressions, clicks, indexed pages, links built, AI mentions — one shareable link, updated daily from Search Console.",
+    t: "Search Console Reporting",
+    d: "Imports verified clicks and impressions, saves a comparable day-one baseline, and syncs performance daily.",
     icon: "📈",
+    wide: true,
+    status: "Available",
   },
   {
-    t: "50+ Languages",
-    d: "Content generated in over 50 languages with natural flow — reach customers in every market you serve.",
-    icon: "🌍",
+    t: "Approved Publishing",
+    d: "Queues approved pages for WordPress, Shopify, or a selected GitHub repository, with draft and review modes where supported.",
+    icon: "🚀",
+    status: "Available",
+  },
+  {
+    t: "Verified Backlink Workflow",
+    d: "Schedules directory opportunities and counts a placement live only after the public page links back to your site.",
+    icon: "🔗",
+    status: "Available",
+  },
+  {
+    t: "AI Visibility Workspace",
+    d: "Displays real AI-query checks after an AI-visibility provider writes results. Until then it stays visibly pending.",
+    icon: "👁",
+    status: "Provider required",
+  },
+  {
+    t: "Semrush Authority Snapshot",
+    d: "Shows Authority Score, referring domains, backlinks, and keyword estimates when Semrush API access is configured.",
+    icon: "📊",
+    status: "API key required",
+  },
+  {
+    t: "Tracked Content Plan",
+    d: "Records approved and published pages, target keywords, and indexing status without inventing work that has not happened.",
+    icon: "🗓",
+    status: "Available",
+  },
+  {
+    t: "Connection Status",
+    d: "Keeps website, repository, store, and Search Console states aligned so connected services are marked correctly.",
+    icon: "🔌",
+    status: "Available",
   },
 ];
 
@@ -214,8 +220,8 @@ export default function LandingPage() {
                   maxWidth: 900,
                 }}
               >
-                Grow organic traffic <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
-                <EngineRotator />
+                Audit, publish, and measure{" "}
+                <span style={{ color: ACCENT }}>organic growth with evidence</span>
               </h1>
               <p
                 style={{
@@ -226,8 +232,8 @@ export default function LandingPage() {
                   margin: "0 auto 30px",
                 }}
               >
-                We fix your technical SEO, publish optimized pages that get indexed, build
-                backlinks, and track your visibility inside AI assistants — all done for you.
+                MentionMyApp turns site audits, approved publishing, verified backlinks, and real
+                Search Console data into one truthful growth workspace.
               </p>
               <a href="/grow" className="lp-cta" style={{ fontSize: 16.5, padding: "18px 38px" }}>
                 Start for free
@@ -270,8 +276,6 @@ export default function LandingPage() {
               )}
             </div>
           </header>
-
-          <PressMarquee />
         </div>
       </div>
 
@@ -285,10 +289,10 @@ export default function LandingPage() {
             background: `radial-gradient(50% 60% at 50% 0%, ${ACCENT}0F, ${BG})`,
           }}
         >
-          <div className="lp-eyebrow">Free GEO Audit</div>
+          <div className="lp-eyebrow">Free SEO · AEO · GEO readiness audit</div>
           <h2 className="lp-h2" style={{ maxWidth: 720, margin: "12px auto 0" }}>
-            Do <span style={{ color: ACCENT }}>ChatGPT, Claude, Perplexity & Gemini</span> recommend
-            your website?
+            Can search engines and AI crawlers clearly understand{" "}
+            <span style={{ color: ACCENT }}>what your website offers?</span>
           </h2>
           <div
             style={{
@@ -422,6 +426,20 @@ export default function LandingPage() {
                   {f.icon}
                 </span>
               </div>
+              <span
+                style={{
+                  display: "inline-flex",
+                  marginBottom: 10,
+                  borderRadius: 999,
+                  padding: "4px 9px",
+                  background: f.status === "Available" ? "#ECFDF5" : "#FFF7ED",
+                  color: f.status === "Available" ? "#047857" : "#9A3412",
+                  fontSize: 11,
+                  fontWeight: 700,
+                }}
+              >
+                {f.status}
+              </span>
               <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.65, margin: 0 }}>{f.d}</p>
             </div>
           ))}
@@ -430,46 +448,39 @@ export default function LandingPage() {
 
       {/* ---------- WRITTEN LIKE YOU ---------- */}
       <section className="lp-sec" style={{ padding: "70px 20px 20px" }}>
-        <div className="lp-eyebrow">Examples</div>
+        <div className="lp-eyebrow">Controlled delivery</div>
         <h2 className="lp-h2">
-          Not just written for you <span className="ghost">— written like you.</span>
+          Your website stays yours <span className="ghost">— every change is explicit.</span>
         </h2>
         <p style={{ color: MUTED, fontSize: 16, maxWidth: 640, margin: "14px 0 30px" }}>
-          Every page inherits your brand colors, your tone of voice, and links straight back to the
-          products you sell.
+          Connect only the destination you authorize, review the page content, and choose draft,
+          publish, or pull-request delivery where the platform supports it.
         </p>
         <div
           className="lp-2col"
           style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}
         >
-          <MiniCard n="1" title="Brand colors">
-            <div style={{ display: "flex", gap: 8 }}>
-              {[ACCENT, "#8B8FF5", "#C7CAF0", "#F2F3FD"].map((c) => (
-                <span
-                  key={c}
-                  style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 10,
-                    background: c,
-                    border: `1px solid ${LINE}`,
-                  }}
-                />
+          <MiniCard n="1" title="Scoped connection">
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["WordPress", "Shopify", "GitHub"].map((platform) => (
+                <span key={platform} className="lp-chip" style={{ fontSize: 12.5 }}>
+                  {platform}
+                </span>
               ))}
             </div>
           </MiniCard>
-          <MiniCard n="2" title="Voice & tone">
+          <MiniCard n="2" title="Approval state">
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["expert but friendly", "plain-language", "action-focused"].map((t) => (
+              {["draft", "approved", "published"].map((t) => (
                 <span key={t} className="lp-chip" style={{ fontSize: 12.5 }}>
                   {t}
                 </span>
               ))}
             </div>
           </MiniCard>
-          <MiniCard n="3" title="Cross-linked offerings">
+          <MiniCard n="3" title="Evidence trail">
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["Your services", "Your products", "Your booking page"].map((t) => (
+              {["Job status", "Published URL", "Verified backlink"].map((t) => (
                 <span
                   key={t}
                   className="lp-chip"
@@ -549,11 +560,11 @@ export default function LandingPage() {
               className="lp-display"
               style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
             >
-              Rank high on Google
+              Measure Google search performance
             </h3>
             <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
-              SEO pages published and indexed monthly, targeting high-intent keywords your customers
-              actually search for.
+              Verified clicks and impressions sync from your Search Console property and stay
+              comparable to the saved 28-day baseline.
             </p>
             {/* mini GSC-style chart */}
             <svg viewBox="0 0 420 150" style={{ width: "100%" }}>
@@ -591,10 +602,11 @@ export default function LandingPage() {
               className="lp-display"
               style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
             >
-              Get mentioned by AI assistants
+              Prepare for AI discovery
             </h3>
             <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
-              AI assistants discover your pages and recommend your business when customers ask.
+              Audit the structure that search and answer engines can read. Mention tracking appears
+              only after a real visibility provider is connected.
             </p>
             <div
               style={{
@@ -626,8 +638,7 @@ export default function LandingPage() {
                   padding: "12px 14px",
                 }}
               >
-                I'd recommend <strong style={{ color: ACCENT_DARK }}>your business</strong> — here's
-                why customers rate it highly…
+                Provider not connected — MentionMyApp will not invent an AI recommendation.
               </div>
             </div>
           </div>
@@ -647,7 +658,7 @@ export default function LandingPage() {
             className="lp-display"
             style={{ fontSize: "clamp(26px, 3.4vw, 38px)", fontWeight: 800, margin: "12px 0 8px" }}
           >
-            $49/month. Everything included.
+            $49/month for the core growth workspace.
           </h2>
           <p style={{ color: "#B6BAD1", fontSize: 15, margin: "0 0 26px" }}>
             No measurable growth in 90 days — every dollar back. Cancel anytime.

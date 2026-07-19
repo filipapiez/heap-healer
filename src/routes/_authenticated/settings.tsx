@@ -41,7 +41,7 @@ function SettingsPage() {
           </SettingsGroup>
           <SettingsGroup label="Content">
             <Link to="/media">
-              <SettingsItem icon={Image} label="Media & visuals" />
+              <SettingsItem icon={Image} label="Content assets" />
             </Link>
             <Link to="/resources">
               <SettingsItem icon={BookOpen} label="Resources" />
@@ -67,10 +67,10 @@ function SettingsPage() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg font-semibold text-[#302d34]">
-                  Publishing connections
+                  Website connections
                 </h2>
                 <p className="mt-1 text-xs text-[#85818b]">
-                  Connect social accounts, Search Console and website delivery destinations.
+                  Connect Search Console and secure website delivery destinations.
                 </p>
               </div>
               <Link
@@ -103,7 +103,9 @@ function SettingsPage() {
                 CMS credentials are encrypted server-side and are never returned to the browser.
               </li>
               <li>Media is served through short-lived signed URLs.</li>
-              <li>Every publishing attempt is logged with sanitized metadata for auditing.</li>
+              <li>
+                Every website publishing attempt is logged with sanitized metadata for auditing.
+              </li>
             </ul>
           </section>
         </main>

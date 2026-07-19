@@ -22,6 +22,7 @@ function emptyGrowthDashboard() {
     metrics: [] as MetricRow[],
     backlinksLive: 0,
     aiMentions: 0,
+    aiChecks: 0,
     workPlan: {
       audit: null,
       pages: { published: 0, indexed: 0 },
@@ -63,8 +64,8 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
     const [
       connectionResult,
       metricsResult,
-      backlinksResult,
       mentionsResult,
+      mentionChecksResult,
       auditRunResult,
       placementsResult,
       livePlacementsResult,
@@ -83,15 +84,14 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
         .gte("day", start.toISOString().slice(0, 10))
         .order("day", { ascending: true }),
       supabaseAdmin
-        .from("seo_backlinks" as never)
-        .select("id", { count: "exact", head: true })
-        .eq("client_id", clientRow.id)
-        .eq("status", "live"),
-      supabaseAdmin
         .from("seo_geo_checks" as never)
         .select("id", { count: "exact", head: true })
         .eq("client_id", clientRow.id)
         .eq("mentioned", true),
+      supabaseAdmin
+        .from("seo_geo_checks" as never)
+        .select("id", { count: "exact", head: true })
+        .eq("client_id", clientRow.id),
       supabaseAdmin
         .from("seo_audit_runs" as never)
         .select("score,checks_passed,checks_failed,created_at")
@@ -122,8 +122,8 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
     const queryError = [
       connectionResult.error,
       metricsResult.error,
-      backlinksResult.error,
       mentionsResult.error,
+      mentionChecksResult.error,
       auditRunResult.error,
       placementsResult.error,
       livePlacementsResult.error,
@@ -156,8 +156,9 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
       lastSyncedAt: connectionRow?.last_synced_at ?? null,
       syncError: connectionRow?.last_error ?? null,
       metrics: (metricsResult.data ?? []) as unknown as MetricRow[],
-      backlinksLive: backlinksResult.count ?? 0,
+      backlinksLive: livePlacementsResult.count ?? 0,
       aiMentions: mentionsResult.count ?? 0,
+      aiChecks: mentionChecksResult.count ?? 0,
       workPlan: {
         audit: auditRow
           ? {
@@ -176,5 +177,47 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
           live: livePlacementsResult.count ?? 0,
         },
       },
+    };
+  });
+
+export const getContentPlanData = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: profile, error: profileError } = await context.supabase
+      .from("profiles")
+      .select("current_workspace_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (profileError) throw profileError;
+    if (!profile?.current_workspace_id) return { website: null, items: [] };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: client, error: clientError } = await supabaseAdmin
+      .from("seo_clients" as never)
+      .select("id,website")
+      .eq("workspace_id", profile.current_workspace_id)
+      .maybeSingle();
+    if (clientError) throw clientError;
+    const clientRow = client as unknown as { id: string; website: string | null } | null;
+    if (!clientRow) return { website: null, items: [] };
+
+    const { data: pages, error: pagesError } = await supabaseAdmin
+      .from("seo_pages" as never)
+      .select("id,url,keyword,indexed,impressions,clicks,published_at")
+      .eq("client_id", clientRow.id)
+      .order("published_at", { ascending: false });
+    if (pagesError) throw pagesError;
+
+    return {
+      website: clientRow.website,
+      items: (pages ?? []) as unknown as Array<{
+        id: string;
+        url: string;
+        keyword: string | null;
+        indexed: boolean;
+        impressions: number;
+        clicks: number;
+        published_at: string;
+      }>,
     };
   });

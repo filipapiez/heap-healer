@@ -14,7 +14,10 @@ export const Route = createFileRoute("/auth")({
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap",
+      },
     ],
   }),
   component: AuthPage,
@@ -83,11 +86,14 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setError(""); setInfo("");
+    setBusy(true);
+    setError("");
+    setInfo("");
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          email, password,
+          email,
+          password,
           options: {
             emailRedirectTo: window.location.origin,
             data: { name: email.split("@")[0] },
@@ -103,15 +109,22 @@ function AuthPage() {
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
-    } finally { setBusy(false); }
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function google() {
-    setBusy(true); setError("");
+    setBusy(true);
+    setError("");
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result.error) { setError(result.error.message ?? "Google sign-in failed"); setBusy(false); return; }
+    if (result.error) {
+      setError(result.error.message ?? "Google sign-in failed");
+      setBusy(false);
+      return;
+    }
     if (result.redirected) return;
     navigate({ to: "/dashboard", replace: true });
   }
@@ -121,35 +134,96 @@ function AuthPage() {
       <style dangerouslySetInnerHTML={{ __html: STYLES }} />
       <div className="mma-auth">
         <aside className="side">
-          <Link to="/" className="logo">Mention<em>My</em>App</Link>
+          <Link to="/" className="logo">
+            Mention<em>My</em>App
+          </Link>
           <div>
-            <h2>Post once.<br />Show up everywhere —<br /><span className="accent">including Google.</span></h2>
+            <h2>
+              Fix the foundation.
+              <br />
+              Publish what ranks.
+              <br />
+              <span className="accent">Measure real growth.</span>
+            </h2>
             <div className="checks">
-              <span><b>✓</b> Publish to 11 platforms in one click</span>
-              <span><b>✓</b> Every like, comment &amp; DM in one inbox</span>
-              <span><b>✓</b> Backlinks + indexable pages, automatically</span>
+              <span>
+                <b>✓</b> Technical SEO, AEO and GEO audits
+              </span>
+              <span>
+                <b>✓</b> Website content and verified backlinks
+              </span>
+              <span>
+                <b>✓</b> Search Console and AI visibility
+              </span>
             </div>
           </div>
           <div className="side-foot">
             <div className="gbadge">90</div>
-            <span>90-day guarantee — rank better on Google or get every dollar back, and keep all the work.</span>
+            <span>
+              90-day guarantee — no verified Search Console growth in clicks or impressions, get
+              every dollar back under the published terms.
+            </span>
           </div>
         </aside>
 
         <main className="pane">
           <div className="card">
             <div className="head">
-              <Link to="/" className="logo">Mention<em style={{ fontStyle: "normal", color: "var(--signal)" }}>My</em>App</Link>
-              <p>{mode === "signin" ? "Welcome back — your platforms are waiting." : "Create your account in seconds."}</p>
+              <Link to="/" className="logo">
+                Mention<em style={{ fontStyle: "normal", color: "var(--signal)" }}>My</em>App
+              </Link>
+              <p>
+                {mode === "signin"
+                  ? "Welcome back — your growth workspace is ready."
+                  : "Create your account in seconds."}
+              </p>
             </div>
 
             <div className="tabs" role="tablist">
-              <button type="button" className={mode === "signin" ? "on" : ""} onClick={() => { setMode("signin"); setError(""); setInfo(""); }} role="tab" aria-selected={mode === "signin"}>Sign in</button>
-              <button type="button" className={mode === "signup" ? "on" : ""} onClick={() => { setMode("signup"); setError(""); setInfo(""); }} role="tab" aria-selected={mode === "signup"}>Create account</button>
+              <button
+                type="button"
+                className={mode === "signin" ? "on" : ""}
+                onClick={() => {
+                  setMode("signin");
+                  setError("");
+                  setInfo("");
+                }}
+                role="tab"
+                aria-selected={mode === "signin"}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                className={mode === "signup" ? "on" : ""}
+                onClick={() => {
+                  setMode("signup");
+                  setError("");
+                  setInfo("");
+                }}
+                role="tab"
+                aria-selected={mode === "signup"}
+              >
+                Create account
+              </button>
             </div>
 
             <button type="button" className="btn-google" onClick={google} disabled={busy}>
-              <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.6h3.2a9.8 9.8 0 0 0 3-7.5Z"/><path fill="#34A853" d="M12 22a9.6 9.6 0 0 0 6.6-2.4l-3.2-2.5a6 6 0 0 1-9-3.2H3.1v2.6A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3.1a10 10 0 0 0 0 9Z"/><path fill="#EA4335" d="M12 5.9a5.4 5.4 0 0 1 3.8 1.5l2.9-2.8A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.9 5.5l3.3 2.6A6 6 0 0 1 12 5.9Z"/></svg>
+              <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="#4285F4"
+                  d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.6h3.2a9.8 9.8 0 0 0 3-7.5Z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 22a9.6 9.6 0 0 0 6.6-2.4l-3.2-2.5a6 6 0 0 1-9-3.2H3.1v2.6A10 10 0 0 0 12 22Z"
+                />
+                <path fill="#FBBC05" d="M6.4 13.9a6 6 0 0 1 0-3.8V7.5H3.1a10 10 0 0 0 0 9Z" />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.9a5.4 5.4 0 0 1 3.8 1.5l2.9-2.8A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.9 5.5l3.3 2.6A6 6 0 0 1 12 5.9Z"
+                />
+              </svg>
               Continue with Google
             </button>
 
@@ -157,10 +231,30 @@ function AuthPage() {
 
             <form onSubmit={submit}>
               <label htmlFor="email">Email</label>
-              <input id="email" type="email" required autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                id="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               <label htmlFor="pw">Password</label>
-              <input id="pw" type="password" required minLength={6} autoComplete={mode === "signin" ? "current-password" : "new-password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
-              <div className="row"><span></span>{mode === "signin" && <a>Forgot password?</a>}</div>
+              <input
+                id="pw"
+                type="password"
+                required
+                minLength={6}
+                autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <div className="row">
+                <span></span>
+                {mode === "signin" && <a>Forgot password?</a>}
+              </div>
               {error && <div className="msg err">{error}</div>}
               {info && <div className="msg ok">{info}</div>}
               <button className="submit" type="submit" disabled={busy}>
@@ -168,7 +262,9 @@ function AuthPage() {
               </button>
             </form>
 
-            <div className="foot"><b>●</b> We never ask for your social media passwords — platforms connect via their official sign-in.</div>
+            <div className="foot">
+              <b>●</b> Search Console is read-only and website credentials are encrypted.
+            </div>
           </div>
         </main>
       </div>

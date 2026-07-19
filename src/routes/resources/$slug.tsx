@@ -78,7 +78,7 @@ export const Route = createFileRoute("/resources/$slug")({
 
 function ResourcePage() {
   const { page, article, related, reportImage } = Route.useLoaderData();
-  const toc = article.sections.map((section: any) => ({
+  const toc = article.sections.map((section) => ({
     id: slugify(section.heading),
     heading: section.heading,
     eyebrow: section.eyebrow,
@@ -205,7 +205,7 @@ function ResourcePage() {
                 Audit sections
               </h2>
               <ol className="mt-4 space-y-2 text-sm leading-6 text-[var(--color-ink-700)]">
-                {toc.map((item: any) => (
+                {toc.map((item) => (
                   <li key={item.id}>
                     <a
                       className="grid grid-cols-[48px_minmax(0,1fr)] gap-2 rounded-lg px-2 py-1 hover:bg-[var(--color-mist-50)] hover:text-[var(--color-signal-600)]"
@@ -250,13 +250,13 @@ function ResourcePage() {
             </section>
 
             <section className="mt-8 grid gap-4 lg:grid-cols-3">
-              {prioritySections.map((section: any) => (
+              {prioritySections.map((section) => (
                 <PriorityCard key={section.heading} section={section} />
               ))}
             </section>
 
             <div className="mt-10 space-y-8">
-              {article.sections.map((section: any) => (
+              {article.sections.map((section) => (
                 <ArticleSection key={section.heading} section={section} />
               ))}
             </div>
@@ -271,7 +271,7 @@ function ResourcePage() {
                 </h2>
               </div>
               <div className="mt-6 grid gap-4">
-                {article.faqs.map((faq: any) => (
+                {article.faqs.map((faq) => (
                   <div
                     key={faq.question}
                     className="rounded-xl border border-[var(--color-mist-200)] bg-white p-5"
@@ -298,7 +298,7 @@ function ResourcePage() {
                 </Link>
               </div>
               <div className="mt-6 grid gap-3 md:grid-cols-2">
-                {related.map((relatedPage: any) => (
+                {related.map((relatedPage) => (
                   <Link
                     key={relatedPage.slug}
                     to="/resources/$slug"
@@ -325,15 +325,7 @@ function ResourcePage() {
   );
 }
 
-function HeroMetric({
-  icon,
-  label,
-  value,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
+function HeroMetric({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-xl border border-[var(--color-mist-200)] bg-white p-4 shadow-sm">
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-signal-600)]">
@@ -347,15 +339,7 @@ function HeroMetric({
   );
 }
 
-function SignalCard({
-  icon,
-  title,
-  text,
-}: {
-  icon: ReactNode;
-  title: string;
-  text: string;
-}) {
+function SignalCard({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
   return (
     <div className="rounded-xl border border-[var(--color-mist-200)] bg-white p-4">
       <div className="flex items-center gap-2 font-display font-bold">
@@ -381,9 +365,7 @@ function TargetRow({ label, value }: { label: string; value: string }) {
 function DarkMiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-white/50">
-        {label}
-      </div>
+      <div className="text-xs font-semibold uppercase tracking-[0.12em] text-white/50">{label}</div>
       <div className="mt-2 text-sm leading-6 text-white/85">{value}</div>
     </div>
   );
@@ -450,7 +432,10 @@ function buildReportPreviewImage(page: SeoPage, article: SeoArticle) {
   const scorePercent = Math.max(8, Math.min(96, Math.round(score * 10)));
   const issueCount = 22 + (page.index % 41);
   const titleLines = splitSvgLines(page.title, 31).slice(0, 3);
-  const subLines = splitSvgLines(`${page.builder.name} stack / ${page.vertical.name} / ${page.intent.titleNoun}`, 44).slice(0, 2);
+  const subLines = splitSvgLines(
+    `${page.builder.name} stack / ${page.vertical.name} / ${page.intent.titleNoun}`,
+    44,
+  ).slice(0, 2);
   const titleSpans = titleLines
     .map(
       (line, index) =>

@@ -14,23 +14,15 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
           target.searchParams.set("msg", message);
           return Response.redirect(target, 302);
         };
-        if (!installationId) return finish(url.origin, "error", "missing_installation");
-        // GitHub's post-install "Setup URL" redirect only sends installation_id +
-        // setup_action, not our `state`. Fall back to the most recent pending
-        // github_app oauth_state row when state is absent.
-        const query = supabaseAdmin
+        if (!Number.isSafeInteger(installationId) || installationId <= 0)
+          return finish(url.origin, "error", "missing_installation");
+        if (!state) return finish(url.origin, "error", "missing_state");
+        const { data, error: stateError } = await supabaseAdmin
           .from("oauth_states" as never)
           .select("state,provider,workspace_id,redirect_origin,expires_at")
-          .eq("provider", "github_app")
-          .order("created_at", { ascending: false })
-          .limit(1);
-        const { data } = state
-          ? await supabaseAdmin
-              .from("oauth_states" as never)
-              .select("state,provider,workspace_id,redirect_origin,expires_at")
-              .eq("state", state)
-              .maybeSingle()
-          : await query.maybeSingle();
+          .eq("state", state)
+          .maybeSingle();
+        if (stateError) return finish(url.origin, "error", "state_lookup_failed");
         const row = data as unknown as {
           state: string;
           provider: string;
@@ -39,10 +31,11 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
           expires_at: string;
         } | null;
         if (!row) return finish(url.origin, "error", "invalid_state");
-        await supabaseAdmin
+        const { error: consumeError } = await supabaseAdmin
           .from("oauth_states" as never)
           .delete()
           .eq("state", row.state);
+        if (consumeError) return finish(row.redirect_origin, "error", "state_consume_failed");
         if (row.provider !== "github_app")
           return finish(row.redirect_origin, "error", "provider_mismatch");
         if (new Date(row.expires_at) < new Date())

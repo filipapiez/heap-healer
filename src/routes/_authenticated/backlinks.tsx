@@ -53,7 +53,6 @@ type DirectoryProfile = {
   category?: string | null;
   contact_email?: string | null;
   pricing_model?: string | null;
-  twitter_handle?: string | null;
   founder_name?: string | null;
 };
 
@@ -89,21 +88,19 @@ function BacklinksPage() {
   const data = queueQuery.data!;
   const submissions = (data.submissions ?? []) as Submission[];
   const active = submissions.filter((s) =>
-    ["queued", "pending_action", "auto_submitted"].includes(s.status),
+    ["queued", "pending_action", "auto_submitted", "submitted"].includes(s.status),
   );
-  const history = submissions.filter((s) =>
-    ["submitted", "live", "rejected", "skipped"].includes(s.status),
-  );
+  const history = submissions.filter((s) => ["live", "rejected", "skipped"].includes(s.status));
 
   return (
     <div className="mx-auto max-w-[1120px]">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dde4f3] bg-white px-4 py-3 text-xs text-[#71809b]">
         <span className="flex items-center gap-2">
-          <Radar className="h-3.5 w-3.5 text-[#6366e8]" /> Semrush verifies referring domains and
-          live placement status
+          <Radar className="h-3.5 w-3.5 text-[#6366e8]" /> Live status requires a reachable
+          placement page that links to your website
         </span>
         <span className="rounded-full border border-[#e5e4e8] px-3 py-1.5 font-semibold text-[#57535d]">
-          Backlink engine · Live
+          Backlink workflow · Assisted
         </span>
       </div>
 
@@ -241,12 +238,16 @@ function QueueList({ rows, profile }: { rows: Submission[]; profile: DirectoryPr
 function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryProfile | null }) {
   const qc = useQueryClient();
   const style = STATUS_STYLE[sub.status] ?? STATUS_STYLE.queued;
-  const [liveUrl, setLiveUrl] = useState("");
+  const [liveUrl, setLiveUrl] = useState(sub.live_url ?? "");
 
   const update = useMutation({
     mutationFn: (vars: { status: SubmissionStatus; live_url?: string }) =>
       updateSubmission({ data: { submissionId: sub.id, ...vars } }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["backlink-queue"] }),
+    onSuccess: (result) => {
+      toast.success(result.verified ? "Backlink verified live" : "Submission updated");
+      qc.invalidateQueries({ queryKey: ["backlink-queue"] });
+      qc.invalidateQueries({ queryKey: ["growth-dashboard"] });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
   const retry = useMutation({
@@ -321,6 +322,13 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryP
         >
           Mark submitted
         </button>
+        <button
+          onClick={() => update.mutate({ status: "live", live_url: liveUrl || undefined })}
+          disabled={update.isPending || !(liveUrl || sub.live_url)}
+          className="rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {update.isPending ? "Checking…" : "Verify live"}
+        </button>
         {(sub.directory.submission_method === "api" ||
           sub.directory.submission_method === "form") && (
           <button
@@ -341,7 +349,7 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryP
       <input
         value={liveUrl}
         onChange={(e) => setLiveUrl(e.target.value)}
-        placeholder="Optional: paste live listing URL"
+        placeholder="Paste the public listing URL to verify it live"
         className="mt-2 w-full rounded-lg border border-slate-200 px-2 py-1 text-xs"
       />
     </div>
@@ -417,7 +425,6 @@ function ProfileForm({ initial }: { initial: DirectoryProfile | null }) {
     category: initial?.category ?? "",
     contact_email: initial?.contact_email ?? "",
     pricing_model: initial?.pricing_model ?? "",
-    twitter_handle: initial?.twitter_handle ?? "",
     founder_name: initial?.founder_name ?? "",
   });
   const save = useMutation({
@@ -488,12 +495,6 @@ function ProfileForm({ initial }: { initial: DirectoryProfile | null }) {
         value={form.pricing_model}
         onChange={set("pricing_model")}
         placeholder="Free, Freemium, Paid"
-      />
-      <Field
-        label="Twitter/X handle"
-        value={form.twitter_handle}
-        onChange={set("twitter_handle")}
-        placeholder="@handle"
       />
       <div className="md:col-span-2">
         <Label>Short description (≤280 chars)</Label>

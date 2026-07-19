@@ -72,6 +72,9 @@ export default function GrowthReport({ token }: { token: string }) {
   if (missing || !report) return <ReportState title="This report link is unavailable." />;
 
   const latest = report.metrics.at(-1);
+  const latest28 = report.metrics.slice(-28);
+  const clicks28 = latest28.reduce((sum, metric) => sum + metric.clicks, 0);
+  const impressions28 = latest28.reduce((sum, metric) => sum + metric.impressions, 0);
   const indexed = latest?.indexed_pages ?? report.client.baseline_indexed;
   const liveLinks = report.backlinks.filter((link) => link.status === "live").length;
   const mentions = report.geo.filter((item) => item.mentioned).length;
@@ -113,14 +116,14 @@ export default function GrowthReport({ token }: { token: string }) {
             delta={`+${indexed - report.client.baseline_indexed} from baseline`}
           />
           <Stat
-            label="Impressions"
-            value={fmt(latest?.impressions ?? 0)}
-            delta={`${change(latest?.impressions ?? 0, report.client.baseline_impressions)}% vs baseline`}
+            label="Impressions · latest 28d"
+            value={fmt(impressions28)}
+            delta={`${change(impressions28, report.client.baseline_impressions)}% vs saved 28d baseline`}
           />
           <Stat
-            label="Organic clicks"
-            value={fmt(latest?.clicks ?? 0)}
-            delta={`${change(latest?.clicks ?? 0, report.client.baseline_clicks)}% vs baseline`}
+            label="Organic clicks · latest 28d"
+            value={fmt(clicks28)}
+            delta={`${change(clicks28, report.client.baseline_clicks)}% vs saved 28d baseline`}
           />
           <Stat
             label="Backlinks built"

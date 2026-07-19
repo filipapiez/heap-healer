@@ -5,6 +5,13 @@ function base64url(input: string | Uint8Array) {
   return btoa(binary).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
+function base64(input: string) {
+  const bytes = new TextEncoder().encode(input);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary);
+}
+
 function cleanGithubPrivateKey(value: string) {
   return value
     .trim()
@@ -14,10 +21,7 @@ function cleanGithubPrivateKey(value: string) {
 }
 
 function pemBodyToDer(pem: string) {
-  const body = pem.replace(
-    /-----BEGIN [^-]+-----|-----END [^-]+-----|\s/g,
-    "",
-  );
+  const body = pem.replace(/-----BEGIN [^-]+-----|-----END [^-]+-----|\s/g, "");
   if (!body) throw new Error("GitHub App private key is empty");
   try {
     return Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
@@ -38,7 +42,10 @@ function pkcs1ToPkcs8(pkcs1: Uint8Array): Uint8Array {
     if (n < 0x80) return new Uint8Array([n]);
     const bytes: number[] = [];
     let x = n;
-    while (x > 0) { bytes.unshift(x & 0xff); x >>= 8; }
+    while (x > 0) {
+      bytes.unshift(x & 0xff);
+      x >>= 8;
+    }
     return new Uint8Array([0x80 | bytes.length, ...bytes]);
   };
   const octetLen = encodeLen(pkcs1.length);
@@ -121,6 +128,20 @@ export async function getInstallation(installationId: number) {
   return (await response.json()) as { account?: { login?: string; type?: string } };
 }
 
+export async function deleteInstallation(installationId: number) {
+  const response = await fetch(`https://api.github.com/app/installations/${installationId}`, {
+    method: "DELETE",
+    headers: {
+      authorization: `Bearer ${await appJwt()}`,
+      accept: "application/vnd.github+json",
+      "user-agent": "MentionMyApp",
+    },
+  });
+  if (response.status !== 202 && response.status !== 204 && response.status !== 404) {
+    throw new Error(`GitHub App uninstall failed (${response.status})`);
+  }
+}
+
 export async function listInstallationRepositories(installationId: number) {
   const tokenResponse = await fetch(
     `https://api.github.com/app/installations/${installationId}/access_tokens`,
@@ -186,13 +207,29 @@ export async function openSeoPullRequest(input: {
   if (!repoResponse.ok) throw new Error(`GitHub repository lookup failed (${repoResponse.status})`);
   const repo = (await repoResponse.json()) as { default_branch: string };
   const base = input.base ?? repo.default_branch;
+  const baseRefResponse = await fetch(`${api}/git/ref/heads/${encodeURIComponent(base)}`, {
+    headers,
+  });
+  if (!baseRefResponse.ok)
+    throw new Error(`GitHub base branch lookup failed (${baseRefResponse.status})`);
+  const baseRef = (await baseRefResponse.json()) as { object?: { sha?: string } };
+  const baseSha = baseRef.object?.sha;
+  if (!baseSha) throw new Error("GitHub did not return the base branch commit");
+  const branch = `mentionmyapp/seo-${input.slug}-${Date.now().toString(36)}`;
+  const branchResponse = await fetch(`${api}/git/refs`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: baseSha }),
+  });
+  if (!branchResponse.ok)
+    throw new Error(`GitHub review branch creation failed (${branchResponse.status})`);
+
   const path = `content/seo/${input.slug}.html`;
-  const content = btoa(unescape(encodeURIComponent(input.html)));
-  // Check if file already exists on base branch so we can supply the required sha for updates.
-  const existing = await fetch(
-    `${api}/contents/${path}?ref=${encodeURIComponent(base)}`,
-    { headers },
-  );
+  const content = base64(input.html);
+  // The branch starts at base, so an existing page needs its current blob SHA.
+  const existing = await fetch(`${api}/contents/${path}?ref=${encodeURIComponent(branch)}`, {
+    headers,
+  });
   let sha: string | undefined;
   if (existing.ok) {
     const existingJson = (await existing.json()) as { sha?: string };
@@ -206,20 +243,22 @@ export async function openSeoPullRequest(input: {
     body: JSON.stringify({
       message: `Publish SEO page: ${input.title}`,
       content,
-      branch: base,
+      branch,
       ...(sha ? { sha } : {}),
     }),
   });
   if (!commit.ok) throw new Error(`GitHub content commit failed (${commit.status})`);
-  const commitJson = (await commit.json()) as {
-    commit?: { sha?: string; html_url?: string };
-    content?: { html_url?: string };
-  };
-  return {
-    number: 0,
-    html_url:
-      commitJson.commit?.html_url ??
-      commitJson.content?.html_url ??
-      `https://github.com/${input.repository}/blob/${base}/${path}`,
-  };
+  const pullResponse = await fetch(`${api}/pulls`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      title: `SEO page: ${input.title}`,
+      head: branch,
+      base,
+      body: `Review the approved MentionMyApp page at \`${path}\` before merging.`,
+    }),
+  });
+  if (!pullResponse.ok)
+    throw new Error(`GitHub pull request creation failed (${pullResponse.status})`);
+  return (await pullResponse.json()) as { number: number; html_url: string };
 }

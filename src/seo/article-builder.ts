@@ -545,7 +545,7 @@ const marketProfiles: Record<string, MarketProfile> = {
     situation:
       "Salon SEO is visual and local, but search still needs service pages, stylist proof, pricing context, availability, and review trust.",
     hardTruth:
-      "A salon can have strong Instagram proof and still miss organic traffic if services, stylists, prices, and booking details are not crawlable.",
+      "A salon can have strong visual proof and still miss organic traffic if services, stylists, prices, and booking details are not crawlable.",
     good: ["service pages", "stylist specialties", "captioned transformations", "pricing ranges", "booking links near intent"],
     bad: ["image-only service menu", "missing stylist pages", "photos without technique context", "GBP menu mismatch", "no neighborhood signals"],
     pages: ["hair color pages", "extension pages", "stylist bios", "gallery pages", "neighborhood salon pages"],

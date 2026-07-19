@@ -27,6 +27,13 @@ type Backlink = {
   anchor: string | null;
   status: string;
 };
+type VerifiedDirectorySubmission = {
+  id: string;
+  status: "live";
+  live_url: string;
+  notes: string | null;
+  directory: { name: string; domain_authority: number | null } | null;
+};
 type GeoCheck = {
   id: string;
   engine: string;
@@ -52,6 +59,13 @@ type SemrushSnapshot = {
 const fmt = (value: number) => value.toLocaleString();
 const change = (value: number, baseline: number) =>
   baseline ? Math.round(((value - baseline) / baseline) * 100) : value ? 100 : 0;
+const backlinkSource = (item: VerifiedDirectorySubmission) => {
+  try {
+    return new URL(item.live_url).hostname;
+  } catch {
+    return item.directory?.name ?? "Verified placement";
+  }
+};
 
 // Growth-report tables were added after the generated client types.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,6 +117,7 @@ export default function SeoDashboard() {
 
   useEffect(() => {
     if (!clientId) return;
+    const workspaceId = clients.find((item) => item.id === clientId)?.workspace_id;
     setError("");
     setSemrushLoading(true);
     void (async () => {
@@ -113,11 +128,14 @@ export default function SeoDashboard() {
           .select("*")
           .eq("client_id", clientId)
           .order("published_at", { ascending: false }),
-        seoDb
-          .from("seo_backlinks")
-          .select("*")
-          .eq("client_id", clientId)
-          .order("created_at", { ascending: false }),
+        workspaceId
+          ? seoDb
+              .from("directory_submissions")
+              .select("id,status,live_url,notes,directory:directories(name,domain_authority)")
+              .eq("workspace_id", workspaceId)
+              .eq("status", "live")
+              .order("submitted_at", { ascending: false })
+          : Promise.resolve({ data: [], error: null }),
         seoDb
           .from("seo_geo_checks")
           .select("*")
@@ -149,19 +167,31 @@ export default function SeoDashboard() {
       if (semrushRow.error)
         console.warn("[seo-growth] Semrush unavailable", semrushRow.error.message);
       setPages((pageRows.error ? [] : (pageRows.data ?? [])) as Page[]);
-      setBacklinks((backlinkRows.error ? [] : (backlinkRows.data ?? [])) as Backlink[]);
+      const verifiedSubmissions = (
+        backlinkRows.error ? [] : (backlinkRows.data ?? [])
+      ) as VerifiedDirectorySubmission[];
+      setBacklinks(
+        verifiedSubmissions.map((item) => ({
+          id: item.id,
+          source_domain: backlinkSource(item),
+          authority: item.directory?.domain_authority ?? null,
+          anchor: item.notes,
+          status: item.status,
+        })),
+      );
       setGeo((geoRows.error ? [] : (geoRows.data ?? [])) as GeoCheck[]);
       setSemrush((semrushRow.error ? null : (semrushRow.data ?? null)) as SemrushSnapshot | null);
       setSemrushLoading(false);
     })();
-  }, [clientId]);
+  }, [clientId, clients]);
 
   const client = clients.find((item) => item.id === clientId);
   const latest = metrics.at(-1);
   const rangeMetrics = metrics.slice(-rangeDays);
+  const comparisonMetrics = metrics.slice(-28);
   const indexedNow = latest?.indexed_pages ?? client?.baseline_indexed ?? 0;
-  const clicksNow = rangeMetrics.reduce((total, item) => total + item.clicks, 0);
-  const impressionsNow = rangeMetrics.reduce((total, item) => total + item.impressions, 0);
+  const clicksNow = comparisonMetrics.reduce((total, item) => total + item.clicks, 0);
+  const impressionsNow = comparisonMetrics.reduce((total, item) => total + item.impressions, 0);
   const liveLinks = backlinks.filter((item) => item.status === "live").length;
   const mentions = geo.filter((item) => item.mentioned).length;
   const day = client
@@ -211,7 +241,7 @@ export default function SeoDashboard() {
         <div>
           <h1 className="font-display text-2xl font-semibold tracking-[-.03em]">Analytics</h1>
           <p className="mt-1 text-sm text-[#6b7280]">
-            Verified performance across Google Search Console, Semrush and AI search ·{" "}
+            Verified Search Console performance, with optional Semrush and AI-visibility sources ·{" "}
             {client.website}
           </p>
         </div>
@@ -265,10 +295,10 @@ export default function SeoDashboard() {
           Authority
         </a>
         <a
-          href="/history"
+          href="/scheduled"
           className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 hover:text-[#302d34]"
         >
-          Publishing
+          Website content
         </a>
       </nav>
 
@@ -276,7 +306,7 @@ export default function SeoDashboard() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <span className="label">90-day guarantee · Day {day} of 90</span>
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
-            Measured against day one
+            Latest 28 days vs saved 28-day baseline
           </span>
         </div>
         <div className="h-2.5 overflow-hidden rounded-full bg-[#f2f2f8]">
@@ -289,29 +319,29 @@ export default function SeoDashboard() {
 
       <section className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <Stat
-          label="Pages indexed"
+          label="Tracked indexed pages"
           value={fmt(indexedNow)}
           delta={indexedNow - client.baseline_indexed}
-          note={`day one: ${fmt(client.baseline_indexed)}`}
+          note={`recorded at baseline: ${fmt(client.baseline_indexed)}`}
         />
         <Stat
-          label="Pages published"
+          label="Tracked pages"
           value={fmt(pages.length)}
           delta={pages.length}
           note={`${pages.filter((item) => !item.indexed).length} awaiting index`}
         />
         <Stat
-          label={`Impressions · ${rangeDays === 488 ? "16mo" : rangeDays === 365 ? "12mo" : rangeDays === 180 ? "6mo" : `${rangeDays}d`}`}
+          label="Impressions · latest 28d"
           value={fmt(impressionsNow)}
           delta={change(impressionsNow, client.baseline_impressions)}
-          note={`day one: ${fmt(client.baseline_impressions)}`}
+          note={`saved 28d baseline: ${fmt(client.baseline_impressions)}`}
           suffix="%"
         />
         <Stat
-          label={`Clicks · ${rangeDays === 488 ? "16mo" : rangeDays === 365 ? "12mo" : rangeDays === 180 ? "6mo" : `${rangeDays}d`}`}
+          label="Clicks · latest 28d"
           value={fmt(clicksNow)}
           delta={change(clicksNow, client.baseline_clicks)}
-          note={`day one: ${fmt(client.baseline_clicks)}`}
+          note={`saved 28d baseline: ${fmt(client.baseline_clicks)}`}
           suffix="%"
         />
         <Stat
@@ -322,9 +352,9 @@ export default function SeoDashboard() {
         />
         <Stat
           label="AI mentions"
-          value={`${mentions}/${geo.length}`}
+          value={geo.length ? `${mentions}/${geo.length}` : "—"}
           delta={mentions}
-          note="tested queries"
+          note={geo.length ? "tracked queries" : "tracking provider not connected"}
         />
       </section>
 
@@ -392,15 +422,19 @@ export default function SeoDashboard() {
         <InsightCard
           label="Content opportunities"
           value={String(pages.filter((item) => !item.indexed).length)}
-          detail="Pages awaiting indexing, plus future keyword and competitor-gap recommendations."
-          action="View pages"
+          detail="Approved pages recorded in the workspace that are still awaiting an indexed status."
+          action={pages.length ? "View tracked pages" : "No tracked pages yet"}
         />
         <InsightCard
           label="GEO score"
           value={geo.length ? `${Math.round((mentions / geo.length) * 100)}` : "—"}
           suffix={geo.length ? "/100" : ""}
-          detail="Share of tracked AI-search questions that currently mention your brand."
-          action={`${geo.length - mentions} visibility gaps`}
+          detail={
+            geo.length
+              ? "Share of tracked AI-search questions that currently mention your brand."
+              : "Connect an AI-visibility data provider before MentionMyApp can report mentions."
+          }
+          action={geo.length ? `${geo.length - mentions} visibility gaps` : "Provider required"}
         />
       </section>
 
@@ -446,22 +480,29 @@ export default function SeoDashboard() {
             {mentions} of {geo.length} queries mention the brand
           </span>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {geo.map((item) => (
-            <div key={item.id} className="rounded-xl border border-[#e9eaf2] p-4">
-              <div className="flex justify-between text-sm font-bold">
-                <span>{item.engine}</span>
-                <span className={item.mentioned ? "text-green-600" : "text-[#6b7280]"}>
-                  {item.mentioned ? "mentioned ✓" : "not yet"}
-                </span>
+        {geo.length ? (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {geo.map((item) => (
+              <div key={item.id} className="rounded-xl border border-[#e9eaf2] p-4">
+                <div className="flex justify-between text-sm font-bold">
+                  <span>{item.engine}</span>
+                  <span className={item.mentioned ? "text-green-600" : "text-[#6b7280]"}>
+                    {item.mentioned ? "mentioned ✓" : "not yet"}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs text-[#6b7280]">“{item.query}”</p>
+                {item.cited_url && (
+                  <p className="mt-1 text-xs text-green-600">cites {item.cited_url}</p>
+                )}
               </div>
-              <p className="mt-2 text-xs text-[#6b7280]">“{item.query}”</p>
-              {item.cited_url && (
-                <p className="mt-1 text-xs text-green-600">cites {item.cited_url}</p>
-              )}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed border-[#d9dbe7] p-6 text-sm text-[#6b7280]">
+            No AI visibility checks have been collected. This section stays pending until a provider
+            is connected and real query results are saved.
+          </p>
+        )}
       </Card>
 
       <Card id="authority" className="mt-4 scroll-mt-24 p-5">

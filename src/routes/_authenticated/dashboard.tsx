@@ -19,6 +19,8 @@ import {
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
 import { getWebsiteConnectionStatus } from "@/lib/website-connections.functions";
+import { summarizeWebsiteConnections, WEBSITE_CONNECTION_QUERY_KEY } from "@/connection-status";
+import { PlatformLogo } from "@/components/PlatformLogo";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Growth overview — MentionMyApp" }] }),
@@ -38,7 +40,7 @@ function GrowthDashboard() {
     queryFn: () => getGrowthDashboardData(),
   });
   const connectionQuery = useQuery({
-    queryKey: ["website-connection-status"],
+    queryKey: WEBSITE_CONNECTION_QUERY_KEY,
     queryFn: () => getWebsiteConnectionStatus(),
   });
 
@@ -47,13 +49,13 @@ function GrowthDashboard() {
   const recent = metrics.slice(-rangeDays);
   const organicClicks = recent.reduce((sum, row) => sum + (row.clicks ?? 0), 0);
   const impressions = recent.reduce((sum, row) => sum + (row.impressions ?? 0), 0);
-  const connected = Boolean(growth?.connected);
-  const publishingConnected = Boolean(
-    (connectionQuery.data?.delivery as Array<{ status?: string }> | undefined)?.some(
-      (connection) => connection.status === "connected",
-    ),
-  );
-  const websiteIdentified = Boolean(growth?.website);
+  const connectionSummary = summarizeWebsiteConnections(connectionQuery.data);
+  const connectionStatusUnavailable = connectionQuery.isError && !connectionQuery.data;
+  const connected = Boolean(growth?.connected || connectionSummary.searchConnected);
+  const publishingConnected = connectionSummary.publishingConnected;
+  const publishingReady = connectionSummary.publishingReady;
+  const connectedProperty = connectionSummary.searchPropertyUrl;
+  const websiteIdentified = Boolean(growth?.website || connectionSummary.websiteIdentified);
   const auditReady = Boolean(growth?.workPlan?.audit);
   const displayName =
     workspaceQuery.data?.user.displayName?.trim() ||
@@ -76,13 +78,13 @@ function GrowthDashboard() {
     },
     {
       title: "Website identified",
-      detail: growth?.website ?? "Add your website",
+      detail: growth?.website ?? connectedProperty ?? "Add your website",
       complete: websiteIdentified,
       to: "/accounts" as const,
     },
     {
       title: "Search data connected",
-      detail: growth?.propertyUrl ?? "Connect Search Console",
+      detail: growth?.propertyUrl ?? connectedProperty ?? "Connect Search Console",
       complete: connected,
       to: "/accounts" as const,
     },
@@ -96,12 +98,21 @@ function GrowthDashboard() {
     },
     {
       title: "Publishing connected",
-      detail: publishingConnected ? "Ready to publish" : "Connect your website",
+      detail: publishingReady
+        ? "Ready to publish"
+        : publishingConnected
+          ? "Website connection approved"
+          : connectionStatusUnavailable
+            ? "Unable to verify connection"
+            : "Connect your website",
       complete: publishingConnected,
       to: "/accounts" as const,
     },
   ];
   const completedSteps = setupSteps.filter((step) => step.complete).length;
+  const setupLoading =
+    workspaceQuery.isLoading || growthQuery.isLoading || connectionQuery.isLoading;
+  const setupComplete = completedSteps === setupSteps.length;
 
   return (
     <div className="mx-auto max-w-[1020px]">
@@ -117,7 +128,15 @@ function GrowthDashboard() {
           }`}
         >
           <RefreshCw className={`h-3.5 w-3.5 ${growthQuery.isFetching ? "animate-spin" : ""}`} />
-          {connected ? "Live synced" : "Setup in progress"}
+          {setupLoading
+            ? "Checking setup"
+            : connectionStatusUnavailable && !connected
+              ? "Connection check failed"
+              : connected
+                ? growth?.lastSyncedAt
+                  ? "Live synced"
+                  : "Search connected"
+                : "Setup in progress"}
         </div>
       </header>
 
@@ -125,10 +144,16 @@ function GrowthDashboard() {
         <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="font-display text-base font-semibold text-[#201e23]">
-              Your setup is almost complete!
+              {setupLoading
+                ? "Checking your setup…"
+                : setupComplete
+                  ? "Your setup is complete!"
+                  : "Your setup is almost complete!"}
             </h2>
             <p className="mt-1 text-xs text-[#85818b]">
-              {completedSteps} of {setupSteps.length} steps complete
+              {setupLoading
+                ? "Reading your connected services"
+                : `${completedSteps} of ${setupSteps.length} steps complete`}
             </p>
           </div>
           <div className="h-1.5 w-full max-w-[180px] overflow-hidden rounded-full bg-[#efeff2]">
@@ -168,12 +193,18 @@ function GrowthDashboard() {
           ))}
         </div>
 
-        {!publishingConnected && (
+        {!setupLoading && !connectionStatusUnavailable && !publishingConnected && (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#eeedf0] pt-4">
             <div className="flex items-center gap-2 text-xs text-[#77737e]">
-              <PlatformDot label="WP" tone="#315d86" />
-              <PlatformDot label="S" tone="#2f6f54" />
-              <PlatformDot label="GH" tone="#27252b" />
+              <span className="grid h-6 w-6 place-items-center rounded-full border border-[#e4e3e7] bg-white shadow-sm">
+                <PlatformLogo name="wordpress" size={14} />
+              </span>
+              <span className="grid h-6 w-6 place-items-center rounded-full border border-[#e4e3e7] bg-white shadow-sm">
+                <PlatformLogo name="shopify" size={14} />
+              </span>
+              <span className="grid h-6 w-6 place-items-center rounded-full border border-[#e4e3e7] bg-white shadow-sm">
+                <PlatformLogo name="github" size={14} />
+              </span>
               <span className="ml-1">WordPress, Shopify, GitHub and more</span>
             </div>
             <Link
@@ -296,7 +327,7 @@ function GrowthDashboard() {
             icon={FileText}
             title="Content production"
             detail={`${growth?.workPlan?.pages.published ?? 0} SEO pages published`}
-            action={<Link to="/new-post">Create content →</Link>}
+            action={<Link to="/scheduled">View content plan →</Link>}
           />
           <PhaseMilestone
             complete={(growth?.backlinksLive ?? 0) > 0}
@@ -310,12 +341,24 @@ function GrowthDashboard() {
             icon={PlugZap}
             title="Website publishing"
             detail={
-              publishingConnected
+              publishingReady
                 ? "A delivery destination is connected"
-                : "Connect a website before publishing"
+                : publishingConnected
+                  ? "Website approved; choose a delivery repository"
+                  : connectionStatusUnavailable
+                    ? "Unable to verify the website connection"
+                    : "Connect a website before publishing"
             }
             action={
-              !publishingConnected ? <Link to="/accounts">Connect website →</Link> : undefined
+              publishingReady ? undefined : (
+                <Link to="/accounts">
+                  {publishingConnected
+                    ? "Choose repository →"
+                    : connectionStatusUnavailable
+                      ? "Check connection →"
+                      : "Connect website →"}
+                </Link>
+              )
             }
           />
         </PhaseCard>
@@ -330,7 +373,11 @@ function GrowthDashboard() {
             complete={(growth?.aiMentions ?? 0) > 0}
             icon={Bot}
             title="AI visibility"
-            detail={`${growth?.aiMentions ?? 0} successful checks mentioning your brand`}
+            detail={
+              (growth?.aiChecks ?? 0) > 0
+                ? `${growth?.aiMentions ?? 0} of ${growth?.aiChecks ?? 0} tracked checks mention your brand`
+                : "AI visibility tracking is not connected yet"
+            }
           />
           <PhaseMilestone
             complete={(growth?.workPlan?.placements.live ?? 0) > 0}
@@ -347,17 +394,6 @@ function GrowthDashboard() {
         </PhaseCard>
       </div>
     </div>
-  );
-}
-
-function PlatformDot({ label, tone }: { label: string; tone: string }) {
-  return (
-    <span
-      className="grid h-6 min-w-6 place-items-center rounded-full border border-white px-1 text-[8px] font-bold text-white shadow-sm"
-      style={{ background: tone }}
-    >
-      {label}
-    </span>
   );
 }
 

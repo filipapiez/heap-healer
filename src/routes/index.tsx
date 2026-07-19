@@ -4,17 +4,17 @@ import LandingPage from "@/components/LandingPage";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SEO Growth Service | 90-Day Guarantee | MentionMyApp" },
+      { title: "SEO Growth Workspace | Verified Reporting | MentionMyApp" },
       {
         name: "description",
         content:
-          "We fix technical SEO and build indexable pages around real search demand. No measurable SEO growth in 90 days? Get every dollar back.",
+          "Audit technical SEO, publish approved website changes, verify backlinks, and measure organic growth with Google Search Console.",
       },
-      { property: "og:title", content: "Fix your SEO — measurable growth in 90 days" },
+      { property: "og:title", content: "MentionMyApp — verified SEO growth workflows" },
       {
         property: "og:description",
         content:
-          "Technical SEO fixes, new indexable pages, and transparent Search Console reporting — backed by a 90-day guarantee.",
+          "Technical audits, approved publishing, verified backlinks, and transparent Search Console reporting.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://mentionmyapp.com/" },

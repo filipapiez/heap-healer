@@ -27,25 +27,17 @@ import { Route as ReportTokenRouteImport } from './routes/report/$token'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
 import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
-import { Route as AuthenticatedNewPostRouteImport } from './routes/_authenticated/new-post'
 import { Route as AuthenticatedMediaRouteImport } from './routes/_authenticated/media'
-import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedEngagementRouteImport } from './routes/_authenticated/engagement'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBacklinksRouteImport } from './routes/_authenticated/backlinks'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
 import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
 import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
 import { Route as ApiPublicQueueDirectoriesRouteImport } from './routes/api/public/queue-directories'
-import { Route as ApiPublicOauthYoutubeCallbackRouteImport } from './routes/api/public/oauth/youtube/callback'
-import { Route as ApiPublicOauthTiktokCallbackRouteImport } from './routes/api/public/oauth/tiktok/callback'
-import { Route as ApiPublicOauthThreadsCallbackRouteImport } from './routes/api/public/oauth/threads/callback'
 import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/public/oauth/shopify/callback'
-import { Route as ApiPublicOauthMetaCallbackRouteImport } from './routes/api/public/oauth/meta/callback'
-import { Route as ApiPublicOauthLinkedinCallbackRouteImport } from './routes/api/public/oauth/linkedin/callback'
 import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
 import { Route as ApiPublicOauthGithubCallbackRouteImport } from './routes/api/public/oauth/github/callback'
 
@@ -138,19 +130,9 @@ const AuthenticatedScheduledRoute = AuthenticatedScheduledRouteImport.update({
   path: '/scheduled',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedNewPostRoute = AuthenticatedNewPostRouteImport.update({
-  id: '/new-post',
-  path: '/new-post',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedMediaRoute = AuthenticatedMediaRouteImport.update({
   id: '/media',
   path: '/media',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEngagementRoute = AuthenticatedEngagementRouteImport.update({
@@ -171,11 +153,6 @@ const AuthenticatedBacklinksRoute = AuthenticatedBacklinksRouteImport.update({
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
@@ -204,40 +181,10 @@ const ApiPublicQueueDirectoriesRoute =
     path: '/api/public/queue-directories',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicOauthYoutubeCallbackRoute =
-  ApiPublicOauthYoutubeCallbackRouteImport.update({
-    id: '/api/public/oauth/youtube/callback',
-    path: '/api/public/oauth/youtube/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicOauthTiktokCallbackRoute =
-  ApiPublicOauthTiktokCallbackRouteImport.update({
-    id: '/api/public/oauth/tiktok/callback',
-    path: '/api/public/oauth/tiktok/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicOauthThreadsCallbackRoute =
-  ApiPublicOauthThreadsCallbackRouteImport.update({
-    id: '/api/public/oauth/threads/callback',
-    path: '/api/public/oauth/threads/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicOauthShopifyCallbackRoute =
   ApiPublicOauthShopifyCallbackRouteImport.update({
     id: '/api/public/oauth/shopify/callback',
     path: '/api/public/oauth/shopify/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicOauthMetaCallbackRoute =
-  ApiPublicOauthMetaCallbackRouteImport.update({
-    id: '/api/public/oauth/meta/callback',
-    path: '/api/public/oauth/meta/callback',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicOauthLinkedinCallbackRoute =
-  ApiPublicOauthLinkedinCallbackRouteImport.update({
-    id: '/api/public/oauth/linkedin/callback',
-    path: '/api/public/oauth/linkedin/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicOauthGscCallbackRoute =
@@ -267,14 +214,11 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
-  '/history': typeof AuthenticatedHistoryRoute
   '/media': typeof AuthenticatedMediaRoute
-  '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -286,12 +230,7 @@ export interface FileRoutesByFullPath {
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
-  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
-  '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
-  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
-  '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
-  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -307,14 +246,11 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
-  '/admin': typeof AuthenticatedAdminRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
-  '/history': typeof AuthenticatedHistoryRoute
   '/media': typeof AuthenticatedMediaRoute
-  '/new-post': typeof AuthenticatedNewPostRoute
   '/scheduled': typeof AuthenticatedScheduledRoute
   '/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -326,12 +262,7 @@ export interface FileRoutesByTo {
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
-  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
-  '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
-  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
-  '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
-  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -349,14 +280,11 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/engagement': typeof AuthenticatedEngagementRoute
-  '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/media': typeof AuthenticatedMediaRoute
-  '/_authenticated/new-post': typeof AuthenticatedNewPostRoute
   '/_authenticated/scheduled': typeof AuthenticatedScheduledRoute
   '/_authenticated/seo-audit': typeof AuthenticatedSeoAuditRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -368,12 +296,7 @@ export interface FileRoutesById {
   '/api/public/sync-semrush': typeof ApiPublicSyncSemrushRoute
   '/api/public/oauth/github/callback': typeof ApiPublicOauthGithubCallbackRoute
   '/api/public/oauth/gsc/callback': typeof ApiPublicOauthGscCallbackRoute
-  '/api/public/oauth/linkedin/callback': typeof ApiPublicOauthLinkedinCallbackRoute
-  '/api/public/oauth/meta/callback': typeof ApiPublicOauthMetaCallbackRoute
   '/api/public/oauth/shopify/callback': typeof ApiPublicOauthShopifyCallbackRoute
-  '/api/public/oauth/threads/callback': typeof ApiPublicOauthThreadsCallbackRoute
-  '/api/public/oauth/tiktok/callback': typeof ApiPublicOauthTiktokCallbackRoute
-  '/api/public/oauth/youtube/callback': typeof ApiPublicOauthYoutubeCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -391,14 +314,11 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/accounts'
-    | '/admin'
     | '/analytics'
     | '/backlinks'
     | '/dashboard'
     | '/engagement'
-    | '/history'
     | '/media'
-    | '/new-post'
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
@@ -410,12 +330,7 @@ export interface FileRouteTypes {
     | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
-    | '/api/public/oauth/linkedin/callback'
-    | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/shopify/callback'
-    | '/api/public/oauth/threads/callback'
-    | '/api/public/oauth/tiktok/callback'
-    | '/api/public/oauth/youtube/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -431,14 +346,11 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/accounts'
-    | '/admin'
     | '/analytics'
     | '/backlinks'
     | '/dashboard'
     | '/engagement'
-    | '/history'
     | '/media'
-    | '/new-post'
     | '/scheduled'
     | '/seo-audit'
     | '/settings'
@@ -450,12 +362,7 @@ export interface FileRouteTypes {
     | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
-    | '/api/public/oauth/linkedin/callback'
-    | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/shopify/callback'
-    | '/api/public/oauth/threads/callback'
-    | '/api/public/oauth/tiktok/callback'
-    | '/api/public/oauth/youtube/callback'
   id:
     | '__root__'
     | '/'
@@ -472,14 +379,11 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/terms'
     | '/_authenticated/accounts'
-    | '/_authenticated/admin'
     | '/_authenticated/analytics'
     | '/_authenticated/backlinks'
     | '/_authenticated/dashboard'
     | '/_authenticated/engagement'
-    | '/_authenticated/history'
     | '/_authenticated/media'
-    | '/_authenticated/new-post'
     | '/_authenticated/scheduled'
     | '/_authenticated/seo-audit'
     | '/_authenticated/settings'
@@ -491,12 +395,7 @@ export interface FileRouteTypes {
     | '/api/public/sync-semrush'
     | '/api/public/oauth/github/callback'
     | '/api/public/oauth/gsc/callback'
-    | '/api/public/oauth/linkedin/callback'
-    | '/api/public/oauth/meta/callback'
     | '/api/public/oauth/shopify/callback'
-    | '/api/public/oauth/threads/callback'
-    | '/api/public/oauth/tiktok/callback'
-    | '/api/public/oauth/youtube/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -520,12 +419,7 @@ export interface RootRouteChildren {
   ApiPublicSyncSemrushRoute: typeof ApiPublicSyncSemrushRoute
   ApiPublicOauthGithubCallbackRoute: typeof ApiPublicOauthGithubCallbackRoute
   ApiPublicOauthGscCallbackRoute: typeof ApiPublicOauthGscCallbackRoute
-  ApiPublicOauthLinkedinCallbackRoute: typeof ApiPublicOauthLinkedinCallbackRoute
-  ApiPublicOauthMetaCallbackRoute: typeof ApiPublicOauthMetaCallbackRoute
   ApiPublicOauthShopifyCallbackRoute: typeof ApiPublicOauthShopifyCallbackRoute
-  ApiPublicOauthThreadsCallbackRoute: typeof ApiPublicOauthThreadsCallbackRoute
-  ApiPublicOauthTiktokCallbackRoute: typeof ApiPublicOauthTiktokCallbackRoute
-  ApiPublicOauthYoutubeCallbackRoute: typeof ApiPublicOauthYoutubeCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -656,25 +550,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedScheduledRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/new-post': {
-      id: '/_authenticated/new-post'
-      path: '/new-post'
-      fullPath: '/new-post'
-      preLoaderRoute: typeof AuthenticatedNewPostRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/media': {
       id: '/_authenticated/media'
       path: '/media'
       fullPath: '/media'
       preLoaderRoute: typeof AuthenticatedMediaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/history': {
-      id: '/_authenticated/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/engagement': {
@@ -703,13 +583,6 @@ declare module '@tanstack/react-router' {
       path: '/analytics'
       fullPath: '/analytics'
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/accounts': {
@@ -747,46 +620,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicQueueDirectoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/oauth/youtube/callback': {
-      id: '/api/public/oauth/youtube/callback'
-      path: '/api/public/oauth/youtube/callback'
-      fullPath: '/api/public/oauth/youtube/callback'
-      preLoaderRoute: typeof ApiPublicOauthYoutubeCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/oauth/tiktok/callback': {
-      id: '/api/public/oauth/tiktok/callback'
-      path: '/api/public/oauth/tiktok/callback'
-      fullPath: '/api/public/oauth/tiktok/callback'
-      preLoaderRoute: typeof ApiPublicOauthTiktokCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/oauth/threads/callback': {
-      id: '/api/public/oauth/threads/callback'
-      path: '/api/public/oauth/threads/callback'
-      fullPath: '/api/public/oauth/threads/callback'
-      preLoaderRoute: typeof ApiPublicOauthThreadsCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/oauth/shopify/callback': {
       id: '/api/public/oauth/shopify/callback'
       path: '/api/public/oauth/shopify/callback'
       fullPath: '/api/public/oauth/shopify/callback'
       preLoaderRoute: typeof ApiPublicOauthShopifyCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/oauth/meta/callback': {
-      id: '/api/public/oauth/meta/callback'
-      path: '/api/public/oauth/meta/callback'
-      fullPath: '/api/public/oauth/meta/callback'
-      preLoaderRoute: typeof ApiPublicOauthMetaCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/oauth/linkedin/callback': {
-      id: '/api/public/oauth/linkedin/callback'
-      path: '/api/public/oauth/linkedin/callback'
-      fullPath: '/api/public/oauth/linkedin/callback'
-      preLoaderRoute: typeof ApiPublicOauthLinkedinCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/oauth/gsc/callback': {
@@ -808,14 +646,11 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRoute
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedBacklinksRoute: typeof AuthenticatedBacklinksRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEngagementRoute: typeof AuthenticatedEngagementRoute
-  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedMediaRoute: typeof AuthenticatedMediaRoute
-  AuthenticatedNewPostRoute: typeof AuthenticatedNewPostRoute
   AuthenticatedScheduledRoute: typeof AuthenticatedScheduledRoute
   AuthenticatedSeoAuditRoute: typeof AuthenticatedSeoAuditRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -823,14 +658,11 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountsRoute: AuthenticatedAccountsRoute,
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedBacklinksRoute: AuthenticatedBacklinksRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEngagementRoute: AuthenticatedEngagementRoute,
-  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedMediaRoute: AuthenticatedMediaRoute,
-  AuthenticatedNewPostRoute: AuthenticatedNewPostRoute,
   AuthenticatedScheduledRoute: AuthenticatedScheduledRoute,
   AuthenticatedSeoAuditRoute: AuthenticatedSeoAuditRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
@@ -872,12 +704,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSyncSemrushRoute: ApiPublicSyncSemrushRoute,
   ApiPublicOauthGithubCallbackRoute: ApiPublicOauthGithubCallbackRoute,
   ApiPublicOauthGscCallbackRoute: ApiPublicOauthGscCallbackRoute,
-  ApiPublicOauthLinkedinCallbackRoute: ApiPublicOauthLinkedinCallbackRoute,
-  ApiPublicOauthMetaCallbackRoute: ApiPublicOauthMetaCallbackRoute,
   ApiPublicOauthShopifyCallbackRoute: ApiPublicOauthShopifyCallbackRoute,
-  ApiPublicOauthThreadsCallbackRoute: ApiPublicOauthThreadsCallbackRoute,
-  ApiPublicOauthTiktokCallbackRoute: ApiPublicOauthTiktokCallbackRoute,
-  ApiPublicOauthYoutubeCallbackRoute: ApiPublicOauthYoutubeCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

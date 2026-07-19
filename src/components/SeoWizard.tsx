@@ -8,8 +8,7 @@ const MUTED = "#3a4470";
 const LINE = "#e4e7f2";
 const PANEL = "#f7f8fc";
 const STEPS = 6;
-const CHECKOUT_URL =
-  "https://buy.stripe.com/14A7sE0dr9sC7jt9eV0oM00?client_reference_id=3368c149-80ef-41e4-89d7-142cd2f92eb6";
+const CHECKOUT_URL = "https://buy.stripe.com/14A7sE0dr9sC7jt9eV0oM00";
 const SECONDARY_CHECKOUT_URL = "https://buy.stripe.com/aFa5kF3Y00ifbpf8KbcAo00";
 const OWNER_EMAIL = "filipapiez@gmail.com";
 const MARKETS = [
@@ -175,26 +174,26 @@ const SERVICE_SCOPE = [
     group: "Fix",
     blurb: "Weeks 1–2 · technical foundation",
     items: [
-      "Technical SEO audit covering speed, mobile, crawl errors, and schema",
-      "Indexing fixes and sitemap resubmission for priority pages",
-      "On-page cleanup for titles, descriptions, headings, and internal links",
+      "Technical SEO audit covering crawlability, metadata, links, and schema",
+      "Prioritized findings with the affected URLs and recommended fixes",
+      "Approved website changes sent through a connected publishing workflow",
     ],
   },
   {
     group: "Build",
     blurb: "Every month · new indexable pages",
     items: [
-      "Keyword and competitor-gap research for your market",
-      "New SEO landing pages and articles built around real search demand",
-      "Every page interlinked, submitted for indexing, and tracked",
+      "A workspace for approved SEO pages and target keywords",
+      "Draft or publish delivery through supported website connections",
+      "Published and indexed status tracked only when evidence is available",
     ],
   },
   {
     group: "Promote",
     blurb: "Every month · authority and visibility",
     items: [
-      "Relevant backlink opportunities identified and built into the plan",
-      "Content structured for Google results and AI search visibility",
+      "A weekly directory-opportunity queue with assisted submissions",
+      "Backlinks counted live only after the placement page is verified",
     ],
   },
   {
@@ -202,7 +201,7 @@ const SERVICE_SCOPE = [
     blurb: "Always on · clear measurement",
     items: [
       "Day-one Google Search Console baseline snapshot",
-      "Monthly reporting for clicks, impressions, links, and indexed pages",
+      "Reporting for clicks, impressions, verified links, and tracked pages",
       "Day-90 review against baseline: no measurable growth, full refund",
     ],
   },
@@ -254,12 +253,14 @@ export default function SeoWizard() {
   const [audienceInput, setAudienceInput] = useState("");
   const [competitorInput, setCompetitorInput] = useState("");
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [done, setDone] = useState(false);
   const set = <K extends keyof Lead>(key: K, value: Lead[K]) =>
     setLead((old) => ({ ...old, [key]: value }));
 
   const persist = async (nextStep: number, completed = false) => {
     setSaving(true);
+    setSaveError("");
     const row = {
       id: leadId,
       ...lead,
@@ -267,35 +268,49 @@ export default function SeoWizard() {
       completed,
       updated_at: new Date().toISOString(),
     };
-    const { error } = await seoLeadClient.from("seo_leads").upsert(row, { onConflict: "id" });
-    setSaving(false);
-    return !error;
+    try {
+      const { error } = await seoLeadClient.from("seo_leads").upsert(row, { onConflict: "id" });
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "We could not save your audit request";
+      setSaveError(`${message}. Please try again before continuing.`);
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const checkoutUrl = (base: string) => {
+    const url = new URL(base);
+    url.searchParams.set("client_reference_id", leadId);
+    return url.toString();
   };
 
   const next = async () => {
     const nextStep = Math.min(step + 1, STEPS);
-    await persist(nextStep);
-    setStep(nextStep);
+    if (await persist(nextStep)) setStep(nextStep);
   };
   const submit = async () => {
-    await persist(STEPS, true);
+    if (!(await persist(STEPS, true))) return;
     setDone(true);
     const { data } = await supabase.auth.getUser();
     if (data.user?.email?.toLowerCase() === OWNER_EMAIL) {
       window.location.assign("/dashboard");
       return;
     }
-    window.location.assign(CHECKOUT_URL);
+    window.location.assign(checkoutUrl(CHECKOUT_URL));
   };
   const submitSecondary = async () => {
-    await persist(STEPS, true);
+    if (!(await persist(STEPS, true))) return;
     setDone(true);
     const { data } = await supabase.auth.getUser();
     if (data.user?.email?.toLowerCase() === OWNER_EMAIL) {
       window.location.assign("/dashboard");
       return;
     }
-    window.location.assign(SECONDARY_CHECKOUT_URL);
+    window.location.assign(checkoutUrl(SECONDARY_CHECKOUT_URL));
   };
   const canContinue = useMemo(() => {
     if (step === 1) return /^(https?:\/\/)?[^\s.]+\.[^\s]+/.test(lead.website.trim());
@@ -335,7 +350,7 @@ export default function SeoWizard() {
       .money-back{display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 16px;border:1px solid #dcdcf8;background:#f7f7ff;border-radius:14px;color:${INK};font-size:14px;line-height:1.4}.money-back-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:${ACCENT};color:#fff;font-weight:900;box-shadow:0 7px 16px #5b5bd630}.money-back strong{display:block;color:${ACCENT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
       .market-picker{position:relative}.market-trigger{width:100%;display:flex;align-items:center;gap:14px;border:1.5px solid ${LINE};border-radius:24px;background:#fff;padding:19px 22px;color:${INK};font-size:17px;font-weight:650;cursor:pointer;box-shadow:0 7px 20px #252b5210}.market-trigger.open{border-color:#cfcff5;border-radius:24px}.market-globe{color:${ACCENT};font-size:21px}.market-chevron{margin-left:auto;color:#8a91aa;transition:transform .2s ease}.market-trigger.open .market-chevron{transform:rotate(180deg)}.market-menu{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 10px);background:#fff;border:1px solid ${LINE};border-radius:22px;box-shadow:0 20px 48px #1a224228;overflow:hidden;animation:stepIn .2s ease}.market-search{border:0!important;border-radius:0!important;border-bottom:1px solid ${LINE}!important;box-shadow:none!important;padding:18px 22px!important}.market-options{max-height:300px;overflow:auto}.market-option{width:100%;display:flex;align-items:center;gap:13px;border:0;background:#fff;padding:15px 22px;text-align:left;color:${INK};cursor:pointer}.market-option:hover,.market-option.selected{background:#f4f3ff}.market-option.selected{color:${ACCENT};font-weight:700}.market-count{padding:11px 22px;border-top:1px solid ${LINE};font-size:12px;color:#8a91aa;background:#fbfbfd}.language-trigger{align-items:flex-start}.language-flag{font-size:22px;line-height:1}.language-copy{display:grid;gap:7px;text-align:left}.language-audience{font-size:13px;color:${ACCENT};font-weight:650}.language-menu{top:calc(100% + 10px)}.language-option{font-size:15px}.language-option .language-flag{font-size:20px}.baseline-select-wrap{position:relative}.baseline-select{appearance:none!important;border-radius:999px!important;padding:16px 46px 16px 20px!important;background:#fff!important;box-shadow:0 6px 18px #252b520d}.baseline-select-wrap:after{content:"⌄";position:absolute;right:19px;top:50%;transform:translateY(-56%);color:#7f869f;font-size:18px;pointer-events:none}
       .benefit-list{display:grid;gap:12px;margin:24px 0 4px}.benefit{display:flex;align-items:center;gap:12px;padding:13px 14px;background:${PANEL};border:1px solid ${LINE};border-radius:12px;font-size:14px;font-weight:650;color:${INK};transition:transform .2s ease,border-color .2s ease}.benefit:hover{transform:translateX(4px);border-color:#c9c9f2}.benefit-check{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e4f8ef;color:#079668;font-weight:900;flex:0 0 24px}
-      .checkout-step .seo-main{grid-column:1/-1;max-width:1240px;width:100%;margin:0 auto;padding-top:38px;padding-bottom:54px;box-sizing:border-box}.checkout-step .seo-proof{display:none}.checkout-step .seo-progress{margin-bottom:14px}.checkout-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr);gap:26px;align-items:start}.checkout-intro{margin-bottom:24px}.checkout-intro h1{font-size:clamp(32px,4vw,48px);line-height:1.08;letter-spacing:-.035em;margin:0 0 10px}.checkout-intro p{margin:0;color:${MUTED};font-size:16px;line-height:1.6}.scope-list{display:grid;gap:11px}.scope-card{background:${PANEL};border:1px solid #eceef6;border-radius:20px;padding:17px 20px}.scope-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.scope-number{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:${ACCENT};color:#fff;font-size:12px;font-weight:850}.scope-name{font-weight:850}.scope-blurb{font-size:12px;color:#7d849d}.scope-card ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}.scope-card li{display:flex;gap:9px;font-size:13.5px;line-height:1.45}.scope-check{color:#119b69;font-weight:900}.checkout-panel{position:sticky;top:96px;display:grid;gap:14px}.checkout-guarantee{background:${INK};color:#fff;border-radius:24px;padding:26px;box-shadow:0 24px 60px #0b102032}.checkout-guarantee-kicker{font-size:11.5px;font-weight:850;letter-spacing:.15em;color:#a9aaf7}.checkout-guarantee h2{font-size:21px;line-height:1.35;margin:10px 0}.checkout-guarantee p{font-size:13px;line-height:1.55;color:#bec3d1;margin:0}.checkout-price{display:flex;align-items:baseline;gap:9px;border-top:1px solid #2b3042;margin-top:17px;padding-top:15px}.checkout-price strong{font-size:38px}.checkout-price span{font-size:13px;color:#bec3d1}.checkout-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-field label{display:block;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};margin-bottom:7px}.checkout-actions{display:flex;gap:10px}.checkout-actions .back{width:70px;flex:0 0 70px;background:${PANEL};color:${INK}}.checkout-actions .primary{flex:1;background:linear-gradient(135deg,${ACCENT},#4545c1);color:#fff;box-shadow:0 12px 26px #5b5bd638}.checkout-hint{text-align:center;color:${MUTED};font-size:12px}.checkout-alt{border:0;background:transparent;color:${ACCENT};font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+      .checkout-step .seo-main{grid-column:1/-1;max-width:1240px;width:100%;margin:0 auto;padding-top:38px;padding-bottom:54px;box-sizing:border-box}.checkout-step .seo-proof{display:none}.checkout-step .seo-progress{margin-bottom:14px}.checkout-layout{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(360px,.88fr);gap:26px;align-items:start}.checkout-intro{margin-bottom:24px}.checkout-intro h1{font-size:clamp(32px,4vw,48px);line-height:1.08;letter-spacing:-.035em;margin:0 0 10px}.checkout-intro p{margin:0;color:${MUTED};font-size:16px;line-height:1.6}.scope-list{display:grid;gap:11px}.scope-card{background:${PANEL};border:1px solid #eceef6;border-radius:20px;padding:17px 20px}.scope-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.scope-number{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:${ACCENT};color:#fff;font-size:12px;font-weight:850}.scope-name{font-weight:850}.scope-blurb{font-size:12px;color:#7d849d}.scope-card ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}.scope-card li{display:flex;gap:9px;font-size:13.5px;line-height:1.45}.scope-check{color:#119b69;font-weight:900}.checkout-panel{position:sticky;top:96px;display:grid;gap:14px}.checkout-guarantee{background:${INK};color:#fff;border-radius:24px;padding:26px;box-shadow:0 24px 60px #0b102032}.checkout-guarantee-kicker{font-size:11.5px;font-weight:850;letter-spacing:.15em;color:#a9aaf7}.checkout-guarantee h2{font-size:21px;line-height:1.35;margin:10px 0}.checkout-guarantee p{font-size:13px;line-height:1.55;color:#bec3d1;margin:0}.checkout-price{display:flex;align-items:baseline;gap:9px;border-top:1px solid #2b3042;margin-top:17px;padding-top:15px}.checkout-price strong{font-size:38px}.checkout-price span{font-size:13px;color:#bec3d1}.checkout-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-field label{display:block;font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};margin-bottom:7px}.checkout-actions{display:flex;gap:10px}.checkout-actions .back{width:70px;flex:0 0 70px;background:${PANEL};color:${INK}}.checkout-actions .primary{flex:1;background:linear-gradient(135deg,${ACCENT},#4545c1);color:#fff;box-shadow:0 12px 26px #5b5bd638}.checkout-hint{text-align:center;color:${MUTED};font-size:12px}.save-error{border:1px solid #fecaca;background:#fef2f2;color:#991b1b;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.45}.checkout-alt{border:0;background:transparent;color:${ACCENT};font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
       @keyframes stepIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}@keyframes brandFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(3deg)}}@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-16px) scale(1.08)}}
       @media(prefers-reduced-motion:reduce){.seo-wizard *{animation:none!important;transition:none!important}}
       @media(max-width:860px){.seo-wizard{grid-template-columns:1fr;grid-template-rows:66px auto}.seo-topbar{padding:0 22px}.seo-proof{display:none}.seo-main{padding:36px 22px;min-height:calc(100vh - 66px)}.two-col,.checkout-layout{grid-template-columns:1fr}.checkout-step .seo-main{padding:28px 22px 44px}.checkout-panel{position:static}.checkout-fields{grid-template-columns:1fr}}
@@ -598,6 +613,7 @@ export default function SeoWizard() {
                         Enter your name and work email to continue
                       </div>
                     )}
+                    {saveError && <div className="save-error">{saveError}</div>}
                     <div className="checkout-hint">
                       🔒 Secure checkout powered by Stripe · Baseline confirmed before the guarantee
                       period begins
@@ -614,25 +630,28 @@ export default function SeoWizard() {
               </div>
             )}
             {step < STEPS && (
-              <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
-                {step > 1 && (
+              <>
+                <div style={{ display: "flex", gap: 12, marginTop: 26 }}>
+                  {step > 1 && (
+                    <button
+                      className="seo-btn"
+                      onClick={() => setStep((s) => Math.max(1, s - 1))}
+                      style={{ background: PANEL, color: INK, width: 92 }}
+                    >
+                      ←
+                    </button>
+                  )}
                   <button
                     className="seo-btn"
-                    onClick={() => setStep((s) => Math.max(1, s - 1))}
-                    style={{ background: PANEL, color: INK, width: 92 }}
+                    disabled={!canContinue || saving}
+                    onClick={next}
+                    style={{ background: INK, color: "#fff", flex: 1 }}
                   >
-                    ←
+                    {saving ? "Saving…" : "Continue →"}
                   </button>
-                )}
-                <button
-                  className="seo-btn"
-                  disabled={!canContinue || saving}
-                  onClick={next}
-                  style={{ background: INK, color: "#fff", flex: 1 }}
-                >
-                  {saving ? "Saving…" : "Continue →"}
-                </button>
-              </div>
+                </div>
+                {saveError && <div className="save-error">{saveError}</div>}
+              </>
             )}
           </>
         ) : (
@@ -652,22 +671,22 @@ export default function SeoWizard() {
             <div className="metric-icon">
               <BuildingIcon />
             </div>
-            <div className="metric-value">12K+</div>
-            <div className="metric-label">Customer reviews</div>
+            <div className="metric-value">Read-only</div>
+            <div className="metric-label">Search Console access</div>
           </div>
           <div>
             <div className="metric-icon">
               <TrendIcon />
             </div>
-            <div className="metric-value">35,000</div>
-            <div className="metric-label">Companies</div>
+            <div className="metric-value">Verified</div>
+            <div className="metric-label">Live backlink evidence</div>
           </div>
           <div>
             <div className="metric-icon">
               <TrendIcon />
             </div>
-            <div className="metric-value">72%</div>
-            <div className="metric-label">Average organic growth</div>
+            <div className="metric-value">Approved</div>
+            <div className="metric-label">Website changes only</div>
           </div>
         </div>
         <WorldMap
@@ -677,10 +696,9 @@ export default function SeoWizard() {
           dotOpacity={0.72}
           height={420}
         />
-        <div className="review-pill" aria-label="4.9 out of 5 from more than 12,000 reviews">
-          <span className="review-stars">★★★★★</span>
-          <strong>4.9/5</strong>
-          <span>from 12K+ reviews</span>
+        <div className="review-pill" aria-label="Evidence-first reporting">
+          <strong>Evidence-first</strong>
+          <span>Unconnected data stays visibly pending</span>
         </div>
       </aside>
     </main>

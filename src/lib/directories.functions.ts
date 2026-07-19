@@ -1,8 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-async function getActiveWorkspaceId(supabase: any, userId: string): Promise<string> {
+type DirectoryRow = Database["public"]["Tables"]["directories"]["Row"];
+type DirectorySubmissionRow = Database["public"]["Tables"]["directory_submissions"]["Row"];
+type SubmissionWithDirectory = DirectorySubmissionRow & { directory: DirectoryRow | null };
+
+async function getActiveWorkspaceId(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+): Promise<string> {
   const { data: profile } = await supabase
     .from("profiles")
     .select("current_workspace_id")
@@ -30,7 +39,9 @@ export const seedDirectories = createServerFn({ method: "POST" })
       domain_authority: d.domain_authority ?? null,
       notes: d.notes ?? null,
     }));
-    const { error } = await supabase.from("directories").upsert(rows as never, { onConflict: "slug" });
+    const { error } = await supabase
+      .from("directories")
+      .upsert(rows as never, { onConflict: "slug" });
     if (error) throw error;
     return { seeded: rows.length };
   });
@@ -58,7 +69,6 @@ const ProfileSchema = z.object({
   category: z.string().max(80).nullish(),
   contact_email: z.string().email().nullish(),
   pricing_model: z.string().max(60).nullish(),
-  twitter_handle: z.string().max(40).nullish(),
   founder_name: z.string().max(80).nullish(),
 });
 
@@ -83,9 +93,7 @@ export const saveDirectoryProfile = createServerFn({ method: "POST" })
  *  workspace-policy forbids public buckets, so we sign for ~10 years. */
 export const signBrandAssetUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({ path: z.string().min(1).max(500) }).parse(input),
-  )
+  .inputValidator((input) => z.object({ path: z.string().min(1).max(500) }).parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const workspaceId = await getActiveWorkspaceId(supabase, userId);
@@ -109,7 +117,9 @@ export const listBacklinkQueue = createServerFn({ method: "GET" })
     const [submissionsRes, profileRes, totalRes] = await Promise.all([
       supabase
         .from("directory_submissions")
-        .select("id, status, scheduled_for, submitted_at, live_url, notes, auto_result, directory:directories(id, name, slug, homepage_url, submit_url, category, tier, submission_method, domain_authority, notes)")
+        .select(
+          "id, status, scheduled_for, submitted_at, live_url, notes, auto_result, directory:directories(id, name, slug, homepage_url, submit_url, category, tier, submission_method, domain_authority, notes)",
+        )
         .eq("workspace_id", workspaceId)
         .order("scheduled_for", { ascending: false }),
       supabase
@@ -121,7 +131,7 @@ export const listBacklinkQueue = createServerFn({ method: "GET" })
     ]);
     if (submissionsRes.error) throw submissionsRes.error;
 
-    const submissions = (submissionsRes.data ?? []) as any[];
+    const submissions = (submissionsRes.data ?? []) as SubmissionWithDirectory[];
     const submittedDirIds = new Set(submissions.map((s) => s.directory?.id).filter(Boolean));
 
     const counts = submissions.reduce(
@@ -162,16 +172,91 @@ export const updateSubmission = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const workspaceId = await getActiveWorkspaceId(supabase, userId);
+    const { data: submission, error: submissionError } = await supabase
+      .from("directory_submissions")
+      .select("id,workspace_id,live_url")
+      .eq("id", data.submissionId)
+      .eq("workspace_id", workspaceId)
+      .maybeSingle();
+    if (submissionError) throw submissionError;
+    if (!submission) throw new Error("Submission not found");
+
     const patch: Record<string, unknown> = { status: data.status };
+    let verified:
+      | { placementUrl: string; sourceDomain: string; targetUrl: string; verifiedAt: string }
+      | undefined;
+    if (data.status === "live") {
+      const placementUrl = data.live_url || submission.live_url;
+      if (!placementUrl) throw new Error("Paste the public placement URL before verifying it live");
+      const [{ data: profile, error: profileError }, { data: client, error: clientError }] =
+        await Promise.all([
+          supabase
+            .from("workspace_directory_profile")
+            .select("website_url")
+            .eq("workspace_id", workspaceId)
+            .maybeSingle(),
+          supabase
+            .from("seo_clients")
+            .select("id,website")
+            .eq("workspace_id", workspaceId)
+            .maybeSingle(),
+        ]);
+      if (profileError) throw profileError;
+      if (clientError) throw clientError;
+      const targetUrl = profile?.website_url || client?.website;
+      if (!targetUrl) throw new Error("Add your website URL before verifying a backlink");
+      const { verifyBacklink } = await import("@/backlink-verification.server");
+      verified = await verifyBacklink(placementUrl, targetUrl);
+      patch.live_url = verified.placementUrl;
+      patch.notes = `Verified ${new Date(verified.verifiedAt).toLocaleString("en-US", { timeZone: "UTC" })} UTC`;
+    }
     if (data.status === "submitted" || data.status === "live") {
       patch.submitted_at = new Date().toISOString();
     }
-    if (data.live_url !== undefined) patch.live_url = data.live_url || null;
-    if (data.notes !== undefined) patch.notes = data.notes ?? null;
-    const { error } = await supabase.from("directory_submissions").update(patch as never).eq("id", data.submissionId);
+    if (data.status !== "live" && data.live_url !== undefined)
+      patch.live_url = data.live_url || null;
+    if (data.status !== "live" && data.notes !== undefined) patch.notes = data.notes ?? null;
+    const { error } = await supabase
+      .from("directory_submissions")
+      .update(patch as never)
+      .eq("id", data.submissionId)
+      .eq("workspace_id", workspaceId);
     if (error) throw error;
-    return { ok: true };
+
+    if (verified) {
+      // Progressive SEO report tables are newer than the generated Supabase types.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const seoDb = supabase as any;
+      const { data: client, error: clientError } = await supabase
+        .from("seo_clients")
+        .select("id")
+        .eq("workspace_id", workspaceId)
+        .maybeSingle();
+      if (clientError) throw clientError;
+      if (client) {
+        const { data: existing, error: existingError } = await seoDb
+          .from("seo_backlinks")
+          .select("id")
+          .eq("client_id", client.id)
+          .eq("source_domain", verified.sourceDomain)
+          .limit(1)
+          .maybeSingle();
+        if (existingError) throw existingError;
+        const backlink = {
+          client_id: client.id,
+          source_domain: verified.sourceDomain,
+          target_url: verified.targetUrl,
+          status: "live",
+        };
+        const backlinkResult = existing
+          ? await seoDb.from("seo_backlinks").update(backlink).eq("id", existing.id)
+          : await seoDb.from("seo_backlinks").insert(backlink);
+        if (backlinkResult.error) throw backlinkResult.error;
+      }
+    }
+    return { ok: true, verified: verified ?? null };
   });
 
 /** Trigger the auto-submit for a single queued row (user-initiated retry). */
@@ -196,7 +281,10 @@ export const triggerAutoSubmit = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const { attemptAutoSubmit } = await import("./directory-submit.server");
-    const result = await attemptAutoSubmit(sub.directory as any, profile as any);
+    const result = await attemptAutoSubmit(
+      sub.directory as unknown as Parameters<typeof attemptAutoSubmit>[0],
+      profile as Parameters<typeof attemptAutoSubmit>[1],
+    );
     const patch = result.ok
       ? {
           status: "auto_submitted" as const,

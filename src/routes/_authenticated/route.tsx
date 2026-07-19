@@ -2,10 +2,8 @@ import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/re
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
-  Bell,
   BookOpen,
   CalendarDays,
-  FilePlus2,
   Image,
   LayoutDashboard,
   Link2,
@@ -19,6 +17,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { getWebsiteConnectionStatus } from "@/lib/website-connections.functions";
+import { summarizeWebsiteConnections, WEBSITE_CONNECTION_QUERY_KEY } from "@/connection-status";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
 import { useState, type ComponentType } from "react";
 
@@ -36,9 +35,7 @@ type NavItem = {
   to:
     | "/dashboard"
     | "/analytics"
-    | "/new-post"
     | "/scheduled"
-    | "/history"
     | "/backlinks"
     | "/seo-audit"
     | "/accounts"
@@ -60,9 +57,8 @@ const PRIMARY_NAV: NavItem[] = [
 ];
 
 const OTHER_NAV: NavItem[] = [
-  { to: "/new-post", label: "Create content", icon: FilePlus2 },
   { to: "/accounts", label: "Connections", icon: PlugZap },
-  { to: "/media", label: "Media library", icon: Image },
+  { to: "/media", label: "Content assets", icon: Image },
   { to: "/settings", label: "Settings", icon: Settings },
   { to: "/resources", label: "Growth resources", icon: BookOpen },
 ];
@@ -78,7 +74,7 @@ function DashboardLayout() {
     queryFn: () => getCurrentWorkspace(),
   });
   const connectionQuery = useQuery({
-    queryKey: ["website-connection-status"],
+    queryKey: WEBSITE_CONNECTION_QUERY_KEY,
     queryFn: () => getWebsiteConnectionStatus(),
   });
 
@@ -97,11 +93,10 @@ function DashboardLayout() {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
-  const deliveryConnected = Boolean(
-    (connectionQuery.data?.delivery as Array<{ status?: string }> | undefined)?.some(
-      (connection) => connection.status === "connected",
-    ),
-  );
+  const connectionSummary = summarizeWebsiteConnections(connectionQuery.data);
+  const deliveryConnected = connectionSummary.publishingConnected;
+  const publishingReady = connectionSummary.publishingReady;
+  const connectionStatusUnavailable = connectionQuery.isError && !connectionQuery.data;
 
   const sidebar = (
     <>
@@ -136,19 +131,33 @@ function DashboardLayout() {
         >
           <div className="flex items-center gap-2">
             <span
-              className={`h-2.5 w-2.5 rounded-full ${deliveryConnected ? "bg-[#36b37e]" : "bg-[#b9b7ff]"}`}
+              className={`h-2.5 w-2.5 rounded-full ${connectionStatusUnavailable ? "bg-amber-400" : deliveryConnected ? "bg-[#36b37e]" : "bg-[#b9b7ff]"}`}
             />
             <strong className="font-display text-[15px] font-semibold text-[#1f1d25]">
-              {deliveryConnected ? "Publishing ready" : "Setup pending"}
+              {connectionStatusUnavailable
+                ? "Status unavailable"
+                : publishingReady
+                  ? "Publishing ready"
+                  : deliveryConnected
+                    ? "Website connected"
+                    : "Setup pending"}
             </strong>
           </div>
           <p className="mt-2 text-xs leading-5 text-[#777681]">
-            {deliveryConnected
-              ? "MentionMyApp can publish approved content to your connected website."
-              : "Connect your website to publish approved content automatically."}
+            {connectionStatusUnavailable
+              ? "MentionMyApp could not verify your website connection. Open Connections to retry."
+              : deliveryConnected
+                ? publishingReady
+                  ? "MentionMyApp can publish approved content to your connected website."
+                  : "Your website connection is approved. Choose a delivery repository when ready."
+                : "Connect your website to publish approved content automatically."}
           </p>
           <span className="mt-3 inline-flex text-xs font-semibold text-[#5b5bd6]">
-            {deliveryConnected ? "Manage connection →" : "Finish setup →"}
+            {connectionStatusUnavailable
+              ? "Check connection →"
+              : deliveryConnected
+                ? "Manage connection →"
+                : "Finish setup →"}
           </span>
         </Link>
       </div>
@@ -194,13 +203,6 @@ function DashboardLayout() {
             <WorkspaceSwitcher />
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/history"
-              aria-label="Product updates"
-              className="grid h-9 w-9 place-items-center rounded-full bg-[#f6f6f8] text-[#5d5964] hover:bg-[#efeff2]"
-            >
-              <Bell className="h-[18px] w-[18px]" />
-            </Link>
             <button
               onClick={signOut}
               disabled={signingOut}

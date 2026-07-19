@@ -53,17 +53,19 @@ export const Route = createFileRoute("/api/public/oauth/gsc/callback")({
         const state = requestUrl.searchParams.get("state");
         const oauthError = requestUrl.searchParams.get("error");
         if (!state) return finish(requestUrl.origin, "error", "missing_state");
-        const { data } = await supabaseAdmin
+        const { data, error: stateError } = await supabaseAdmin
           .from("oauth_states" as never)
           .select("provider,workspace_id,redirect_origin,expires_at")
           .eq("state", state)
           .maybeSingle();
+        if (stateError) return finish(requestUrl.origin, "error", "state_lookup_failed");
         const row = data as unknown as StateRow | null;
         if (!row) return finish(requestUrl.origin, "error", "invalid_state");
-        await supabaseAdmin
+        const { error: consumeError } = await supabaseAdmin
           .from("oauth_states" as never)
           .delete()
           .eq("state", state);
+        if (consumeError) return finish(row.redirect_origin, "error", "state_consume_failed");
         if (row.provider !== "gsc")
           return finish(row.redirect_origin, "error", "provider_mismatch");
         if (new Date(row.expires_at) < new Date())

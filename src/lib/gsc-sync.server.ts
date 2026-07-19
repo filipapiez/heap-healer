@@ -12,6 +12,17 @@ type SearchRow = {
   impressions?: number;
 };
 
+function normalizedPageUrl(value: string) {
+  try {
+    const url = new URL(value);
+    url.hash = "";
+    url.search = "";
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return value.replace(/\/$/, "");
+  }
+}
+
 function errorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;
@@ -107,6 +118,55 @@ async function syncConnection(connection: GscConnection) {
       .from("seo_metrics_daily" as never)
       .upsert(rows as never, { onConflict: "client_id,day" });
     if (error) throw error;
+  }
+
+  const pageStart = new Date(end);
+  pageStart.setUTCDate(pageStart.getUTCDate() - 27);
+  const pageResponse = await fetch(
+    `https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(connection.property_url)}/searchAnalytics/query`,
+    {
+      method: "POST",
+      headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        startDate: iso(pageStart),
+        endDate: iso(end),
+        dimensions: ["page"],
+        rowLimit: 25000,
+        dataState: "final",
+      }),
+    },
+  );
+  if (!pageResponse.ok)
+    throw new Error(`Search Console page query failed (${pageResponse.status})`);
+  const pagePayload = (await pageResponse.json()) as { rows?: SearchRow[] };
+  const pageMetrics = new Map(
+    (pagePayload.rows ?? []).flatMap((row) =>
+      row.keys?.[0]
+        ? [
+            [
+              normalizedPageUrl(row.keys[0]),
+              {
+                clicks: Math.round(row.clicks ?? 0),
+                impressions: Math.round(row.impressions ?? 0),
+              },
+            ] as const,
+          ]
+        : [],
+    ),
+  );
+  const { data: trackedPages, error: trackedPagesError } = await supabaseAdmin
+    .from("seo_pages" as never)
+    .select("id,url")
+    .eq("client_id", connection.client_id);
+  if (trackedPagesError) throw trackedPagesError;
+  for (const trackedPage of (trackedPages ?? []) as unknown as Array<{ id: string; url: string }>) {
+    const metric = pageMetrics.get(normalizedPageUrl(trackedPage.url));
+    if (!metric) continue;
+    const { error: pageUpdateError } = await supabaseAdmin
+      .from("seo_pages" as never)
+      .update({ ...metric, indexed: true } as never)
+      .eq("id", trackedPage.id);
+    if (pageUpdateError) throw pageUpdateError;
   }
   const baselineRows = rows.slice(-28);
   const baselineClicks = baselineRows.reduce((sum, row) => sum + row.clicks, 0);
