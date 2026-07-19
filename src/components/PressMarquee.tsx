@@ -1,13 +1,24 @@
-const OUTLETS = [
-  "Forbes",
-  "Yahoo! Finance",
-  "Bloomberg",
-  "Business Insider",
-  "MarketWatch",
-  "TechCrunch",
-  "Entrepreneur",
-  "USA Today",
-] as const;
+type Outlet = {
+  name: string;
+  font: string;
+  weight: number;
+  tracking: string;
+  transform?: "uppercase" | "none";
+  italic?: boolean;
+};
+
+// Per-outlet typography chosen to evoke the flavor of each masthead
+// without reproducing any trademarked wordmark.
+const OUTLETS: Outlet[] = [
+  { name: "Forbes",           font: "'Playfair Display', Georgia, serif", weight: 900, tracking: "-0.02em" },
+  { name: "Yahoo! Finance",   font: "'Inter', system-ui, sans-serif",     weight: 800, tracking: "-0.02em" },
+  { name: "Bloomberg",        font: "'Inter', system-ui, sans-serif",     weight: 800, tracking: "-0.015em" },
+  { name: "Business Insider", font: "'Inter', system-ui, sans-serif",     weight: 800, tracking: "-0.02em" },
+  { name: "MarketWatch",      font: "'Inter', system-ui, sans-serif",     weight: 700, tracking: "-0.01em" },
+  { name: "TechCrunch",       font: "'Inter', system-ui, sans-serif",     weight: 900, tracking: "-0.04em", transform: "uppercase" },
+  { name: "Entrepreneur",     font: "'Playfair Display', Georgia, serif", weight: 700, tracking: "-0.01em", italic: true },
+  { name: "USA Today",        font: "'Inter', system-ui, sans-serif",     weight: 800, tracking: "-0.02em" },
+];
 
 export default function PressMarquee() {
   const track = [...OUTLETS, ...OUTLETS];
@@ -15,7 +26,7 @@ export default function PressMarquee() {
   return (
     <section
       className="press-marquee"
-      aria-label={`Visibility targets: ${OUTLETS.join(", ")}. These names are goals, not endorsements.`}
+      aria-label={`Visibility targets: ${OUTLETS.map((o) => o.name).join(", ")}. These names are goals, not endorsements.`}
     >
       <style>{`
         @keyframes pressScroll {
@@ -23,32 +34,32 @@ export default function PressMarquee() {
           to { transform: translateX(-50%); }
         }
         .press-marquee {
-          padding: 30px 0 28px;
-          border-top: 1px solid rgba(229, 231, 235, 0.82);
-          background: rgba(255, 255, 255, 0.72);
-          backdrop-filter: blur(8px);
+          padding: 36px 0 34px;
+          border-top: 1px solid rgba(229, 231, 235, 0.9);
+          border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+          background: #ffffff;
         }
         .press-marquee__label {
-          margin-bottom: 15px;
+          margin-bottom: 22px;
           text-align: center;
-          color: #8b90a0;
-          font: 800 10px/1.3 'Inter', system-ui, sans-serif;
-          letter-spacing: 0.2em;
+          color: #9098a8;
+          font: 700 10.5px/1.3 'Inter', system-ui, sans-serif;
+          letter-spacing: 0.24em;
           text-transform: uppercase;
         }
         .press-marquee__viewport {
           position: relative;
           overflow: hidden;
-          -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
         }
         .press-marquee__track {
           display: flex;
           width: max-content;
           align-items: center;
-          gap: 20px;
-          padding-right: 20px;
-          animation: pressScroll 30s linear infinite;
+          gap: 68px;
+          padding-right: 68px;
+          animation: pressScroll 48s linear infinite;
           will-change: transform;
         }
         .press-marquee__viewport:hover .press-marquee__track {
@@ -57,22 +68,24 @@ export default function PressMarquee() {
         .press-marquee__mark {
           display: inline-flex;
           align-items: center;
-          min-height: 46px;
-          padding: 0 24px;
-          border: 1px solid #e5e7eb;
-          border-radius: 999px;
-          background: #fff;
-          color: #6f7482;
-          box-shadow: 0 8px 24px rgba(23, 26, 43, 0.05);
-          font: 700 18px/1 Georgia, 'Times New Roman', serif;
+          min-height: 40px;
+          padding: 0;
+          color: #9aa0ae;
+          font-size: 26px;
+          line-height: 1;
           white-space: nowrap;
+          transition: color 200ms ease;
+        }
+        .press-marquee__mark:hover {
+          color: #1e2333;
         }
         @media (prefers-reduced-motion: reduce) {
           .press-marquee__track {
             width: auto;
             flex-wrap: wrap;
             justify-content: center;
-            padding: 0 20px;
+            gap: 40px 56px;
+            padding: 0 24px;
             animation: none;
           }
           .press-marquee__track > :nth-child(n + 9) { display: none; }
@@ -82,8 +95,18 @@ export default function PressMarquee() {
       <div className="press-marquee__viewport" aria-hidden="true">
         <div className="press-marquee__track">
           {track.map((outlet, index) => (
-            <span className="press-marquee__mark" key={`${outlet}-${index}`}>
-              {outlet}
+            <span
+              className="press-marquee__mark"
+              key={`${outlet.name}-${index}`}
+              style={{
+                fontFamily: outlet.font,
+                fontWeight: outlet.weight,
+                letterSpacing: outlet.tracking,
+                textTransform: outlet.transform ?? "none",
+                fontStyle: outlet.italic ? "italic" : "normal",
+              }}
+            >
+              {outlet.name}
             </span>
           ))}
         </div>
