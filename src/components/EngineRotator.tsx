@@ -9,11 +9,11 @@ type Engine = { name: string; src: string; scale: number; nudge: number };
 // scale = height in em; nudge = vertical alignment tweak in em (positive = down).
 // Tuned per-logo so wordmark cap-heights and baselines visually match the headline.
 const ENGINES: Engine[] = [
-  { name: "ChatGPT", src: chatgptLogo.url, scale: 1.15, nudge: 0 },
-  { name: "Claude", src: claudeLogo.url, scale: 1.1, nudge: 0 },
-  { name: "Perplexity", src: perplexityLogo.url, scale: 0.95, nudge: 0 },
-  { name: "Gemini", src: geminiLogo.url, scale: 1.0, nudge: 0 },
-  { name: "Google", src: googleLogo.url, scale: 0.95, nudge: 0 },
+  { name: "ChatGPT", src: chatgptLogo.url, scale: 2.4, nudge: 0 },
+  { name: "Claude", src: claudeLogo.url, scale: 2.2, nudge: 0 },
+  { name: "Perplexity", src: perplexityLogo.url, scale: 1.8, nudge: 0 },
+  { name: "Gemini", src: geminiLogo.url, scale: 1.9, nudge: 0 },
+  { name: "Google", src: googleLogo.url, scale: 1.9, nudge: 0 },
 ];
 const INTERVAL_MS = 2200;
 
