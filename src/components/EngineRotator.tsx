@@ -5,14 +5,15 @@ import perplexityLogo from "@/assets/engines/perplexity.png.asset.json";
 import geminiLogo from "@/assets/engines/gemini.png.asset.json";
 import googleLogo from "@/assets/engines/google.png.asset.json";
 
-type Engine = { name: string; src: string; scale: number };
-// scale = height in em, tuned per-logo so wordmark cap-heights visually match.
+type Engine = { name: string; src: string; scale: number; nudge: number };
+// scale = height in em; nudge = vertical alignment tweak in em (positive = down).
+// Tuned per-logo so wordmark cap-heights and baselines visually match the headline.
 const ENGINES: Engine[] = [
-  { name: "ChatGPT", src: chatgptLogo.url, scale: 1.55 },
-  { name: "Claude", src: claudeLogo.url, scale: 1.5 },
-  { name: "Perplexity", src: perplexityLogo.url, scale: 1.1 },
-  { name: "Gemini", src: geminiLogo.url, scale: 1.15 },
-  { name: "Google", src: googleLogo.url, scale: 1.2 },
+  { name: "ChatGPT", src: chatgptLogo.url, scale: 1.35, nudge: 0 },
+  { name: "Claude", src: claudeLogo.url, scale: 1.35, nudge: 0 },
+  { name: "Perplexity", src: perplexityLogo.url, scale: 1.35, nudge: 0 },
+  { name: "Gemini", src: geminiLogo.url, scale: 1.5, nudge: 0 },
+  { name: "Google", src: googleLogo.url, scale: 1.55, nudge: 0 },
 ];
 const INTERVAL_MS = 2200;
 
@@ -40,7 +41,8 @@ export default function EngineRotator() {
         .engine-rotator {
           display: inline-grid;
           overflow: hidden;
-          vertical-align: -0.18em;
+          vertical-align: -0.22em;
+          line-height: 1;
         }
         .engine-rotator__item {
           grid-area: 1 / 1;
@@ -73,7 +75,10 @@ export default function EngineRotator() {
               src={engine.src}
               alt={engine.name}
               className="engine-rotator__logo"
-              style={{ height: `${engine.scale}em` }}
+              style={{
+                height: `${engine.scale}em`,
+                transform: engine.nudge ? `translateY(${engine.nudge}em)` : undefined,
+              }}
             />
           </span>
         );

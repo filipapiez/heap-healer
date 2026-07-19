@@ -215,16 +215,25 @@ export default function LandingPage() {
               <h1
                 className="lp-display"
                 style={{
-                  fontSize: "clamp(40px, 6.4vw, 76px)",
+                  fontSize: "clamp(38px, 5.6vw, 68px)",
                   fontWeight: 800,
-                  lineHeight: 1.08,
+                  lineHeight: 1.1,
                   margin: "0 auto 24px",
-                  maxWidth: 1040,
+                  maxWidth: 1240,
                 }}
               >
                 Grow organic traffic
-                <span style={{ display: "block" }}>
-                  <span style={{ color: ACCENT }}>on autopilot</span> from{" "}
+                <span
+                  style={{
+                    display: "flex",
+                    flexWrap: "nowrap",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.32em",
+                  }}
+                >
+                  <span style={{ color: ACCENT }}>on autopilot</span>
+                  <span>from</span>
                   <EngineRotator />
                 </span>
               </h1>
