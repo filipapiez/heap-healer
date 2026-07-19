@@ -248,11 +248,7 @@ const EMPTY: Lead = {
 
 export default function SeoWizard() {
   const [step, setStep] = useState(1);
-  const [lead, setLead] = useState<Lead>(() => {
-    if (typeof window === "undefined") return EMPTY;
-    const site = new URLSearchParams(window.location.search).get("site")?.trim();
-    return site ? { ...EMPTY, website: site } : EMPTY;
-  });
+  const [lead, setLead] = useState<Lead>(EMPTY);
   const [leadId] = useState(() => crypto.randomUUID());
   const [audienceInput, setAudienceInput] = useState("");
   const [competitorInput, setCompetitorInput] = useState("");
