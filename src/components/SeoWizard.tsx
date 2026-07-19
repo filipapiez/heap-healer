@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import WorldMap from "@/components/WorldMap";
 
@@ -261,6 +261,11 @@ export default function SeoWizard() {
   const [done, setDone] = useState(false);
   const set = <K extends keyof Lead>(key: K, value: Lead[K]) =>
     setLead((old) => ({ ...old, [key]: value }));
+
+  useEffect(() => {
+    const site = new URLSearchParams(window.location.search).get("site")?.trim();
+    if (site) setLead((old) => (old.website ? old : { ...old, website: site }));
+  }, []);
 
   const persist = async (nextStep: number, completed = false) => {
     setSaving(true);
