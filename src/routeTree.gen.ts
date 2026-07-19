@@ -33,6 +33,7 @@ import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedEngagementRouteImport } from './routes/_authenticated/engagement'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBacklinksRouteImport } from './routes/_authenticated/backlinks'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
 import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
@@ -167,6 +168,11 @@ const AuthenticatedBacklinksRoute = AuthenticatedBacklinksRouteImport.update({
   path: '/backlinks',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/engagement': typeof AuthenticatedEngagementRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/engagement': typeof AuthenticatedEngagementRoute
@@ -383,6 +392,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accounts'
     | '/admin'
+    | '/analytics'
     | '/backlinks'
     | '/dashboard'
     | '/engagement'
@@ -422,6 +432,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accounts'
     | '/admin'
+    | '/analytics'
     | '/backlinks'
     | '/dashboard'
     | '/engagement'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/accounts'
     | '/_authenticated/admin'
+    | '/_authenticated/analytics'
     | '/_authenticated/backlinks'
     | '/_authenticated/dashboard'
     | '/_authenticated/engagement'
@@ -686,6 +698,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBacklinksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/analytics': {
+      id: '/_authenticated/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -790,6 +809,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountsRoute: typeof AuthenticatedAccountsRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAnalyticsRoute: typeof AuthenticatedAnalyticsRoute
   AuthenticatedBacklinksRoute: typeof AuthenticatedBacklinksRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEngagementRoute: typeof AuthenticatedEngagementRoute
@@ -804,6 +824,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountsRoute: AuthenticatedAccountsRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAnalyticsRoute: AuthenticatedAnalyticsRoute,
   AuthenticatedBacklinksRoute: AuthenticatedBacklinksRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEngagementRoute: AuthenticatedEngagementRoute,

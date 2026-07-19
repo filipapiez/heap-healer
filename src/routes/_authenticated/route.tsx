@@ -1,9 +1,26 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  CalendarDays,
+  FilePlus2,
+  Image,
+  LayoutDashboard,
+  Link2,
+  Menu,
+  MessageCircleMore,
+  PlugZap,
+  ScanSearch,
+  Settings,
+  X,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
+import { getWebsiteConnectionStatus } from "@/lib/website-connections.functions";
 import WorkspaceSwitcher from "@/components/WorkspaceSwitcher";
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -15,23 +32,54 @@ export const Route = createFileRoute("/_authenticated")({
   component: DashboardLayout,
 });
 
-const NAV = [
-  { to: "/dashboard", label: "Growth overview", icon: "⌁" },
-  { to: "/seo-audit", label: "SEO Growth", icon: "↗" },
-  { to: "/backlinks", label: "Backlink builder", icon: "🔗" },
-  { to: "/accounts", label: "Connections", icon: "⛓" },
-  { to: "/resources", label: "Growth resources", icon: "◇" },
-  { to: "/settings", label: "Settings", icon: "⚙" },
-] as const;
+type NavItem = {
+  to:
+    | "/dashboard"
+    | "/analytics"
+    | "/new-post"
+    | "/scheduled"
+    | "/history"
+    | "/backlinks"
+    | "/seo-audit"
+    | "/accounts"
+    | "/media"
+    | "/engagement"
+    | "/settings"
+    | "/resources";
+  label: string;
+  icon: ComponentType<{ className?: string; strokeWidth?: number }>;
+};
+
+const PRIMARY_NAV: NavItem[] = [
+  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { to: "/scheduled", label: "Content plan", icon: CalendarDays },
+  { to: "/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/backlinks", label: "Backlinks", icon: Link2 },
+  { to: "/seo-audit", label: "Technical audit", icon: ScanSearch },
+  { to: "/engagement", label: "Reddit", icon: MessageCircleMore },
+];
+
+const OTHER_NAV: NavItem[] = [
+  { to: "/new-post", label: "Create content", icon: FilePlus2 },
+  { to: "/accounts", label: "Connections", icon: PlugZap },
+  { to: "/media", label: "Media library", icon: Image },
+  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/resources", label: "Growth resources", icon: BookOpen },
+];
 
 function DashboardLayout() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [signingOut, setSigningOut] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const wsQuery = useQuery({
     queryKey: ["current-workspace"],
     queryFn: () => getCurrentWorkspace(),
+  });
+  const connectionQuery = useQuery({
+    queryKey: ["website-connection-status"],
+    queryFn: () => getWebsiteConnectionStatus(),
   });
 
   async function signOut() {
@@ -42,56 +90,161 @@ function DashboardLayout() {
     router.navigate({ to: "/auth", replace: true });
   }
 
+  const user = wsQuery.data?.user;
+  const displayName = user?.displayName?.trim() || user?.email?.split("@")[0] || "Account";
+  const initials = displayName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+  const deliveryConnected = Boolean(
+    (connectionQuery.data?.delivery as Array<{ status?: string }> | undefined)?.some(
+      (connection) => connection.status === "connected",
+    ),
+  );
+
+  const sidebar = (
+    <>
+      <div className="flex h-[70px] items-center px-8">
+        <Link
+          to="/dashboard"
+          className="font-display text-[21px] font-extrabold tracking-[-.055em] text-[#161616]"
+          onClick={() => setMobileOpen(false)}
+        >
+          Mention<span className="text-[#6366e8]">My</span>App
+        </Link>
+      </div>
+      <div className="border-y border-[#f0eff2] px-8 py-5 lg:hidden">
+        <div className="font-display text-lg font-semibold text-[#1f1c24]">{displayName}</div>
+        <div className="mt-1 truncate text-xs text-[#85818b]">{user?.email}</div>
+        <div className="mt-4">
+          <WorkspaceSwitcher />
+        </div>
+      </div>
+      <nav className="flex-1 overflow-y-auto px-8 pb-5 pt-5">
+        <NavGroup items={PRIMARY_NAV} onNavigate={() => setMobileOpen(false)} />
+        <div className="mb-2 mt-8 px-3 font-display text-[11px] font-semibold uppercase tracking-[.08em] text-[#777681]">
+          Other
+        </div>
+        <NavGroup items={OTHER_NAV} onNavigate={() => setMobileOpen(false)} />
+      </nav>
+      <div className="px-8 pb-8">
+        <Link
+          to="/accounts"
+          onClick={() => setMobileOpen(false)}
+          className="block rounded-2xl border border-[#e6e6e9] bg-white p-4 shadow-[0_10px_24px_rgba(16,24,40,.08)] transition hover:-translate-y-0.5"
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${deliveryConnected ? "bg-[#36b37e]" : "bg-[#b9b7ff]"}`}
+            />
+            <strong className="font-display text-[15px] font-semibold text-[#1f1d25]">
+              {deliveryConnected ? "Publishing ready" : "Setup pending"}
+            </strong>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-[#777681]">
+            {deliveryConnected
+              ? "MentionMyApp can publish approved content to your connected website."
+              : "Connect your website to publish approved content automatically."}
+          </p>
+          <span className="mt-3 inline-flex text-xs font-semibold text-[#5b5bd6]">
+            {deliveryConnected ? "Manage connection →" : "Finish setup →"}
+          </span>
+        </Link>
+      </div>
+    </>
+  );
+
   return (
-    <div className="flex min-h-screen bg-[#fafafe] font-body text-[#111426]">
-      <aside className="flex w-[278px] shrink-0 flex-col bg-[#0b1020] text-white">
-        <div className="px-7 pb-5 pt-7">
-          <div
-            className="font-display text-[22px]"
-            style={{ fontWeight: 800, letterSpacing: "-.05em" }}
-          >
-            Mention<span style={{ color: "#7c7cf0" }}>My</span>App
-          </div>
-          <div className="mt-1 text-[11px] font-medium uppercase tracking-[.13em] text-white/35">
-            Organic growth workspace
-          </div>
-        </div>
-        <WorkspaceSwitcher />
-        <div className="px-6 pb-2 pt-5 text-[10px] font-bold uppercase tracking-[.16em] text-white/35">
-          Workspace
-        </div>
-        <nav className="flex-1 space-y-1 px-4">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              activeProps={{ className: "!bg-[#5b5bd633] !text-white" }}
-              className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-[#a9b0cc] transition-colors hover:bg-white/5 hover:text-white"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded-lg border border-white/10 bg-white/5 text-xs">
-                {item.icon}
-              </span>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="m-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-white/55">
-          <div className="mb-1 text-[10px] font-bold uppercase tracking-[.12em] text-white/35">
-            Signed in as
-          </div>
-          <div className="truncate font-semibold text-white/80">{wsQuery.data?.user.email}</div>
-          <button
-            onClick={signOut}
-            disabled={signingOut}
-            className="mt-3 text-[#9b9bf5] hover:underline"
-          >
-            {signingOut ? "Signing out…" : "Sign out"}
-          </button>
-        </div>
+    <div className="min-h-screen bg-[#f7f8fa] font-body text-[#17151b]">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[272px] flex-col border-r border-[#f0eff2] bg-white shadow-[0_1px_2px_rgba(0,0,0,.05)] lg:flex">
+        {sidebar}
       </aside>
-      <main className="min-w-0 flex-1 p-8 lg:p-12">
-        <Outlet />
-      </main>
+
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <button
+            className="absolute inset-0 bg-black/25"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close navigation"
+          />
+          <aside className="relative flex h-full w-[272px] flex-col bg-white shadow-2xl">
+            <button
+              className="absolute right-4 top-5 rounded-full p-2 text-[#64616c] hover:bg-[#f6f6f8]"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close navigation"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            {sidebar}
+          </aside>
+        </div>
+      )}
+
+      <div className="min-h-screen bg-[#f7f8fa] lg:ml-[272px]">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#f0eff2] bg-white px-4 shadow-[0_1px_2px_rgba(0,0,0,.05)] sm:px-6 lg:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              onClick={() => setMobileOpen(true)}
+              className="rounded-lg p-2 text-[#57545f] hover:bg-[#f6f6f8] lg:hidden"
+              aria-label="Open navigation"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <WorkspaceSwitcher />
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/history"
+              aria-label="Product updates"
+              className="grid h-9 w-9 place-items-center rounded-full bg-[#f6f6f8] text-[#5d5964] hover:bg-[#efeff2]"
+            >
+              <Bell className="h-[18px] w-[18px]" />
+            </Link>
+            <button
+              onClick={signOut}
+              disabled={signingOut}
+              title={
+                signingOut
+                  ? "Signing out…"
+                  : `Signed in as ${user?.email ?? displayName}. Click to sign out.`
+              }
+              className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#ecebfd] text-xs font-bold text-[#5558d8] transition hover:ring-2 hover:ring-[#d8d7ff]"
+            >
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                initials || "MA"
+              )}
+            </button>
+          </div>
+        </header>
+        <main className="px-4 pb-10 pt-7 sm:px-6 lg:px-12 lg:pb-12 lg:pt-10">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function NavGroup({ items, onNavigate }: { items: NavItem[]; onNavigate: () => void }) {
+  return (
+    <div className="space-y-1">
+      {items.map((item) => {
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={onNavigate}
+            activeProps={{ className: "!bg-[#f5f5f7] !font-semibold !text-[#17151b]" }}
+            className="flex h-[42px] items-center gap-3 rounded-lg px-3 text-sm text-[#403d46] transition-colors hover:bg-[#f8f8f9] hover:text-[#17151b]"
+          >
+            <Icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            <span>{item.label}</span>
+          </Link>
+        );
+      })}
     </div>
   );
 }

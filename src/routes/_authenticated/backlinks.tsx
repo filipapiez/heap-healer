@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import type { ChangeEvent, InputHTMLAttributes } from "react";
 import { toast } from "sonner";
+import { Link2, Radar } from "lucide-react";
 import {
   getDirectoryProfile,
   listBacklinkQueue,
@@ -39,6 +41,22 @@ type Submission = {
   };
 };
 
+type SubmissionStatus = "queued" | "submitted" | "live" | "rejected" | "skipped" | "pending_action";
+
+type DirectoryProfile = {
+  product_name?: string | null;
+  tagline?: string | null;
+  short_description?: string | null;
+  long_description?: string | null;
+  website_url?: string | null;
+  logo_url?: string | null;
+  category?: string | null;
+  contact_email?: string | null;
+  pricing_model?: string | null;
+  twitter_handle?: string | null;
+  founder_name?: string | null;
+};
+
 const STATUS_STYLE: Record<string, { label: string; className: string }> = {
   queued: { label: "Queued", className: "bg-slate-100 text-slate-700" },
   pending_action: { label: "Needs 1-click", className: "bg-amber-100 text-amber-800" },
@@ -65,34 +83,58 @@ function BacklinksPage() {
   });
 
   if (queueQuery.isLoading) return <div className="p-8 text-slate-500">Loading…</div>;
-  if (queueQuery.error) return <div className="p-8 text-red-600">{(queueQuery.error as Error).message}</div>;
+  if (queueQuery.error)
+    return <div className="p-8 text-red-600">{(queueQuery.error as Error).message}</div>;
 
   const data = queueQuery.data!;
   const submissions = (data.submissions ?? []) as Submission[];
   const active = submissions.filter((s) =>
     ["queued", "pending_action", "auto_submitted"].includes(s.status),
   );
-  const history = submissions.filter((s) => ["submitted", "live", "rejected", "skipped"].includes(s.status));
+  const history = submissions.filter((s) =>
+    ["submitted", "live", "rejected", "skipped"].includes(s.status),
+  );
 
   return (
-    <div className="max-w-6xl">
-      <header className="mb-6">
-        <div className="text-[11px] font-bold uppercase tracking-[.16em] text-[#5b5bd6]">Backlink builder</div>
-        <h1 className="mt-1 font-display text-3xl font-bold" style={{ letterSpacing: "-.02em" }}>
-          15 new directories per week
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-slate-600">
-          Every Monday we queue 15 fresh SaaS/AI directories for your workspace. We auto-submit where we can and
-          give you a one-click "Open & submit" for the rest. Semrush cross-checks referring domains daily and flips
-          rows to Live automatically when the backlink appears.
-        </p>
+    <div className="mx-auto max-w-[1120px]">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dde4f3] bg-white px-4 py-3 text-xs text-[#71809b]">
+        <span className="flex items-center gap-2">
+          <Radar className="h-3.5 w-3.5 text-[#6366e8]" /> Semrush verifies referring domains and
+          live placement status
+        </span>
+        <span className="rounded-full border border-[#e5e4e8] px-3 py-1.5 font-semibold text-[#57535d]">
+          Backlink engine · Live
+        </span>
+      </div>
+
+      <header className="mb-6 flex items-start gap-4">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#efefff] text-[#5b5bd6]">
+          <Link2 className="h-5 w-5" />
+        </span>
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-[-.03em] text-[#201d24]">
+            Backlinks
+          </h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[#85818b]">
+            Build authority with a truthful directory-placement queue. MentionMyApp schedules 15
+            relevant directories each week, assists submission, and only counts a backlink after it
+            is verified live.
+          </p>
+        </div>
       </header>
 
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-5">
         <Stat label="This queue" value={active.length} />
         <Stat label="Auto-submitted" value={data.counts.auto_submitted ?? 0} />
         <Stat label="Live backlinks" value={data.counts.live ?? 0} />
-        <Stat label="Submitted (total)" value={(data.counts.submitted ?? 0) + (data.counts.auto_submitted ?? 0) + (data.counts.live ?? 0)} />
+        <Stat
+          label="Submitted (total)"
+          value={
+            (data.counts.submitted ?? 0) +
+            (data.counts.auto_submitted ?? 0) +
+            (data.counts.live ?? 0)
+          }
+        />
         <Stat label="Remaining in catalog" value={data.remaining} />
       </div>
 
@@ -112,23 +154,31 @@ function BacklinksPage() {
 
       {data.remaining < 30 && data.totalCatalog > 0 && (
         <div className="mb-6 rounded-xl border border-indigo-200 bg-indigo-50 p-4 text-sm text-indigo-900">
-          Catalog runway is getting low ({data.remaining} unsubmitted). We're adding a fresh batch soon.
+          Catalog runway is getting low ({data.remaining} unsubmitted). We're adding a fresh batch
+          soon.
         </div>
       )}
 
       {!data.profile?.product_name && (
         <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
-          <strong>Fill your submission profile first.</strong> Auto-submit and one-click paste both need it.{" "}
+          <strong>Fill your submission profile first.</strong> Auto-submit and one-click paste both
+          need it.{" "}
           <button onClick={() => setTab("profile")} className="font-semibold underline">
             Open profile
           </button>
         </div>
       )}
 
-      <div className="mb-4 flex gap-1 rounded-xl bg-slate-100 p-1 text-sm font-semibold">
-        <TabBtn on={tab === "queue"} onClick={() => setTab("queue")}>This queue ({active.length})</TabBtn>
-        <TabBtn on={tab === "history"} onClick={() => setTab("history")}>History ({history.length})</TabBtn>
-        <TabBtn on={tab === "profile"} onClick={() => setTab("profile")}>Profile</TabBtn>
+      <div className="mb-4 flex gap-1 rounded-xl border border-[#e4e3e7] bg-white p-1 text-sm font-semibold">
+        <TabBtn on={tab === "queue"} onClick={() => setTab("queue")}>
+          This queue ({active.length})
+        </TabBtn>
+        <TabBtn on={tab === "history"} onClick={() => setTab("history")}>
+          History ({history.length})
+        </TabBtn>
+        <TabBtn on={tab === "profile"} onClick={() => setTab("profile")}>
+          Profile
+        </TabBtn>
       </div>
 
       {tab === "queue" && <QueueList rows={active} profile={data.profile} />}
@@ -140,20 +190,30 @@ function BacklinksPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</div>
-      <div className="mt-1 font-display text-2xl font-bold">{value}</div>
+    <div className="rounded-2xl border border-[#e4e3e7] bg-white p-4">
+      <div className="text-[10px] font-semibold uppercase tracking-[.07em] text-[#77737e]">
+        {label}
+      </div>
+      <div className="mt-2 font-display text-2xl font-semibold text-[#302d34]">{value}</div>
     </div>
   );
 }
 
-function TabBtn({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
+function TabBtn({
+  on,
+  onClick,
+  children,
+}: {
+  on: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
       className={
         "flex-1 rounded-lg px-3 py-2 transition-colors " +
-        (on ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900")
+        (on ? "bg-[#f5f5f7] text-[#252229]" : "text-[#77737e] hover:text-[#302d34]")
       }
     >
       {children}
@@ -161,7 +221,7 @@ function TabBtn({ on, onClick, children }: { on: boolean; onClick: () => void; c
   );
 }
 
-function QueueList({ rows, profile }: { rows: Submission[]; profile: any }) {
+function QueueList({ rows, profile }: { rows: Submission[]; profile: DirectoryProfile | null }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
@@ -178,21 +238,22 @@ function QueueList({ rows, profile }: { rows: Submission[]; profile: any }) {
   );
 }
 
-function SubmissionCard({ sub, profile }: { sub: Submission; profile: any }) {
+function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryProfile | null }) {
   const qc = useQueryClient();
   const style = STATUS_STYLE[sub.status] ?? STATUS_STYLE.queued;
   const [liveUrl, setLiveUrl] = useState("");
 
   const update = useMutation({
-    mutationFn: (vars: { status: any; live_url?: string }) =>
+    mutationFn: (vars: { status: SubmissionStatus; live_url?: string }) =>
       updateSubmission({ data: { submissionId: sub.id, ...vars } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["backlink-queue"] }),
     onError: (e: Error) => toast.error(e.message),
   });
   const retry = useMutation({
     mutationFn: () => triggerAutoSubmit({ data: { submissionId: sub.id } }),
-    onSuccess: (r: any) => {
-      if (r.ok) toast.success("Auto-submitted"); else toast.info(r.error ?? "Needs manual submission");
+    onSuccess: (r) => {
+      if (r.ok) toast.success("Auto-submitted");
+      else toast.info(r.error ?? "Needs manual submission");
       qc.invalidateQueries({ queryKey: ["backlink-queue"] });
     },
     onError: (e: Error) => toast.error(e.message),
@@ -208,7 +269,9 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: any }) {
       profile?.category && `Category: ${profile.category}`,
       profile?.contact_email && `Email: ${profile.contact_email}`,
       profile?.pricing_model && `Pricing: ${profile.pricing_model}`,
-    ].filter(Boolean).join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
     navigator.clipboard.writeText(parts).catch(() => {});
     window.open(sub.directory.submit_url, "_blank", "noopener");
     toast.success("Opened directory + copied your profile to clipboard");
@@ -218,22 +281,37 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: any }) {
     <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <a href={sub.directory.homepage_url} target="_blank" rel="noopener" className="font-display text-base font-bold hover:text-[#5b5bd6]">
+          <a
+            href={sub.directory.homepage_url}
+            target="_blank"
+            rel="noopener"
+            className="font-display text-base font-bold hover:text-[#5b5bd6]"
+          >
             {sub.directory.name}
           </a>
           <div className="mt-0.5 text-xs text-slate-500">
-            Tier {sub.directory.tier} · DA {sub.directory.domain_authority ?? "?"} · {sub.directory.category} · {sub.directory.submission_method}
+            Tier {sub.directory.tier} · DA {sub.directory.domain_authority ?? "?"} ·{" "}
+            {sub.directory.category} · {sub.directory.submission_method}
           </div>
         </div>
         <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + style.className}>
           {style.label}
         </span>
       </div>
-      {sub.directory.notes && <div className="mt-2 text-xs text-slate-500">{sub.directory.notes}</div>}
-      {sub.notes && <div className="mt-2 text-xs text-slate-600"><strong>Note:</strong> {sub.notes}</div>}
+      {sub.directory.notes && (
+        <div className="mt-2 text-xs text-slate-500">{sub.directory.notes}</div>
+      )}
+      {sub.notes && (
+        <div className="mt-2 text-xs text-slate-600">
+          <strong>Note:</strong> {sub.notes}
+        </div>
+      )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button onClick={openAndCopy} className="rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1a2040]">
+        <button
+          onClick={openAndCopy}
+          className="rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1a2040]"
+        >
           Open & submit
         </button>
         <button
@@ -243,7 +321,8 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: any }) {
         >
           Mark submitted
         </button>
-        {(sub.directory.submission_method === "api" || sub.directory.submission_method === "form") && (
+        {(sub.directory.submission_method === "api" ||
+          sub.directory.submission_method === "form") && (
           <button
             onClick={() => retry.mutate()}
             disabled={retry.isPending}
@@ -270,7 +349,12 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: any }) {
 }
 
 function HistoryTable({ rows }: { rows: Submission[] }) {
-  if (rows.length === 0) return <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">Nothing submitted yet.</div>;
+  if (rows.length === 0)
+    return (
+      <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
+        Nothing submitted yet.
+      </div>
+    );
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
       <table className="w-full text-sm">
@@ -287,13 +371,29 @@ function HistoryTable({ rows }: { rows: Submission[] }) {
             <tr key={s.id} className="border-t border-slate-100">
               <td className="px-3 py-2 font-semibold">{s.directory.name}</td>
               <td className="px-3 py-2">
-                <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + (STATUS_STYLE[s.status]?.className ?? "")}>
+                <span
+                  className={
+                    "rounded-full px-2 py-0.5 text-[11px] font-semibold " +
+                    (STATUS_STYLE[s.status]?.className ?? "")
+                  }
+                >
                   {STATUS_STYLE[s.status]?.label ?? s.status}
                 </span>
               </td>
               <td className="px-3 py-2 text-slate-600">{s.submitted_at?.slice(0, 10) ?? "—"}</td>
               <td className="px-3 py-2">
-                {s.live_url ? <a href={s.live_url} className="text-[#5b5bd6] hover:underline" target="_blank" rel="noopener">View</a> : "—"}
+                {s.live_url ? (
+                  <a
+                    href={s.live_url}
+                    className="text-[#5b5bd6] hover:underline"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    View
+                  </a>
+                ) : (
+                  "—"
+                )}
               </td>
             </tr>
           ))}
@@ -303,9 +403,9 @@ function HistoryTable({ rows }: { rows: Submission[] }) {
   );
 }
 
-function ProfileForm({ initial }: { initial: any }) {
+function ProfileForm({ initial }: { initial: DirectoryProfile | null }) {
   const qc = useQueryClient();
-  const queueData = qc.getQueryData<any>(["backlink-queue"]);
+  const queueData = qc.getQueryData<{ workspaceId?: string }>(["backlink-queue"]);
   const workspaceId: string | undefined = queueData?.workspaceId;
   const [form, setForm] = useState({
     product_name: initial?.product_name ?? "",
@@ -321,14 +421,23 @@ function ProfileForm({ initial }: { initial: any }) {
     founder_name: initial?.founder_name ?? "",
   });
   const save = useMutation({
-    mutationFn: () => saveDirectoryProfile({ data: form as any }),
+    mutationFn: () =>
+      saveDirectoryProfile({
+        data: {
+          ...form,
+          website_url: form.website_url || null,
+          logo_url: form.logo_url || null,
+          contact_email: form.contact_email || null,
+        },
+      }),
     onSuccess: () => {
       toast.success("Profile saved");
       qc.invalidateQueries({ queryKey: ["backlink-queue"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
-  const set = (k: keyof typeof form) => (e: any) => setForm({ ...form, [k]: e.target.value });
+  const set = (k: keyof typeof form) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm({ ...form, [k]: e.target.value });
 
   return (
     <form
@@ -339,10 +448,25 @@ function ProfileForm({ initial }: { initial: any }) {
       className="grid gap-4 rounded-xl border border-slate-200 bg-white p-6 md:grid-cols-2"
     >
       <Field label="Product name" value={form.product_name} onChange={set("product_name")} />
-      <Field label="Website URL" value={form.website_url} onChange={set("website_url")} placeholder="https://…" />
+      <Field
+        label="Website URL"
+        value={form.website_url}
+        onChange={set("website_url")}
+        placeholder="https://…"
+      />
       <Field label="Tagline (≤120 chars)" value={form.tagline} onChange={set("tagline")} />
-      <Field label="Category" value={form.category} onChange={set("category")} placeholder="AI, SaaS, marketing…" />
-      <Field label="Contact email" value={form.contact_email} onChange={set("contact_email")} type="email" />
+      <Field
+        label="Category"
+        value={form.category}
+        onChange={set("category")}
+        placeholder="AI, SaaS, marketing…"
+      />
+      <Field
+        label="Contact email"
+        value={form.contact_email}
+        onChange={set("contact_email")}
+        type="email"
+      />
       <div>
         {workspaceId ? (
           <LogoUploader
@@ -351,18 +475,41 @@ function ProfileForm({ initial }: { initial: any }) {
             onChange={(url) => setForm((f) => ({ ...f, logo_url: url }))}
           />
         ) : (
-          <Field label="Logo URL" value={form.logo_url} onChange={set("logo_url")} placeholder="https://…" />
+          <Field
+            label="Logo URL"
+            value={form.logo_url}
+            onChange={set("logo_url")}
+            placeholder="https://…"
+          />
         )}
       </div>
-      <Field label="Pricing model" value={form.pricing_model} onChange={set("pricing_model")} placeholder="Free, Freemium, Paid" />
-      <Field label="Twitter/X handle" value={form.twitter_handle} onChange={set("twitter_handle")} placeholder="@handle" />
+      <Field
+        label="Pricing model"
+        value={form.pricing_model}
+        onChange={set("pricing_model")}
+        placeholder="Free, Freemium, Paid"
+      />
+      <Field
+        label="Twitter/X handle"
+        value={form.twitter_handle}
+        onChange={set("twitter_handle")}
+        placeholder="@handle"
+      />
       <div className="md:col-span-2">
         <Label>Short description (≤280 chars)</Label>
-        <textarea className={inputClass + " min-h-[72px]"} value={form.short_description} onChange={set("short_description")} />
+        <textarea
+          className={inputClass + " min-h-[72px]"}
+          value={form.short_description}
+          onChange={set("short_description")}
+        />
       </div>
       <div className="md:col-span-2">
         <Label>Long description</Label>
-        <textarea className={inputClass + " min-h-[140px]"} value={form.long_description} onChange={set("long_description")} />
+        <textarea
+          className={inputClass + " min-h-[140px]"}
+          value={form.long_description}
+          onChange={set("long_description")}
+        />
       </div>
       <div className="md:col-span-2 flex justify-end">
         <button
@@ -377,9 +524,10 @@ function ProfileForm({ initial }: { initial: any }) {
   );
 }
 
-const inputClass = "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#5b5bd6] focus:outline-none";
+const inputClass =
+  "mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#5b5bd6] focus:outline-none";
 
-function Field({ label, ...rest }: any) {
+function Field({ label, ...rest }: { label: string } & InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div>
       <Label>{label}</Label>
@@ -388,5 +536,9 @@ function Field({ label, ...rest }: any) {
   );
 }
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">{children}</label>;
+  return (
+    <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+      {children}
+    </label>
+  );
 }

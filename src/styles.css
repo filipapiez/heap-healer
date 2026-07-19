@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Raleway:wght@500;600;700;800&display=swap");
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -5,24 +6,24 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Raleway", ui-sans-serif, system-ui, sans-serif;
 
   /* MentionMyApp brand palette */
-  --color-mist-50: #F7F8FC;
-  --color-mist-100: #EEF0F7;
-  --color-mist-200: #E4E7F2;
+  --color-mist-50: #f7f8fc;
+  --color-mist-100: #eef0f7;
+  --color-mist-200: #e4e7f2;
   --color-mist-300: #cbd5e1;
   --color-ink-700: #334155;
   --color-ink-800: #1e293b;
-  --color-ink-900: #0B1020;
+  --color-ink-900: #0b1020;
   --color-ink-950: #05070f;
-  --color-signal-400: #7C7CF0;
-  --color-signal-500: #5B5BD6;
-  --color-signal-600: #4747C2;
-  --color-success: #12B981;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
+  --color-signal-400: #7c7cf0;
+  --color-signal-500: #5b5bd6;
+  --color-signal-600: #4747c2;
+  --color-success: #12b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
 
 @utility card {
@@ -39,22 +40,32 @@
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: background-color 150ms, color 150ms, border-color 150ms;
-  &:disabled { opacity: 0.5; pointer-events: none; }
+  transition:
+    background-color 150ms,
+    color 150ms,
+    border-color 150ms;
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 @utility btn-primary {
   @apply btn;
   background-color: var(--color-signal-500);
   color: #fff;
-  box-shadow: 0 8px 24px rgba(91,91,214,.35);
-  &:hover { background-color: var(--color-signal-600); }
+  box-shadow: 0 8px 24px rgba(91, 91, 214, 0.35);
+  &:hover {
+    background-color: var(--color-signal-600);
+  }
 }
 @utility btn-ghost {
   @apply btn;
   background-color: #fff;
   border: 1px solid var(--color-mist-200);
   color: var(--color-ink-900);
-  &:hover { background-color: var(--color-mist-100); }
+  &:hover {
+    background-color: var(--color-mist-100);
+  }
 }
 @utility input {
   width: 100%;
@@ -63,7 +74,10 @@
   background: #fff;
   padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
-  &:focus { outline: none; box-shadow: 0 0 0 2px var(--color-signal-400); }
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-signal-400);
+  }
 }
 @utility label {
   display: block;

@@ -74,7 +74,7 @@ export default function SeoDashboard() {
     void (async () => {
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData.user) {
-        setError(userError?.message ?? "You must be signed in to view SEO Growth");
+        setError(userError?.message ?? "You must be signed in to view analytics");
         setLoading(false);
         return;
       }
@@ -151,9 +151,7 @@ export default function SeoDashboard() {
       setPages((pageRows.error ? [] : (pageRows.data ?? [])) as Page[]);
       setBacklinks((backlinkRows.error ? [] : (backlinkRows.data ?? [])) as Backlink[]);
       setGeo((geoRows.error ? [] : (geoRows.data ?? [])) as GeoCheck[]);
-      setSemrush(
-        (semrushRow.error ? null : (semrushRow.data ?? null)) as SemrushSnapshot | null,
-      );
+      setSemrush((semrushRow.error ? null : (semrushRow.data ?? null)) as SemrushSnapshot | null);
       setSemrushLoading(false);
     })();
   }, [clientId]);
@@ -191,18 +189,18 @@ export default function SeoDashboard() {
     };
   }, [rangeMetrics]);
 
-  if (loading) return <State title="Loading SEO growth…" />;
-  if (error) return <State title="SEO Growth could not load" detail={error} />;
+  if (loading) return <State title="Loading analytics…" />;
+  if (error) return <State title="Analytics could not load" detail={error} />;
   if (!client)
     return (
       <State
-        title="Your SEO Growth report is ready to be connected"
+        title="Your analytics report is ready to be connected"
         detail="Create the first client record after onboarding, then the daily Search Console sync will populate this dashboard automatically."
       />
     );
 
   return (
-    <div className="mx-auto max-w-[1500px] text-[#171a2b]">
+    <div className="mx-auto max-w-[1120px] text-[#171a2b]">
       <style>{`
         .label{font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#6b7280}
         .seo-table th{padding:11px 16px;border-bottom:1px solid #e9eaf2;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6b7280}
@@ -211,9 +209,10 @@ export default function SeoDashboard() {
       `}</style>
       <header className="mb-6 flex flex-wrap items-center gap-4">
         <div>
-          <h1 className="text-[28px] font-extrabold tracking-[-.04em]">SEO Growth</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-[-.03em]">Analytics</h1>
           <p className="mt-1 text-sm text-[#6b7280]">
-            {client.website} · baseline {client.baseline_date}
+            Verified performance across Google Search Console, Semrush and AI search ·{" "}
+            {client.website}
           </p>
         </div>
         <select
@@ -242,6 +241,36 @@ export default function SeoDashboard() {
           </select>
         )}
       </header>
+
+      <nav
+        className="mb-6 flex gap-1 overflow-x-auto border-b border-[#dddce1] text-xs font-semibold text-[#77737e]"
+        aria-label="Analytics data source"
+      >
+        <a
+          href="#search-performance"
+          className="whitespace-nowrap border-b-2 border-[#6366e8] px-4 py-3 text-[#302d34]"
+        >
+          Search Console
+        </a>
+        <a
+          href="#ai-visibility"
+          className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 hover:text-[#302d34]"
+        >
+          AI visibility
+        </a>
+        <a
+          href="#authority"
+          className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 hover:text-[#302d34]"
+        >
+          Authority
+        </a>
+        <a
+          href="/history"
+          className="whitespace-nowrap border-b-2 border-transparent px-4 py-3 hover:text-[#302d34]"
+        >
+          Publishing
+        </a>
+      </nav>
 
       <Card className="mb-4 p-5">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -299,7 +328,7 @@ export default function SeoDashboard() {
         />
       </section>
 
-      <Card className="mb-4 p-6">
+      <Card id="search-performance" className="mb-4 scroll-mt-24 p-6">
         <div className="mb-3 flex flex-wrap justify-between gap-2">
           <span className="label">Impressions & clicks since baseline</span>
           <span className="text-xs text-[#6b7280]">Indigo: impressions · Ink: clicks</span>
@@ -410,7 +439,7 @@ export default function SeoDashboard() {
         </TableCard>
       </section>
 
-      <Card className="mt-4 p-5">
+      <Card id="ai-visibility" className="mt-4 scroll-mt-24 p-5">
         <div className="mb-4 flex justify-between gap-3">
           <span className="label">AI search visibility (GEO)</span>
           <span className="text-xs text-[#6b7280]">
@@ -435,7 +464,7 @@ export default function SeoDashboard() {
         </div>
       </Card>
 
-      <Card className="mt-4 p-5">
+      <Card id="authority" className="mt-4 scroll-mt-24 p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <span className="label">Semrush snapshot</span>
           <span className="text-xs text-[#6b7280]">
@@ -450,7 +479,8 @@ export default function SeoDashboard() {
           <p className="py-4 text-sm text-[#6b7280]">Loading latest Semrush snapshot…</p>
         ) : semrush?.sync_status === "failed" ? (
           <p className="py-4 text-sm text-red-600">
-            Last Semrush sync failed: {semrush.sync_error ?? "unknown error"}. It will retry on the next daily run.
+            Last Semrush sync failed: {semrush.sync_error ?? "unknown error"}. It will retry on the
+            next daily run.
           </p>
         ) : semrush?.sync_status === "success" ? (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -464,7 +494,8 @@ export default function SeoDashboard() {
           </div>
         ) : (
           <p className="py-4 text-sm text-[#6b7280]">
-            The daily Semrush sync will populate Authority Score, backlinks, referring domains, and organic keywords.
+            The daily Semrush sync will populate Authority Score, backlinks, referring domains, and
+            organic keywords.
           </p>
         )}
       </Card>
@@ -472,9 +503,18 @@ export default function SeoDashboard() {
   );
 }
 
-function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function Card({
+  children,
+  className = "",
+  id,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) {
   return (
     <div
+      id={id}
       className={`rounded-2xl border border-[#e9eaf2] bg-white shadow-[0_8px_24px_rgba(23,26,43,.05)] ${className}`}
     >
       {children}
