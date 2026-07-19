@@ -230,7 +230,6 @@ export default function LandingPage() {
                 style={{
                   minHeight: 42,
                   margin: "2px auto 22px",
-                  color: "#4a5060",
                   fontSize: "clamp(26px, 3.4vw, 40px)",
                   fontWeight: 800,
                   color: INK,
