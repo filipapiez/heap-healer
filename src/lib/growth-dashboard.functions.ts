@@ -221,3 +221,30 @@ export const getContentPlanData = createServerFn({ method: "GET" })
       }>,
     };
   });
+
+/** Manually trigger a Semrush snapshot for the caller's active workspace. */
+export const syncMyWorkspaceSemrush = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: profile, error: profileError } = await context.supabase
+      .from("profiles")
+      .select("current_workspace_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (profileError) throw profileError;
+    if (!profile?.current_workspace_id) throw new Error("No active workspace");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: client, error: clientError } = await supabaseAdmin
+      .from("seo_clients" as never)
+      .select("id,website")
+      .eq("workspace_id", profile.current_workspace_id)
+      .maybeSingle();
+    if (clientError) throw clientError;
+    const clientRow = client as unknown as { id: string; website: string | null } | null;
+    if (!clientRow?.website) throw new Error("Add a website to your workspace first");
+
+    const { syncSemrushClient } = await import("./semrush-sync.server");
+    const snapshot = await syncSemrushClient(clientRow.id);
+    return { ok: true, domain: snapshot.domain };
+  });
