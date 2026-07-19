@@ -15,8 +15,10 @@
 // =============================================================
 
 import { useState } from "react";
+import EngineRotator from "@/components/EngineRotator";
 import EngineIcon, { type EngineName } from "@/components/engineIcons";
 import HeroBackground from "@/components/HeroBackground";
+import PressMarquee from "@/components/PressMarquee";
 import WorldMap from "@/components/WorldMap";
 
 // ---------- Brand ----------
@@ -223,6 +225,18 @@ export default function LandingPage() {
                 Audit, publish, and measure{" "}
                 <span style={{ color: ACCENT }}>organic growth with evidence</span>
               </h1>
+              <div
+                className="lp-display"
+                style={{
+                  minHeight: 34,
+                  margin: "-5px auto 18px",
+                  color: "#858A99",
+                  fontSize: "clamp(17px, 2.1vw, 23px)",
+                  fontWeight: 700,
+                }}
+              >
+                Build visibility across <EngineRotator />
+              </div>
               <p
                 style={{
                   fontSize: 18.5,
@@ -276,6 +290,7 @@ export default function LandingPage() {
               )}
             </div>
           </header>
+          <PressMarquee />
         </div>
       </div>
 
