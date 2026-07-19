@@ -65,6 +65,34 @@ export const getWebsiteConnectionStatus = createServerFn({ method: "GET" })
       .eq("workspace_id", workspaceId)
       .neq("status", "disconnected");
     if (deliveryError) throw deliveryError;
+    const deliveryRows =
+      (delivery as unknown as Array<{ platform: string; external_id: string }> | null) ?? [];
+    const hasGithubDelivery = deliveryRows.some((row) => row.platform === "github");
+    if (githubRow && repositories.length === 1 && !hasGithubDelivery) {
+      const repo = repositories[0];
+      const { data: inserted, error: autoErr } = await supabaseAdmin
+        .from("website_connections" as never)
+        .upsert(
+          {
+            workspace_id: workspaceId,
+            platform: "github",
+            external_id: repo.full_name,
+            display_name: repo.full_name,
+            metadata: { installation_id: githubRow.installation_id },
+            status: "connected",
+            last_tested_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as never,
+          { onConflict: "workspace_id,platform,external_id" },
+        )
+        .select("id,platform,external_id,display_name,status,last_tested_at,last_error,metadata")
+        .maybeSingle();
+      if (autoErr) {
+        console.error("[github-app] auto-select repository failed", autoErr);
+      } else if (inserted) {
+        deliveryRows.push(inserted as never);
+      }
+    }
     const githubConfigured = Boolean(
       process.env.GITHUB_APP_SLUG &&
       process.env.GITHUB_APP_ID &&
@@ -75,7 +103,7 @@ export const getWebsiteConnectionStatus = createServerFn({ method: "GET" })
       github: githubRow,
       githubConfigured,
       repositories,
-      delivery: delivery ?? [],
+      delivery: deliveryRows,
     };
   });
 
