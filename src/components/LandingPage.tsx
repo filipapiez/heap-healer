@@ -231,8 +231,9 @@ export default function LandingPage() {
                   minHeight: 42,
                   margin: "2px auto 22px",
                   color: "#4a5060",
-                  fontSize: "clamp(20px, 2.6vw, 30px)",
-                  fontWeight: 700,
+                  fontSize: "clamp(26px, 3.4vw, 40px)",
+                  fontWeight: 800,
+                  color: INK,
                   letterSpacing: "-0.01em",
                 }}
               >
