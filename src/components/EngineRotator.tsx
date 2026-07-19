@@ -5,13 +5,14 @@ import perplexityLogo from "@/assets/engines/perplexity.png.asset.json";
 import geminiLogo from "@/assets/engines/gemini.png.asset.json";
 import googleLogo from "@/assets/engines/google.png.asset.json";
 
-type Engine = { name: string; src: string };
+type Engine = { name: string; src: string; scale: number };
+// scale = height in em, tuned per-logo so wordmark cap-heights visually match.
 const ENGINES: Engine[] = [
-  { name: "ChatGPT", src: chatgptLogo.url },
-  { name: "Claude", src: claudeLogo.url },
-  { name: "Perplexity", src: perplexityLogo.url },
-  { name: "Gemini", src: geminiLogo.url },
-  { name: "Google", src: googleLogo.url },
+  { name: "ChatGPT", src: chatgptLogo.url, scale: 1.55 },
+  { name: "Claude", src: claudeLogo.url, scale: 1.5 },
+  { name: "Perplexity", src: perplexityLogo.url, scale: 1.1 },
+  { name: "Gemini", src: geminiLogo.url, scale: 1.15 },
+  { name: "Google", src: googleLogo.url, scale: 1.2 },
 ];
 const INTERVAL_MS = 2200;
 
