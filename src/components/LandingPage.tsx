@@ -228,10 +228,10 @@ export default function LandingPage() {
               <div
                 className="lp-display"
                 style={{
-                  minHeight: 42,
                   margin: "2px auto 22px",
-                  fontSize: "clamp(26px, 3.4vw, 40px)",
+                  fontSize: "clamp(38px, 6vw, 68px)",
                   fontWeight: 800,
+                  lineHeight: 1.05,
                   color: INK,
                   letterSpacing: "-0.01em",
                 }}
