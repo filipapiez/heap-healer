@@ -10,7 +10,7 @@ type Engine = { name: string; src: string; scale: number; nudge: number };
 // Tuned per-logo so wordmark cap-heights and baselines visually match the headline.
 const ENGINES: Engine[] = [
   { name: "ChatGPT", src: chatgptLogo.url, scale: 1.35, nudge: 0 },
-  { name: "Claude", src: claudeLogo.url, scale: 3.2, nudge: 0 },
+  { name: "Claude", src: claudeLogo.url, scale: 1.35, nudge: 0 },
   { name: "Perplexity", src: perplexityLogo.url, scale: 1.35, nudge: 0 },
   { name: "Gemini", src: geminiLogo.url, scale: 1.5, nudge: 0 },
   { name: "Google", src: googleLogo.url, scale: 1.55, nudge: 0 },
