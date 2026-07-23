@@ -39,8 +39,6 @@ type Submission = {
   };
 };
 
-type SubmissionStatus = "queued" | "submitted" | "live" | "rejected" | "skipped" | "pending_action";
-
 type DirectoryProfile = {
   product_name?: string | null;
   tagline?: string | null;
@@ -176,7 +174,7 @@ function BacklinksPage() {
         </TabBtn>
       </div>
 
-      {tab === "queue" && <QueueList rows={active} profile={data.profile} />}
+      {tab === "queue" && <QueueList rows={active} />}
       {tab === "history" && <HistoryTable rows={history} />}
       {tab === "profile" && <ProfileForm initial={data.profile} />}
     </div>
@@ -216,65 +214,25 @@ function TabBtn({
   );
 }
 
-function QueueList({ rows, profile }: { rows: Submission[]; profile: DirectoryProfile | null }) {
+function QueueList({ rows }: { rows: Submission[] }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
-        Nothing queued yet. Weekly cron runs Monday 9am UTC. Or the catalog needs seeding above.
+        Nothing queued yet. Fill your profile and the daily job (9am UTC) will submit for you.
       </div>
     );
   }
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {rows.map((s) => (
-        <SubmissionCard key={s.id} sub={s} profile={profile} />
+        <SubmissionCard key={s.id} sub={s} />
       ))}
     </div>
   );
 }
 
-function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryProfile | null }) {
-  const qc = useQueryClient();
+function SubmissionCard({ sub }: { sub: Submission }) {
   const style = STATUS_STYLE[sub.status] ?? STATUS_STYLE.queued;
-  const [liveUrl, setLiveUrl] = useState(sub.live_url ?? "");
-
-  const update = useMutation({
-    mutationFn: (vars: { status: SubmissionStatus; live_url?: string }) =>
-      updateSubmission({ data: { submissionId: sub.id, ...vars } }),
-    onSuccess: (result) => {
-      toast.success(result.verified ? "Backlink verified live" : "Submission updated");
-      qc.invalidateQueries({ queryKey: ["backlink-queue"] });
-      qc.invalidateQueries({ queryKey: ["growth-dashboard"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-  const retry = useMutation({
-    mutationFn: () => triggerAutoSubmit({ data: { submissionId: sub.id } }),
-    onSuccess: (r) => {
-      if (r.ok) toast.success("Auto-submitted");
-      else toast.info(r.error ?? "Needs manual submission");
-      qc.invalidateQueries({ queryKey: ["backlink-queue"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  function openAndCopy() {
-    const parts = [
-      profile?.product_name && `Name: ${profile.product_name}`,
-      profile?.tagline && `Tagline: ${profile.tagline}`,
-      profile?.website_url && `URL: ${profile.website_url}`,
-      profile?.short_description && `Short: ${profile.short_description}`,
-      profile?.long_description && `Long: ${profile.long_description}`,
-      profile?.category && `Category: ${profile.category}`,
-      profile?.contact_email && `Email: ${profile.contact_email}`,
-      profile?.pricing_model && `Pricing: ${profile.pricing_model}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
-    navigator.clipboard.writeText(parts).catch(() => {});
-    window.open(sub.directory.submit_url, "_blank", "noopener");
-    toast.success("Opened directory + copied your profile to clipboard");
-  }
 
   return (
     <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-4">
@@ -290,7 +248,7 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryP
           </a>
           <div className="mt-0.5 text-xs text-slate-500">
             Tier {sub.directory.tier} · DA {sub.directory.domain_authority ?? "?"} ·{" "}
-            {sub.directory.category} · {sub.directory.submission_method}
+            {sub.directory.category}
           </div>
         </div>
         <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + style.className}>
@@ -300,56 +258,6 @@ function SubmissionCard({ sub, profile }: { sub: Submission; profile: DirectoryP
       {sub.directory.notes && (
         <div className="mt-2 text-xs text-slate-500">{sub.directory.notes}</div>
       )}
-      {sub.notes && (
-        <div className="mt-2 text-xs text-slate-600">
-          <strong>Note:</strong> {sub.notes}
-        </div>
-      )}
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button
-          onClick={openAndCopy}
-          className="rounded-lg bg-[#0b1020] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1a2040]"
-        >
-          Open & submit
-        </button>
-        <button
-          onClick={() => update.mutate({ status: "submitted", live_url: liveUrl || undefined })}
-          disabled={update.isPending}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Mark submitted
-        </button>
-        <button
-          onClick={() => update.mutate({ status: "live", live_url: liveUrl || undefined })}
-          disabled={update.isPending || !(liveUrl || sub.live_url)}
-          className="rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {update.isPending ? "Checking…" : "Verify live"}
-        </button>
-        {(sub.directory.submission_method === "api" ||
-          sub.directory.submission_method === "form") && (
-          <button
-            onClick={() => retry.mutate()}
-            disabled={retry.isPending}
-            className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            {retry.isPending ? "Trying…" : "Try auto-submit"}
-          </button>
-        )}
-        <button
-          onClick={() => update.mutate({ status: "skipped" })}
-          className="ml-auto text-xs text-slate-400 hover:text-slate-700"
-        >
-          Skip
-        </button>
-      </div>
-      <input
-        value={liveUrl}
-        onChange={(e) => setLiveUrl(e.target.value)}
-        placeholder="Paste the public listing URL to verify it live"
-        className="mt-2 w-full rounded-lg border border-slate-200 px-2 py-1 text-xs"
-      />
     </div>
   );
 }
