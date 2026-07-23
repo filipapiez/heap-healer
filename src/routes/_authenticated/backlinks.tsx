@@ -9,8 +9,6 @@ import {
   listBacklinkQueue,
   saveDirectoryProfile,
   seedDirectories,
-  triggerAutoSubmit,
-  updateSubmission,
 } from "@/lib/directories.functions";
 import { LogoUploader } from "@/components/LogoUploader";
 
@@ -57,9 +55,9 @@ type DirectoryProfile = {
 };
 
 const STATUS_STYLE: Record<string, { label: string; className: string }> = {
-  queued: { label: "Queued", className: "bg-slate-100 text-slate-700" },
-  pending_action: { label: "Needs 1-click", className: "bg-amber-100 text-amber-800" },
-  auto_submitted: { label: "Auto-submitted", className: "bg-blue-100 text-blue-800" },
+  queued: { label: "Submitting…", className: "bg-slate-100 text-slate-700" },
+  pending_action: { label: "Submitting…", className: "bg-slate-100 text-slate-700" },
+  auto_submitted: { label: "Submitted", className: "bg-indigo-100 text-indigo-800" },
   submitted: { label: "Submitted", className: "bg-indigo-100 text-indigo-800" },
   live: { label: "Live", className: "bg-emerald-100 text-emerald-800" },
   rejected: { label: "Rejected", className: "bg-red-100 text-red-700" },
