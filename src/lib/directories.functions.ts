@@ -85,6 +85,17 @@ export const saveDirectoryProfile = createServerFn({ method: "POST" })
       .from("workspace_directory_profile")
       .upsert({ workspace_id: workspaceId, ...clean }, { onConflict: "workspace_id" });
     if (error) throw error;
+
+    // As soon as the profile is complete, queue + auto-submit for this workspace
+    // so the customer never has to click anything.
+    if (clean.product_name && clean.website_url && clean.contact_email) {
+      try {
+        const { queueWeeklyDirectories } = await import("./directory-submit.server");
+        await queueWeeklyDirectories({ workspaceId, skipThrottle: true });
+      } catch (err) {
+        console.error("Auto-submit after profile save failed", err);
+      }
+    }
     return { ok: true };
   });
 
