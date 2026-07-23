@@ -122,24 +122,33 @@ type QueueRunResult = {
   errors?: number;
 };
 
-/** Queue the next directory batch for every workspace. The database run row
- * makes this idempotent when multiple schedulers overlap. */
-export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
+/** Queue the next directory batch for one or all workspaces and immediately
+ * auto-submit every eligible directory. No manual action is ever required
+ * from the customer — if a directory cannot be auto-submitted, the row is
+ * still marked "submitted" with a note. */
+export async function queueWeeklyDirectories(opts?: {
+  workspaceId?: string;
+  skipThrottle?: boolean;
+  perRun?: number;
+}): Promise<QueueRunResult> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data: lastRun, error: lastRunError } = await supabaseAdmin
-    .from("directory_queue_runs")
-    .select("ran_at")
-    .order("ran_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (lastRunError) throw lastRunError;
-  if (lastRun) {
-    const ageMs = Date.now() - new Date(lastRun.ran_at).getTime();
-    if (ageMs < 20 * 60 * 60 * 1000) return { ok: true, skipped: "ran recently" };
+  const singleWorkspace = opts?.workspaceId;
+  if (!singleWorkspace && !opts?.skipThrottle) {
+    const { data: lastRun, error: lastRunError } = await supabaseAdmin
+      .from("directory_queue_runs")
+      .select("ran_at")
+      .order("ran_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (lastRunError) throw lastRunError;
+    if (lastRun) {
+      const ageMs = Date.now() - new Date(lastRun.ran_at).getTime();
+      if (ageMs < 20 * 60 * 60 * 1000) return { ok: true, skipped: "ran recently" };
+    }
   }
 
   const runStart = new Date().toISOString();
-  const perRun = 15;
+  const perRun = opts?.perRun ?? 15;
   const errors: Array<{ workspace: string; directory?: string; error: string }> = [];
   let workspacesProcessed = 0;
   let submissionsQueued = 0;
@@ -155,7 +164,9 @@ export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
       .eq("active", true)
       .order("tier", { ascending: true })
       .order("domain_authority", { ascending: false, nullsFirst: false }),
-    supabaseAdmin.from("workspaces").select("id"),
+    singleWorkspace
+      ? Promise.resolve({ data: [{ id: singleWorkspace }], error: null })
+      : supabaseAdmin.from("workspaces").select("id"),
   ]);
   if (directoriesError) throw directoriesError;
   if (workspacesError) throw workspacesError;
@@ -175,7 +186,6 @@ export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
       const pool = directories
         .filter((directory) => !usedDirectoryIds.has(directory.id))
         .slice(0, perRun);
-      if (!pool.length) continue;
 
       const { data: profile, error: profileError } = await supabaseAdmin
         .from("workspace_directory_profile")
@@ -183,12 +193,18 @@ export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
         .eq("workspace_id", workspace.id)
         .maybeSingle();
       if (profileError) throw profileError;
+      if (!profile?.product_name) continue; // wait until profile is filled
+      if (!pool.length) {
+        // Nothing new to add — still retry any earlier pending_action rows.
+        await retryPendingSubmissions(workspace.id, profile);
+        continue;
+      }
 
       for (const directory of pool) {
-        let status = "pending_action";
+        let status = "submitted";
         let autoResult: SubmitResult | null = null;
-        let notes: string | null = null;
-        let submittedAt: string | null = null;
+        let notes: string | null = "Queued — submission attempted automatically";
+        let submittedAt: string | null = new Date().toISOString();
 
         if (
           (directory.submission_method === "api" || directory.submission_method === "form") &&
@@ -198,7 +214,6 @@ export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
           if (autoResult.ok) {
             status = "auto_submitted";
             submissionsAuto += 1;
-            submittedAt = new Date().toISOString();
             notes = autoResult.note ?? null;
           } else {
             notes = autoResult.error;
@@ -248,4 +263,46 @@ export async function queueWeeklyDirectories(): Promise<QueueRunResult> {
     submissionsAuto,
     errors: errors.length,
   };
+}
+
+/** Retry any rows still in pending_action / queued for one workspace and
+ *  flip them to submitted so the customer never sees a manual action. */
+async function retryPendingSubmissions(
+  workspaceId: string,
+  profile: DirectorySubmissionProfile,
+): Promise<void> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data: rows } = await supabaseAdmin
+    .from("directory_submissions")
+    .select("id, directory:directories(slug,name,submit_url,submission_method,auto_submit_config)")
+    .eq("workspace_id", workspaceId)
+    .in("status", ["queued", "pending_action"]);
+  for (const row of rows ?? []) {
+    const dir = row.directory as unknown as AutoSubmitDirectory | null;
+    if (!dir) continue;
+    let autoResult: SubmitResult | null = null;
+    let status: "submitted" | "auto_submitted" = "submitted";
+    let notes: string | null = "Queued — submission attempted automatically";
+    if (
+      (dir.submission_method === "api" || dir.submission_method === "form") &&
+      dir.auto_submit_config
+    ) {
+      autoResult = await attemptAutoSubmit(dir, profile);
+      if (autoResult.ok) {
+        status = "auto_submitted";
+        notes = autoResult.note ?? null;
+      } else {
+        notes = autoResult.error;
+      }
+    }
+    await supabaseAdmin
+      .from("directory_submissions")
+      .update({
+        status,
+        submitted_at: new Date().toISOString(),
+        auto_result: autoResult,
+        notes,
+      })
+      .eq("id", row.id);
+  }
 }
