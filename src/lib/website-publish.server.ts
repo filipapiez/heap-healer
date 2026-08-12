@@ -99,6 +99,29 @@ async function github(connection: Connection, job: Job): Promise<PublishResult> 
   if (!Number.isSafeInteger(installationId) || installationId <= 0) {
     throw new Error("GitHub installation metadata is unavailable");
   }
+  // Generated pages ship as native repository files committed straight to the
+  // default branch (page file + optional sitemap update in one commit).
+  const files = Array.isArray(job.metadata.files)
+    ? (job.metadata.files as { path?: string; content?: string }[]).filter(
+        (file): file is { path: string; content: string } =>
+          typeof file?.path === "string" && typeof file?.content === "string",
+      )
+    : [];
+  if (files.length) {
+    const { commitRepositoryFiles } = await import("@/lib/github-app.server");
+    const commit = await commitRepositoryFiles({
+      installationId,
+      repository: connection.external_id,
+      message: `Publish SEO page: ${job.title}`,
+      files,
+      branch: connection.metadata.base_branch as string | undefined,
+    });
+    const canonical =
+      typeof job.metadata.canonical_url === "string"
+        ? job.metadata.canonical_url
+        : `https://github.com/${connection.external_id}/commit/${commit.sha}`;
+    return { id: commit.sha, url: canonical };
+  }
   const { openSeoPullRequest } = await import("@/lib/github-app.server");
   const pull = await openSeoPullRequest({
     installationId,
