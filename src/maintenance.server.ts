@@ -8,7 +8,7 @@ type MaintenanceResult = {
   errors: Array<{ task: string; message: string }>;
 };
 
-export async function runScheduledMaintenance(now = new Date()): Promise<MaintenanceResult> {
+export async function runScheduledMaintenance(_now = new Date()): Promise<MaintenanceResult> {
   const tasks: Array<[string, Promise<unknown>]> = [
     ["gsc", import("./lib/gsc-sync.server").then(({ syncAllGscClients }) => syncAllGscClients())],
     [
