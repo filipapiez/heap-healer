@@ -64,6 +64,11 @@ const jit = (i: number, k: number) => {
 
 type Dot = { x: number; y: number; r: number; o: number; accent?: boolean };
 
+/** Rounded so SSR and client render byte-identical SVG coordinates. */
+function round3(value: number) {
+  return Math.round(value * 1000) / 1000;
+}
+
 function buildDots(): { base: Dot[]; cluster: Dot[]; satellites: Dot[] } {
   const bin = atob(LAND_B64);
   const land: [number, number][] = [];
@@ -110,9 +115,9 @@ function buildDots(): { base: Dot[]; cluster: Dot[]; satellites: Dot[] } {
       const spread = CELL * (0.7 + Math.abs(jit(i, k + 21)) * 0.9);
       const ang = jit(i, k + 33) * Math.PI * 2;
       cluster.push({
-        x: x + Math.cos(ang) * spread,
-        y: y + Math.sin(ang) * spread,
-        r: 0.65 + Math.abs(jit(i, k + 47)) * 0.35,
+        x: round3(x + Math.cos(ang) * spread),
+        y: round3(y + Math.sin(ang) * spread),
+        r: round3(0.65 + Math.abs(jit(i, k + 47)) * 0.35),
         o: 0.48 - k * 0.08,
       });
     }
