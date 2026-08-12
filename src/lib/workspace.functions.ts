@@ -57,8 +57,25 @@ export const listWorkspaces = createServerFn({ method: "GET" })
       await supabase.from("profiles").update({ current_workspace_id: activeId }).eq("id", userId);
     }
 
+    // Attach the website/domain tracked in each workspace so the switcher can
+    // show "domain 1 / domain 2" instead of only workspace names.
+    const { data: clients } = await supabase
+      .from("seo_clients")
+      .select("workspace_id, website")
+      .in("workspace_id", rows.map((r) => r.id));
+    const websiteByWorkspace = new Map<string, string>();
+    for (const client of clients ?? []) {
+      if (client.workspace_id && client.website && !websiteByWorkspace.has(client.workspace_id)) {
+        websiteByWorkspace.set(client.workspace_id, client.website);
+      }
+    }
+
     return {
-      workspaces: rows.map((r) => ({ ...r, active: r.id === activeId })),
+      workspaces: rows.map((r) => ({
+        ...r,
+        website: websiteByWorkspace.get(r.id) ?? null,
+        active: r.id === activeId,
+      })),
       activeId,
     };
   });
