@@ -279,7 +279,7 @@ canonicalUrl must be exactly ${origin}/<slug>. cta.buttonUrl and breadcrumb URLs
     candidate.faqs ??= [];
     candidate.sections ??= [];
 
-    const semanticHash = await hash(normaliseTopic(`${candidate.primaryKeyword} ${candidate.topicFallback ?? ""}`));
+    const semanticHash = await hash(normaliseTopic(candidate.primaryKeyword ?? ""));
     const duplicate = priorPages.some((prior) => prior.semantic_topic_hash === semanticHash);
     report = scoreGeneratedPage(candidate, { allowedInternalUrls, existingSlugs, origin });
     if (duplicate) {
