@@ -208,6 +208,115 @@ export type Database = {
           },
         ]
       }
+      generated_pages: {
+        Row: {
+          canonical_url: string
+          connection_id: string | null
+          content_hash: string | null
+          content_json: Json
+          error_message: string | null
+          failure_stage: string | null
+          generated_at: string
+          github_commit_sha: string | null
+          h1: string | null
+          id: string
+          last_meaningful_update_at: string | null
+          meta_description: string | null
+          page_type: string | null
+          primary_keyword: string
+          publish_job_id: string | null
+          published_at: string | null
+          quality_issues: Json
+          search_intent: string | null
+          secondary_keywords: string[]
+          semantic_topic_hash: string | null
+          seo_score: number | null
+          seo_title: string | null
+          slug: string
+          status: string
+          topic: string | null
+          workspace_id: string
+        }
+        Insert: {
+          canonical_url: string
+          connection_id?: string | null
+          content_hash?: string | null
+          content_json?: Json
+          error_message?: string | null
+          failure_stage?: string | null
+          generated_at?: string
+          github_commit_sha?: string | null
+          h1?: string | null
+          id?: string
+          last_meaningful_update_at?: string | null
+          meta_description?: string | null
+          page_type?: string | null
+          primary_keyword: string
+          publish_job_id?: string | null
+          published_at?: string | null
+          quality_issues?: Json
+          search_intent?: string | null
+          secondary_keywords?: string[]
+          semantic_topic_hash?: string | null
+          seo_score?: number | null
+          seo_title?: string | null
+          slug: string
+          status?: string
+          topic?: string | null
+          workspace_id: string
+        }
+        Update: {
+          canonical_url?: string
+          connection_id?: string | null
+          content_hash?: string | null
+          content_json?: Json
+          error_message?: string | null
+          failure_stage?: string | null
+          generated_at?: string
+          github_commit_sha?: string | null
+          h1?: string | null
+          id?: string
+          last_meaningful_update_at?: string | null
+          meta_description?: string | null
+          page_type?: string | null
+          primary_keyword?: string
+          publish_job_id?: string | null
+          published_at?: string | null
+          quality_issues?: Json
+          search_intent?: string | null
+          secondary_keywords?: string[]
+          semantic_topic_hash?: string | null
+          seo_score?: number | null
+          seo_title?: string | null
+          slug?: string
+          status?: string
+          topic?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_pages_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "website_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_pages_publish_job_id_fkey"
+            columns: ["publish_job_id"]
+            isOneToOne: false
+            referencedRelation: "website_publish_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_pages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       github_app_installations: {
         Row: {
           account_login: string | null
@@ -1106,43 +1215,64 @@ export type Database = {
       }
       website_connections: {
         Row: {
+          auto_publish: boolean
+          content_format: string | null
           created_at: string
+          daily_generation_enabled: boolean
           display_name: string | null
           encrypted_credentials: string | null
           external_id: string
+          framework: string | null
           id: string
           last_error: string | null
           last_tested_at: string | null
           metadata: Json
           platform: string
+          publish_path: string | null
+          router_type: string | null
+          sitemap_path: string | null
           status: string
           updated_at: string
           workspace_id: string
         }
         Insert: {
+          auto_publish?: boolean
+          content_format?: string | null
           created_at?: string
+          daily_generation_enabled?: boolean
           display_name?: string | null
           encrypted_credentials?: string | null
           external_id: string
+          framework?: string | null
           id?: string
           last_error?: string | null
           last_tested_at?: string | null
           metadata?: Json
           platform: string
+          publish_path?: string | null
+          router_type?: string | null
+          sitemap_path?: string | null
           status?: string
           updated_at?: string
           workspace_id: string
         }
         Update: {
+          auto_publish?: boolean
+          content_format?: string | null
           created_at?: string
+          daily_generation_enabled?: boolean
           display_name?: string | null
           encrypted_credentials?: string | null
           external_id?: string
+          framework?: string | null
           id?: string
           last_error?: string | null
           last_tested_at?: string | null
           metadata?: Json
           platform?: string
+          publish_path?: string | null
+          router_type?: string | null
+          sitemap_path?: string | null
           status?: string
           updated_at?: string
           workspace_id?: string
@@ -1165,6 +1295,7 @@ export type Database = {
           excerpt: string | null
           external_id: string | null
           external_url: string | null
+          generated_page_id: string | null
           html: string
           id: string
           metadata: Json
@@ -1182,6 +1313,7 @@ export type Database = {
           excerpt?: string | null
           external_id?: string | null
           external_url?: string | null
+          generated_page_id?: string | null
           html: string
           id?: string
           metadata?: Json
@@ -1199,6 +1331,7 @@ export type Database = {
           excerpt?: string | null
           external_id?: string | null
           external_url?: string | null
+          generated_page_id?: string | null
           html?: string
           id?: string
           metadata?: Json
@@ -1215,6 +1348,13 @@ export type Database = {
             columns: ["connection_id"]
             isOneToOne: false
             referencedRelation: "website_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "website_publish_jobs_generated_page_id_fkey"
+            columns: ["generated_page_id"]
+            isOneToOne: false
+            referencedRelation: "generated_pages"
             referencedColumns: ["id"]
           },
           {

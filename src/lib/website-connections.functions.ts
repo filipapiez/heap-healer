@@ -493,7 +493,7 @@ export const listWebsitePublishJobs = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("website_publish_jobs" as never)
       .select(
-        "id,title,slug,publish_mode,status,external_url,error_message,created_at,processed_at,connection:website_connections(id,platform,display_name,external_id)",
+        "id,title,slug,publish_mode,status,external_url,external_id,error_message,created_at,processed_at,metadata,connection:website_connections(id,platform,display_name,external_id),generated:generated_pages!website_publish_jobs_generated_page_id_fkey(id,primary_keyword,seo_score,canonical_url,generated_at,published_at,github_commit_sha,status,failure_stage)",
       )
       .eq("workspace_id", workspaceId)
       .order("created_at", { ascending: false })

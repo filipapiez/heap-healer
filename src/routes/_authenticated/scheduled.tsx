@@ -52,10 +52,21 @@ type PublishJob = {
   publish_mode: string;
   status: string;
   external_url: string | null;
+  external_id: string | null;
   error_message: string | null;
   created_at: string;
   processed_at: string | null;
+  metadata: Record<string, unknown> | null;
   connection: DeliveryConnection | null;
+  generated: {
+    id: string;
+    primary_keyword: string | null;
+    seo_score: number | null;
+    canonical_url: string | null;
+    published_at: string | null;
+    github_commit_sha: string | null;
+    failure_stage: string | null;
+  } | null;
 };
 
 function pageLabel(page: SeoPage) {
@@ -335,7 +346,20 @@ function ContentPlanPage() {
             {jobsQuery.isLoading ? (
               <p className="text-xs text-[#85818b]">Loading jobs…</p>
             ) : ((jobsQuery.data?.jobs ?? []) as unknown as PublishJob[]).length ? (
-              ((jobsQuery.data?.jobs ?? []) as unknown as PublishJob[]).slice(0, 8).map((job) => (
+              ((jobsQuery.data?.jobs ?? []) as unknown as PublishJob[]).slice(0, 8).map((job) => {
+                const keyword =
+                  job.generated?.primary_keyword ??
+                  (typeof job.metadata?.keyword === "string" ? job.metadata.keyword : null);
+                const pageUrl =
+                  job.generated?.canonical_url ??
+                  (typeof job.metadata?.canonical_url === "string"
+                    ? job.metadata.canonical_url
+                    : job.external_url);
+                const score =
+                  job.generated?.seo_score ??
+                  (typeof job.metadata?.seo_score === "number" ? job.metadata.seo_score : null);
+                const commitSha = job.generated?.github_commit_sha ?? job.external_id;
+                return (
                 <div key={job.id} className="rounded-xl border border-[#ebeaf0] p-3 text-xs">
                   <div className="flex items-start justify-between gap-2">
                     <strong className="min-w-0 truncate text-[#302d34]">{job.title}</strong>
@@ -348,19 +372,39 @@ function ContentPlanPage() {
                     </span>
                   </div>
                   <p className="mt-1 truncate text-[#85818b]">
-                    {job.connection?.platform ?? "website"} · /{job.slug}
+                    {job.connection?.platform ?? "website"} ·{" "}
+                    {job.connection?.display_name || job.connection?.external_id || "site"} · /
+                    {job.slug}
                   </p>
-                  {job.external_url && (
+                  {keyword && <p className="mt-1 truncate text-[#85818b]">Keyword: {keyword}</p>}
+                  <p className="mt-1 text-[#a09ca8]">
+                    Generated {format(new Date(job.created_at), "MMM d, HH:mm")}
+                    {job.processed_at
+                      ? ` · Published ${format(new Date(job.processed_at), "MMM d, HH:mm")}`
+                      : ""}
+                    {typeof score === "number" ? ` · SEO ${score}/100` : ""}
+                  </p>
+                  {commitSha && (
+                    <p className="mt-1 font-mono text-[10px] text-[#a09ca8]">
+                      commit {commitSha.slice(0, 10)}
+                    </p>
+                  )}
+                  {pageUrl && (
                     <a
-                      href={job.external_url}
+                      href={pageUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="mt-1 inline-block font-semibold text-[#5b5bd6]"
                     >
-                      Open result →
+                      Open page →
                     </a>
                   )}
-                  {job.error_message && <p className="mt-1 text-red-700">{job.error_message}</p>}
+                  {(job.error_message || job.generated?.failure_stage) && (
+                    <p className="mt-1 text-red-700">
+                      {job.generated?.failure_stage ? `${job.generated.failure_stage}: ` : ""}
+                      {job.error_message ?? "Delivery failed"}
+                    </p>
+                  )}
                   {job.status === "failed" && (
                     <button
                       type="button"
@@ -372,7 +416,8 @@ function ContentPlanPage() {
                     </button>
                   )}
                 </div>
-              ))
+                );
+              })
             ) : (
               <p className="rounded-xl border border-dashed border-[#d8d7dc] p-4 text-xs text-[#85818b]">
                 No delivery jobs yet.
