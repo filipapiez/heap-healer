@@ -171,7 +171,7 @@ export async function listInstallationRepositories(installationId: number) {
   return data.repositories ?? [];
 }
 
-async function installationToken(installationId: number) {
+export async function installationToken(installationId: number) {
   const response = await fetch(
     `https://api.github.com/app/installations/${installationId}/access_tokens`,
     {
@@ -185,6 +185,137 @@ async function installationToken(installationId: number) {
   );
   if (!response.ok) throw new Error(`GitHub installation token failed (${response.status})`);
   return ((await response.json()) as { token: string }).token;
+}
+
+function ghHeaders(token: string) {
+  return {
+    authorization: `Bearer ${token}`,
+    accept: "application/vnd.github+json",
+    "content-type": "application/json",
+    "user-agent": "MentionMyApp",
+  };
+}
+
+export async function getRepositoryMeta(installationId: number, repository: string) {
+  const token = await installationToken(installationId);
+  const headers = ghHeaders(token);
+  const api = `https://api.github.com/repos/${repository}`;
+  const response = await fetch(api, { headers });
+  if (!response.ok) throw new Error(`GitHub repository lookup failed (${response.status})`);
+  const repo = (await response.json()) as {
+    default_branch: string;
+    description: string | null;
+    homepage: string | null;
+    topics?: string[];
+    language: string | null;
+    full_name: string;
+  };
+  const [treeResponse, languagesResponse] = await Promise.all([
+    fetch(`${api}/git/trees/${encodeURIComponent(repo.default_branch)}?recursive=1`, { headers }),
+    fetch(`${api}/languages`, { headers }),
+  ]);
+  const tree = treeResponse.ok
+    ? (((await treeResponse.json()) as { tree?: { path: string; type: string }[] }).tree ?? [])
+    : [];
+  const languages = languagesResponse.ok
+    ? Object.keys((await languagesResponse.json()) as Record<string, number>)
+    : [];
+  return {
+    defaultBranch: repo.default_branch,
+    description: repo.description,
+    homepage: repo.homepage,
+    topics: repo.topics ?? [],
+    languages,
+    fullName: repo.full_name,
+    files: tree.filter((entry) => entry.type === "blob").map((entry) => entry.path),
+  };
+}
+
+export async function readRepositoryFile(
+  installationId: number,
+  repository: string,
+  path: string,
+  ref?: string,
+): Promise<string | null> {
+  const token = await installationToken(installationId);
+  const url = `https://api.github.com/repos/${repository}/contents/${path}${ref ? `?ref=${encodeURIComponent(ref)}` : ""}`;
+  const response = await fetch(url, { headers: ghHeaders(token) });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(`GitHub file read failed (${response.status}) for ${path}`);
+  const payload = (await response.json()) as { content?: string; encoding?: string };
+  if (!payload.content) return null;
+  const binary = atob(payload.content.replace(/\n/g, ""));
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+/**
+ * Commit one or more files straight to the repository's default branch.
+ * Used by the daily generator so pages ship without a human merging a PR.
+ */
+export async function commitRepositoryFiles(input: {
+  installationId: number;
+  repository: string;
+  message: string;
+  files: { path: string; content: string }[];
+  branch?: string;
+}) {
+  const token = await installationToken(input.installationId);
+  const headers = ghHeaders(token);
+  const api = `https://api.github.com/repos/${input.repository}`;
+  const repoResponse = await fetch(api, { headers });
+  if (!repoResponse.ok) throw new Error(`GitHub repository lookup failed (${repoResponse.status})`);
+  const branch = input.branch ?? ((await repoResponse.json()) as { default_branch: string }).default_branch;
+
+  const refResponse = await fetch(`${api}/git/ref/heads/${encodeURIComponent(branch)}`, { headers });
+  if (!refResponse.ok) throw new Error(`GitHub branch lookup failed (${refResponse.status})`);
+  const headSha = ((await refResponse.json()) as { object?: { sha?: string } }).object?.sha;
+  if (!headSha) throw new Error("GitHub did not return the branch head commit");
+
+  const commitResponse = await fetch(`${api}/git/commits/${headSha}`, { headers });
+  if (!commitResponse.ok) throw new Error(`GitHub commit lookup failed (${commitResponse.status})`);
+  const baseTree = ((await commitResponse.json()) as { tree: { sha: string } }).tree.sha;
+
+  const blobs = await Promise.all(
+    input.files.map(async (file) => {
+      const blob = await fetch(`${api}/git/blobs`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ content: file.content, encoding: "utf-8" }),
+      });
+      if (!blob.ok) throw new Error(`GitHub blob creation failed (${blob.status})`);
+      return {
+        path: file.path,
+        mode: "100644" as const,
+        type: "blob" as const,
+        sha: ((await blob.json()) as { sha: string }).sha,
+      };
+    }),
+  );
+
+  const treeResponse = await fetch(`${api}/git/trees`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ base_tree: baseTree, tree: blobs }),
+  });
+  if (!treeResponse.ok) throw new Error(`GitHub tree creation failed (${treeResponse.status})`);
+  const treeSha = ((await treeResponse.json()) as { sha: string }).sha;
+
+  const newCommit = await fetch(`${api}/git/commits`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ message: input.message, tree: treeSha, parents: [headSha] }),
+  });
+  if (!newCommit.ok) throw new Error(`GitHub commit creation failed (${newCommit.status})`);
+  const commitSha = ((await newCommit.json()) as { sha: string }).sha;
+
+  const update = await fetch(`${api}/git/refs/heads/${encodeURIComponent(branch)}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ sha: commitSha }),
+  });
+  if (!update.ok) throw new Error(`GitHub branch update failed (${update.status})`);
+  return { sha: commitSha, branch };
 }
 
 export async function openSeoPullRequest(input: {
