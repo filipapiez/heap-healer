@@ -4,7 +4,11 @@ import { useRouter } from "@tanstack/react-router";
 import { Check, ChevronsUpDown, Globe2, Plus } from "lucide-react";
 import { listWorkspaces, setActiveWorkspace, createWorkspace } from "@/lib/workspace.functions";
 
-/** The active brand/website selector shown in the authenticated top bar. */
+function prettyDomain(url: string) {
+  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
+/** The active website/domain selector shown in the authenticated top bar. */
 export default function WorkspaceSwitcher() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -35,6 +39,8 @@ export default function WorkspaceSwitcher() {
       setCreating(false);
       setNewName("");
       setOpen(false);
+      // A brand-new website has nothing connected yet — send them to setup.
+      router.navigate({ to: "/accounts", search: { focus: "setup" } });
     },
   });
 
@@ -58,14 +64,16 @@ export default function WorkspaceSwitcher() {
         aria-haspopup="listbox"
       >
         <Globe2 className="h-4 w-4 shrink-0 text-[#777681]" />
-        <span className="min-w-0 flex-1 truncate">{active?.name ?? "My workspace"}</span>
+        <span className="min-w-0 flex-1 truncate">
+          {active?.website ? prettyDomain(active.website) : (active?.name ?? "My website")}
+        </span>
         <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 text-[#777681]" />
       </button>
 
       {open && (
         <div className="absolute left-0 z-50 mt-2 w-[280px] rounded-2xl border border-[#e7e6ea] bg-white p-2 text-[#17151b] shadow-[0_18px_45px_rgba(16,24,40,.14)]">
           <div className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[.08em] text-[#8a8790]">
-            Brand workspaces
+            Your websites
           </div>
           {workspaces.map((workspace) => (
             <button
@@ -74,10 +82,17 @@ export default function WorkspaceSwitcher() {
               disabled={setActive.isPending}
               role="option"
               aria-selected={workspace.active}
-              className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-[#f7f7f9] ${workspace.active ? "font-semibold text-[#5558d8]" : ""}`}
+              className={`flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-left text-sm hover:bg-[#f7f7f9] ${workspace.active ? "font-semibold text-[#5558d8]" : ""}`}
             >
-              <span className="truncate">{workspace.name}</span>
-              {workspace.active && <Check className="h-4 w-4" />}
+              <span className="min-w-0">
+                <span className="block truncate">
+                  {workspace.website ? prettyDomain(workspace.website) : workspace.name}
+                </span>
+                <span className="block truncate text-xs font-normal text-[#8a8790]">
+                  {workspace.website ? workspace.name : "No website connected yet"}
+                </span>
+              </span>
+              {workspace.active && <Check className="h-4 w-4 shrink-0" />}
             </button>
           ))}
           <div className="my-1 border-t border-[#eeedf0]" />
@@ -86,7 +101,7 @@ export default function WorkspaceSwitcher() {
               <input
                 autoFocus
                 className="input text-sm"
-                placeholder="New brand name"
+                placeholder="New website name (e.g. Second Domain)"
                 value={newName}
                 onChange={(event) => setNewName(event.target.value)}
                 onKeyDown={(event) =>
@@ -111,7 +126,7 @@ export default function WorkspaceSwitcher() {
               onClick={() => setCreating(true)}
               className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-[#5558d8] hover:bg-[#f7f7f9]"
             >
-              <Plus className="h-4 w-4" /> New brand workspace
+              <Plus className="h-4 w-4" /> Add another website
             </button>
           )}
         </div>
