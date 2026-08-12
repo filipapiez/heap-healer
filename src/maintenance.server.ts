@@ -4,6 +4,7 @@ type MaintenanceResult = {
   semrush: unknown;
   websiteJobs: unknown;
   directoryQueue: unknown;
+  dailyPages: unknown;
   errors: Array<{ task: string; message: string }>;
 };
 
@@ -22,15 +23,20 @@ export async function runScheduledMaintenance(now = new Date()): Promise<Mainten
         processWebsitePublishJobs(),
       ),
     ],
-  ];
-  if (now.getUTCDay() === 1) {
-    tasks.push([
+    // Daily SEO page generation runs every day, independent of the directory queue.
+    [
+      "dailyPages",
+      import("./lib/daily-page-generator.server").then(({ runDailyPageGeneration }) =>
+        runDailyPageGeneration(),
+      ),
+    ],
+    [
       "directoryQueue",
       import("./lib/directory-submit.server").then(({ queueWeeklyDirectories }) =>
         queueWeeklyDirectories(),
       ),
-    ]);
-  }
+    ],
+  ];
 
   const settled = await Promise.allSettled(tasks.map(([, task]) => task));
   const output: MaintenanceResult = {
@@ -38,11 +44,17 @@ export async function runScheduledMaintenance(now = new Date()): Promise<Mainten
     gsc: null,
     semrush: null,
     websiteJobs: null,
-    directoryQueue: now.getUTCDay() === 1 ? null : { skipped: "not Monday UTC" },
+    directoryQueue: null,
+    dailyPages: null,
     errors: [],
   };
   settled.forEach((result, index) => {
-    const task = tasks[index][0] as "gsc" | "semrush" | "websiteJobs" | "directoryQueue";
+    const task = tasks[index][0] as
+      | "gsc"
+      | "semrush"
+      | "websiteJobs"
+      | "directoryQueue"
+      | "dailyPages";
     if (result.status === "fulfilled") {
       output[task] = result.value;
     } else {
