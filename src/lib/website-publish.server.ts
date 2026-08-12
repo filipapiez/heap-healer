@@ -142,7 +142,9 @@ async function publish(connection: Connection, job: Job): Promise<PublishResult>
 }
 
 async function recordPublishedPage(job: Job, connection: Connection, url: string) {
-  if (job.publish_mode !== "publish" || connection.platform === "github") return;
+  const generated = job.metadata.generated === true;
+  if (job.publish_mode !== "publish") return;
+  if (connection.platform === "github" && !generated) return;
   const { data: client, error: clientError } = await supabaseAdmin
     .from("seo_clients" as never)
     .select("id")
