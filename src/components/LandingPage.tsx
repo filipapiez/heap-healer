@@ -639,24 +639,11 @@ export default function LandingPage() {
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "flex-end",
                         alignItems: "center",
                         gap: 10,
                       }}
                     >
-                      <span
-                        style={{
-                          fontSize: 10.5,
-                          fontWeight: 700,
-                          letterSpacing: "0.16em",
-                          textTransform: "uppercase",
-                          border: `1px solid ${f.status === "Available" ? VIOLET : MUTEDW}`,
-                          color: f.status === "Available" ? VIOLET : MUTEDW,
-                          padding: "4px 8px",
-                        }}
-                      >
-                        {f.status}
-                      </span>
                       <span aria-hidden style={{ fontSize: 18 }}>
                         {f.icon}
                       </span>
