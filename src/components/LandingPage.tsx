@@ -30,10 +30,10 @@ const LINE = "#E5E7EB";
 const BG = "#FFFFFF";
 
 // ---------- Editorial paper palette (below-hero sections) ----------
-const PAPER = "#F5F2EC";
-const INKD = "#0B0B0F";
+const PAPER = "#F4F5FB";
+const INKD = "#0C0E1A";
 const VIOLET = "#6C5CE7";
-const MUTEDW = "#8A857C";
+const MUTEDW = "#6B7086";
 
 // ---------- Configurable proof (REAL data only; empty = hidden) ----------
 const CLIENTS: string[] = []; // e.g. ["Acme Dental", "Riverside Law", ...]
