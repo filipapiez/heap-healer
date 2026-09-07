@@ -636,18 +636,16 @@ export default function LandingPage() {
                       color: dark ? PAPER : INKD,
                     }}
                   >
-                    <div
+                    <span
+                      aria-hidden
                       style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        alignItems: "center",
-                        gap: 10,
+                        display: "block",
+                        width: 30,
+                        height: 2,
+                        borderRadius: 999,
+                        background: dark ? VIOLET : "rgba(12,14,26,0.18)",
                       }}
-                    >
-                      <span aria-hidden style={{ fontSize: 18 }}>
-                        {f.icon}
-                      </span>
-                    </div>
+                    />
                     <div>
                       <h3
                         style={{
