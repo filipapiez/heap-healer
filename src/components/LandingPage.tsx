@@ -442,7 +442,7 @@ export default function LandingPage() {
                   <a
                     href={`/grow?site=${encodeURIComponent(auditUrl)}`}
                     className="btn"
-                    style={{ borderTop: 0, borderRight: 0, borderBottom: 0, whiteSpace: "nowrap" }}
+                    style={{ whiteSpace: "nowrap", padding: "13px 26px" }}
                   >
                     ANALYZE
                   </a>
@@ -455,7 +455,8 @@ export default function LandingPage() {
                         display: "inline-flex",
                         alignItems: "center",
                         gap: 6,
-                        border: `1px solid ${INKD}`,
+                        border: `1px solid rgba(12,14,26,0.10)`,
+                        borderRadius: 999,
                         padding: "7px 14px",
                         fontSize: 13,
                         fontWeight: 500,
