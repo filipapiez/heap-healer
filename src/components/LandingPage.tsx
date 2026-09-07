@@ -338,456 +338,792 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* ---------- FREE GEO AUDIT WIDGET ---------- */}
-      <section className="lp-sec" style={{ padding: "36px 20px 20px" }}>
-        <div
-          className="lp-card"
-          style={{
-            textAlign: "center",
-            padding: "50px 24px",
-            background: `radial-gradient(50% 60% at 50% 0%, ${ACCENT}0F, ${BG})`,
-          }}
-        >
-          <div className="lp-eyebrow">Free SEO · AEO · GEO readiness audit</div>
-          <h2 className="lp-h2" style={{ maxWidth: 720, margin: "12px auto 0" }}>
-            Can search engines and AI crawlers clearly understand{" "}
-            <span style={{ color: ACCENT }}>what your website offers?</span>
-          </h2>
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              justifyContent: "center",
-              flexWrap: "wrap",
-              margin: "24px 0 26px",
-            }}
-          >
-            {ENGINES.map((e) => (
-              <span key={e} className="lp-chip">
-                <EngineIcon name={e} size={16} /> {e}
-              </span>
-            ))}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              maxWidth: 560,
-              margin: "0 auto",
-              background: BG,
-              border: `1.5px solid ${LINE}`,
-              borderRadius: 999,
-              padding: 6,
-              boxShadow: "0 14px 34px rgba(23,26,43,0.08)",
-            }}
-          >
-            <input
-              value={auditUrl}
-              onChange={(e) => setAuditUrl(e.target.value)}
-              placeholder="yourwebsite.com"
-              style={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                padding: "12px 18px",
-                fontSize: 15.5,
-                fontFamily: "inherit",
-                background: "transparent",
-                color: INK,
-                minWidth: 0,
-              }}
-            />
-            <a
-              href={`/grow?site=${encodeURIComponent(auditUrl)}`}
-              className="lp-cta"
-              style={{ padding: "12px 24px", fontSize: 14.5, whiteSpace: "nowrap" }}
-            >
-              Run free audit →
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* ================= EDITORIAL PAPER SECTIONS ================= */}
+      <div className="brut">
+        <style>{`
+          .brut { background: ${PAPER}; color: ${INKD}; font-family: 'DM Sans', system-ui, sans-serif; }
+          .brut .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+          .brut h2, .brut h3, .brut h4, .brut .grotesk { font-family: 'Space Grotesk', 'DM Sans', sans-serif; letter-spacing: -0.03em; }
+          .brut .rule { border-top: 1px solid ${INKD}; }
+          .brut .box { border: 1px solid ${INKD}; }
+          .brut .lift { transition: box-shadow 140ms ease, transform 140ms ease; }
+          .brut .lift:hover { box-shadow: 8px 8px 0 0 ${VIOLET}; transform: translate(-2px, -2px); }
+          .brut .lift-ink:hover { box-shadow: 8px 8px 0 0 ${INKD}; transform: translate(-2px, -2px); }
+          .brut .eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: ${VIOLET}; }
+          .brut .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid ${INKD}; background: ${VIOLET}; color: #fff; font-weight: 700; font-family: 'Space Grotesk', sans-serif; padding: 14px 28px; text-decoration: none; cursor: pointer; transition: background 140ms, box-shadow 140ms, transform 140ms; }
+          .brut .btn:hover { background: ${INKD}; box-shadow: 6px 6px 0 0 ${VIOLET}; transform: translate(-2px,-2px); }
+          .brut .btn-ghost { background: transparent; color: ${INKD}; }
+          .brut .btn-ghost:hover { background: ${INKD}; color: ${PAPER}; }
+          .brut .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+          .brut .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
+          .brut .bento { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 20px; }
+          .brut .num { font-family: 'Space Grotesk', sans-serif; font-size: 68px; font-weight: 700; line-height: 1; opacity: 0.12; }
+          .brut input { font-family: inherit; }
+          @media (max-width: 900px) {
+            .brut .grid3, .brut .grid2, .brut .bento, .brut .split { grid-template-columns: 1fr !important; }
+            .brut .span2, .brut .span3 { grid-column: auto !important; }
+          }
+        `}</style>
 
-      {/* ---------- HOW IT WORKS ---------- */}
-      <section className="lp-sec" style={{ padding: "70px 20px 20px" }}>
-        <div className="lp-eyebrow">How it works</div>
-        <h2 className="lp-h2">
-          Traffic growth made simple <span className="ghost">— in three strategic steps.</span>
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 16,
-            marginTop: 34,
-          }}
-        >
-          {STEPS.map((s) => (
-            <div key={s.n} className="lp-card" style={{ padding: "26px 28px" }}>
-              <div
-                className="lp-display"
-                style={{ color: ACCENT, fontWeight: 800, fontSize: 15, marginBottom: 10 }}
-              >
-                {s.n}
+        {/* ---------- FREE AUDIT ---------- */}
+        <section style={{ padding: "88px 0", borderBottom: `1px solid ${INKD}` }}>
+          <div className="wrap">
+            <div
+              className="split box"
+              style={{ display: "grid", gridTemplateColumns: "7fr 5fr" }}
+            >
+              <div style={{ padding: 48, borderRight: `1px solid ${INKD}`, background: "#fff" }}>
+                <div className="eyebrow" style={{ marginBottom: 18 }}>
+                  Free SEO · AEO · GEO readiness audit
+                </div>
+                <h2
+                  style={{
+                    fontSize: "clamp(30px, 3.6vw, 46px)",
+                    fontWeight: 700,
+                    lineHeight: 1.05,
+                    margin: "0 0 28px",
+                  }}
+                >
+                  CAN SEARCH ENGINES AND AI CRAWLERS UNDERSTAND{" "}
+                  <span style={{ color: VIOLET }}>WHAT YOU OFFER?</span>
+                </h2>
+                <div
+                  style={{
+                    display: "flex",
+                    border: `1px solid ${INKD}`,
+                    background: PAPER,
+                    marginBottom: 20,
+                  }}
+                >
+                  <input
+                    value={auditUrl}
+                    onChange={(e) => setAuditUrl(e.target.value)}
+                    placeholder="yourwebsite.com"
+                    style={{
+                      flex: 1,
+                      border: "none",
+                      outline: "none",
+                      background: "transparent",
+                      padding: "16px 20px",
+                      fontSize: 16,
+                      color: INKD,
+                      minWidth: 0,
+                    }}
+                  />
+                  <a
+                    href={`/grow?site=${encodeURIComponent(auditUrl)}`}
+                    className="btn"
+                    style={{ borderTop: 0, borderRight: 0, borderBottom: 0, whiteSpace: "nowrap" }}
+                  >
+                    ANALYZE
+                  </a>
+                </div>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {ENGINES.map((e) => (
+                    <span
+                      key={e}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        border: `1px solid ${INKD}`,
+                        padding: "7px 14px",
+                        fontSize: 13,
+                        fontWeight: 500,
+                        background: "#fff",
+                      }}
+                    >
+                      <EngineIcon name={e} size={15} /> {e}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <h3
-                className="lp-display"
-                style={{ fontSize: 21, fontWeight: 800, margin: "0 0 10px" }}
+              <div
+                style={{
+                  padding: 48,
+                  background: INKD,
+                  color: PAPER,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  gap: 26,
+                }}
               >
-                {s.t}
-              </h3>
-              <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 16px" }}>
-                {s.d}
-              </p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {s.chips.map((c) => (
-                  <span key={c} className="lp-chip" style={{ fontSize: 12, padding: "6px 12px" }}>
-                    <span style={{ color: POS }}>✓</span> {c}
-                  </span>
+                {[
+                  ["Technical checks", "Crawlability"],
+                  ["Backlink workflow", "Verified only"],
+                  ["Search Console", "Real data"],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-end",
+                      gap: 12,
+                      borderBottom: `1px solid ${MUTEDW}33`,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <span className="grotesk" style={{ fontSize: 20 }}>
+                      {label}
+                    </span>
+                    <span
+                      className="grotesk"
+                      style={{ color: VIOLET, fontWeight: 700, fontSize: 20 }}
+                    >
+                      {value}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- PLATFORM FEATURES ---------- */}
-      <section id="features" className="lp-sec" style={{ padding: "70px 20px 20px" }}>
-        <div className="lp-eyebrow">Platform features</div>
-        <h2 className="lp-h2">
-          A powerful suite of features <span className="ghost">— all in one place.</span>
-        </h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 16,
-            marginTop: 34,
-          }}
-        >
-          {FEATURES.map((f) => (
-            <div
-              key={f.t}
-              className="lp-card"
-              style={{ padding: "24px 26px", gridColumn: f.wide ? "span 1" : undefined }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 10,
-                }}
-              >
-                <h3 className="lp-display" style={{ fontSize: 19, fontWeight: 800, margin: 0 }}>
-                  {f.t}
-                </h3>
-                <span style={{ fontSize: 18 }} aria-hidden>
-                  {f.icon}
-                </span>
-              </div>
-              <span
-                style={{
-                  display: "inline-flex",
-                  marginBottom: 10,
-                  borderRadius: 999,
-                  padding: "4px 9px",
-                  background: f.status === "Available" ? "#ECFDF5" : "#FFF7ED",
-                  color: f.status === "Available" ? "#047857" : "#9A3412",
-                  fontSize: 11,
-                  fontWeight: 700,
-                }}
-              >
-                {f.status}
-              </span>
-              <p style={{ color: MUTED, fontSize: 14, lineHeight: 1.65, margin: 0 }}>{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------- WRITTEN LIKE YOU ---------- */}
-      <section className="lp-sec" style={{ padding: "70px 20px 20px" }}>
-        <div className="lp-eyebrow">Controlled delivery</div>
-        <h2 className="lp-h2">
-          Your website stays yours <span className="ghost">— every change is explicit.</span>
-        </h2>
-        <p style={{ color: MUTED, fontSize: 16, maxWidth: 640, margin: "14px 0 30px" }}>
-          Connect only the destination you authorize, review the page content, and choose draft,
-          publish, or pull-request delivery where the platform supports it.
-        </p>
-        <div
-          className="lp-2col"
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}
-        >
-          <MiniCard n="1" title="Scoped connection">
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["WordPress", "Shopify", "GitHub"].map((platform) => (
-                <span key={platform} className="lp-chip" style={{ fontSize: 12.5 }}>
-                  {platform}
-                </span>
-              ))}
-            </div>
-          </MiniCard>
-          <MiniCard n="2" title="Approval state">
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["draft", "approved", "published"].map((t) => (
-                <span key={t} className="lp-chip" style={{ fontSize: 12.5 }}>
-                  {t}
-                </span>
-              ))}
-            </div>
-          </MiniCard>
-          <MiniCard n="3" title="Evidence trail">
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["Job status", "Published URL", "Verified backlink"].map((t) => (
-                <span
-                  key={t}
-                  className="lp-chip"
-                  style={{ fontSize: 12.5, color: ACCENT_DARK, borderColor: `${ACCENT}55` }}
-                >
-                  🔗 {t}
-                </span>
-              ))}
-            </div>
-          </MiniCard>
-        </div>
-      </section>
-
-      {/* ---------- SUCCESS STORIES (hidden until real) ---------- */}
-      {CASES.length > 0 && (
-        <section id="stories" className="lp-sec" style={{ padding: "70px 20px 20px" }}>
-          <div className="lp-eyebrow">Success stories</div>
-          <h2 className="lp-h2">
-            Our customer results <span className="ghost">— receipts included.</span>
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: 16,
-              marginTop: 34,
-            }}
-          >
-            {CASES.map((c) => (
-              <div key={c.company} className="lp-card" style={{ padding: "26px 28px" }}>
-                <h3
-                  className="lp-display"
-                  style={{ fontSize: 19, fontWeight: 800, margin: "0 0 14px" }}
-                >
-                  {c.headline}
-                </h3>
-                <div style={{ display: "flex", gap: 26, marginBottom: 14 }}>
-                  {[c.stat1, c.stat2].map(([v, l]) => (
-                    <div key={l}>
-                      <div className="lp-display" style={{ fontSize: 26, fontWeight: 800 }}>
-                        {v}
-                      </div>
-                      <div style={{ fontSize: 12, color: MUTED }}>{l}</div>
-                    </div>
-                  ))}
-                </div>
-                {c.quote && (
-                  <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.6, margin: 0 }}>
-                    "{c.quote}" — {c.person}
-                  </p>
-                )}
-              </div>
-            ))}
           </div>
         </section>
-      )}
 
-      {/* ---------- NETWORK / MAP ---------- */}
-      <section className="lp-sec" style={{ padding: "70px 20px 10px" }}>
-        <div className="lp-eyebrow">From Chicago to everywhere</div>
-        <h2 className="lp-h2">
-          One team in Chicago <span className="ghost">— growing businesses worldwide.</span>
-        </h2>
-        <div style={{ marginTop: 20 }}>
-          <WorldMap hqLabel="MentionMyApp" accent={ACCENT} dot="#C7CAF0" height={440} />
-        </div>
-      </section>
-
-      {/* ---------- TWIN OUTCOME CARDS ---------- */}
-      <section className="lp-sec" style={{ padding: "50px 20px 20px" }}>
-        <div
-          className="lp-2col"
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}
-        >
-          <div className="lp-card" style={{ padding: "28px 30px" }}>
-            <h3
-              className="lp-display"
-              style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
-            >
-              Measure Google search performance
-            </h3>
-            <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
-              Verified clicks and impressions sync from your Search Console property and stay
-              comparable to the saved 28-day baseline.
-            </p>
-            {/* mini GSC-style chart */}
-            <svg viewBox="0 0 420 150" style={{ width: "100%" }}>
-              {[30, 70, 110].map((y) => (
-                <line key={y} x1="0" x2="420" y1={y} y2={y} stroke={LINE} strokeWidth="1" />
-              ))}
-              <path
-                d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26 L420,150 L0,150 Z"
-                fill={`${ACCENT}1A`}
-              />
-              <path
-                d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26"
-                fill="none"
-                stroke={ACCENT}
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              <line
-                x1="150"
-                x2="150"
-                y1="10"
-                y2="140"
-                stroke={MUTED}
-                strokeDasharray="5 5"
-                strokeWidth="1.2"
-                opacity="0.6"
-              />
-              <text x="156" y="22" fontSize="10" fill={MUTED} fontFamily="Inter">
-                work starts
-              </text>
-            </svg>
-          </div>
-          <div className="lp-card" style={{ padding: "28px 30px" }}>
-            <h3
-              className="lp-display"
-              style={{ fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}
-            >
-              Prepare for AI discovery
-            </h3>
-            <p style={{ color: MUTED, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 20px" }}>
-              Audit the structure that search and answer engines can read. Mention tracking appears
-              only after a real visibility provider is connected.
-            </p>
+        {/* ---------- HOW IT WORKS + FEATURE BENTO ---------- */}
+        <section id="features" style={{ padding: "88px 0", background: "#fff" }}>
+          <div className="wrap">
             <div
               style={{
-                background: PANEL,
-                borderRadius: 14,
-                padding: "16px 18px",
-                fontSize: 13.5,
-                lineHeight: 1.6,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                gap: 32,
+                flexWrap: "wrap",
+                marginBottom: 56,
               }}
             >
-              <div style={{ textAlign: "right", marginBottom: 10 }}>
-                <span
-                  style={{
-                    background: INK,
-                    color: "#fff",
-                    borderRadius: 12,
-                    padding: "8px 14px",
-                    display: "inline-block",
-                  }}
-                >
-                  What's the best option near me?
-                </span>
-              </div>
-              <div
+              <h2
                 style={{
-                  background: BG,
-                  border: `1.5px solid ${LINE}`,
-                  borderRadius: 12,
-                  padding: "12px 14px",
+                  fontSize: "clamp(34px, 5vw, 62px)",
+                  fontWeight: 700,
+                  lineHeight: 0.95,
+                  margin: 0,
                 }}
               >
-                Provider not connected — MentionMyApp will not invent an AI recommendation.
+                HOW THE
+                <br />
+                GROWTH ENGINE RUNS
+              </h2>
+              <p style={{ maxWidth: 300, textAlign: "right", color: MUTEDW, margin: 0 }}>
+                Audit, publish, verify, measure — one loop that runs every day on your site.
+              </p>
+            </div>
+
+            <div className="grid3">
+              {STEPS.map((s, i) => (
+                <div
+                  key={s.n}
+                  className={`box ${i === 1 ? "lift-ink" : "lift"}`}
+                  style={{
+                    padding: 32,
+                    minHeight: 320,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    background: i === 1 ? VIOLET : "#fff",
+                    color: i === 1 ? "#fff" : INKD,
+                  }}
+                >
+                  <div className="num" style={{ opacity: i === 1 ? 0.25 : 0.12 }}>
+                    {s.n}
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 700,
+                        margin: "0 0 12px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {s.t}
+                    </h3>
+                    <p style={{ margin: "0 0 16px", lineHeight: 1.6, fontSize: 14.5 }}>{s.d}</p>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {s.chips.map((c) => (
+                        <span
+                          key={c}
+                          style={{
+                            border: `1px solid ${i === 1 ? "#fff" : INKD}`,
+                            padding: "5px 10px",
+                            fontSize: 11.5,
+                            fontWeight: 500,
+                          }}
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bento" style={{ marginTop: 20 }}>
+              {FEATURES.map((f, i) => {
+                const dark = i === 3;
+                const wide = i === 0 || i === 5;
+                return (
+                  <div
+                    key={f.t}
+                    className={`box ${dark ? "lift-ink" : "lift"} ${wide ? "span2" : ""}`}
+                    style={{
+                      gridColumn: wide ? "span 2" : undefined,
+                      padding: 30,
+                      minHeight: 200,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      background: dark ? INKD : PAPER,
+                      color: dark ? PAPER : INKD,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 10,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 10.5,
+                          fontWeight: 700,
+                          letterSpacing: "0.16em",
+                          textTransform: "uppercase",
+                          border: `1px solid ${f.status === "Available" ? VIOLET : MUTEDW}`,
+                          color: f.status === "Available" ? VIOLET : MUTEDW,
+                          padding: "4px 8px",
+                        }}
+                      >
+                        {f.status}
+                      </span>
+                      <span aria-hidden style={{ fontSize: 18 }}>
+                        {f.icon}
+                      </span>
+                    </div>
+                    <div>
+                      <h3
+                        style={{
+                          fontSize: wide ? 28 : 20,
+                          fontWeight: 700,
+                          margin: "22px 0 10px",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {f.t}
+                      </h3>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: 14,
+                          lineHeight: 1.6,
+                          opacity: dark ? 0.75 : 0.7,
+                        }}
+                      >
+                        {f.d}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- CONTROLLED DELIVERY ---------- */}
+        <section style={{ padding: "88px 0", borderTop: `1px solid ${INKD}` }}>
+          <div className="wrap">
+            <div className="eyebrow">Controlled delivery</div>
+            <h2
+              style={{
+                fontSize: "clamp(30px, 4vw, 50px)",
+                fontWeight: 700,
+                margin: "14px 0 12px",
+                lineHeight: 1,
+              }}
+            >
+              YOUR WEBSITE STAYS YOURS.
+            </h2>
+            <p style={{ color: MUTEDW, maxWidth: 620, margin: "0 0 40px", fontSize: 16 }}>
+              Connect only the destination you authorize, review the page content, and choose draft,
+              publish, or pull-request delivery where the platform supports it.
+            </p>
+            <div className="grid3">
+              {[
+                { n: "1", t: "Scoped connection", items: ["WordPress", "Shopify", "GitHub"] },
+                { n: "2", t: "Approval state", items: ["draft", "approved", "published"] },
+                {
+                  n: "3",
+                  t: "Evidence trail",
+                  items: ["Job status", "Published URL", "Verified backlink"],
+                },
+              ].map((m) => (
+                <div key={m.n} className="box lift" style={{ padding: 30, background: "#fff" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      marginBottom: 20,
+                    }}
+                  >
+                    <span
+                      className="grotesk"
+                      style={{
+                        background: VIOLET,
+                        color: "#fff",
+                        width: 26,
+                        height: 26,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 700,
+                        fontSize: 13,
+                      }}
+                    >
+                      {m.n}
+                    </span>
+                    <span
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 12,
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {m.t}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {m.items.map((t) => (
+                      <span
+                        key={t}
+                        style={{
+                          border: `1px solid ${INKD}`,
+                          padding: "6px 12px",
+                          fontSize: 12.5,
+                        }}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- SUCCESS STORIES (hidden until real) ---------- */}
+        {CASES.length > 0 && (
+          <section id="stories" style={{ padding: "88px 0", borderTop: `1px solid ${INKD}` }}>
+            <div className="wrap">
+              <div className="eyebrow">Success stories</div>
+              <h2 style={{ fontSize: 46, fontWeight: 700, margin: "14px 0 40px" }}>
+                CUSTOMER RESULTS
+              </h2>
+              <div className="grid3">
+                {CASES.map((c) => (
+                  <div key={c.company} className="box lift" style={{ padding: 30, background: "#fff" }}>
+                    <h3 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 18px" }}>
+                      {c.headline}
+                    </h3>
+                    <div style={{ display: "flex", gap: 28, marginBottom: 16 }}>
+                      {[c.stat1, c.stat2].map(([v, l]) => (
+                        <div key={l}>
+                          <div className="grotesk" style={{ fontSize: 30, fontWeight: 700 }}>
+                            {v}
+                          </div>
+                          <div style={{ fontSize: 12, color: MUTEDW }}>{l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {c.quote && (
+                      <p style={{ fontSize: 14, color: MUTEDW, lineHeight: 1.6, margin: 0 }}>
+                        "{c.quote}" — {c.person}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* ---------- MEASUREMENT TWIN CARDS ---------- */}
+        <section style={{ padding: "88px 0", background: "#fff", borderTop: `1px solid ${INKD}` }}>
+          <div className="wrap">
+            <div className="grid2">
+              <div className="box" style={{ padding: 36, background: PAPER }}>
+                <h3
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 700,
+                    margin: "0 0 12px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Measure Google performance
+                </h3>
+                <p style={{ color: MUTEDW, fontSize: 14.5, lineHeight: 1.65, margin: "0 0 24px" }}>
+                  Verified clicks and impressions sync from your Search Console property and stay
+                  comparable to the saved 28-day baseline.
+                </p>
+                <svg viewBox="0 0 420 150" style={{ width: "100%" }}>
+                  {[30, 70, 110].map((y) => (
+                    <line key={y} x1="0" x2="420" y1={y} y2={y} stroke={MUTEDW} strokeWidth="1" />
+                  ))}
+                  <path
+                    d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26 L420,150 L0,150 Z"
+                    fill={`${VIOLET}22`}
+                  />
+                  <path
+                    d="M0,135 C60,133 120,128 180,112 C250,92 320,58 420,26"
+                    fill="none"
+                    stroke={VIOLET}
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1="150"
+                    x2="150"
+                    y1="10"
+                    y2="140"
+                    stroke={INKD}
+                    strokeDasharray="5 5"
+                    strokeWidth="1.2"
+                  />
+                  <text x="156" y="22" fontSize="10" fill={INKD} fontFamily="DM Sans">
+                    work starts
+                  </text>
+                </svg>
+              </div>
+              <div className="box" style={{ padding: 36, background: INKD, color: PAPER }}>
+                <h3
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 700,
+                    margin: "0 0 12px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Prepare for AI discovery
+                </h3>
+                <p style={{ fontSize: 14.5, lineHeight: 1.65, margin: "0 0 24px", opacity: 0.75 }}>
+                  Audit the structure that search and answer engines can read. Mention tracking
+                  appears only after a real visibility provider is connected.
+                </p>
+                <div style={{ border: `1px solid ${MUTEDW}55`, padding: 18 }}>
+                  <div style={{ textAlign: "right", marginBottom: 12 }}>
+                    <span
+                      style={{
+                        background: VIOLET,
+                        color: "#fff",
+                        padding: "8px 14px",
+                        display: "inline-block",
+                        fontSize: 13.5,
+                      }}
+                    >
+                      What's the best option near me?
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      border: `1px solid ${MUTEDW}55`,
+                      padding: "12px 14px",
+                      fontSize: 13.5,
+                      opacity: 0.8,
+                    }}
+                  >
+                    Provider not connected — MentionMyApp will not invent an AI recommendation.
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ---------- PRICING ANCHOR ---------- */}
-      <section
-        id="pricing"
-        style={{ background: NAVY, color: "#fff", padding: "60px 20px", marginTop: 50 }}
-      >
-        <div className="lp-sec" style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: "0.16em", color: "#A5B4FC" }}>
-            SIMPLE PRICING
+        {/* ---------- NETWORK / MAP ---------- */}
+        <section style={{ padding: "80px 0", borderTop: `1px solid ${INKD}` }}>
+          <div className="wrap">
+            <div className="eyebrow">From Chicago to everywhere</div>
+            <h2
+              style={{
+                fontSize: "clamp(30px, 4vw, 50px)",
+                fontWeight: 700,
+                margin: "14px 0 0",
+                lineHeight: 1,
+              }}
+            >
+              ONE TEAM IN CHICAGO. <span style={{ color: MUTEDW }}>CLIENTS WORLDWIDE.</span>
+            </h2>
+            <div style={{ marginTop: 24 }}>
+              <WorldMap hqLabel="MentionMyApp" accent={VIOLET} dot="#C9C4BC" height={440} />
+            </div>
           </div>
-          <h2
-            className="lp-display"
-            style={{ fontSize: "clamp(26px, 3.4vw, 38px)", fontWeight: 800, margin: "12px 0 8px" }}
-          >
-            $49/month for the core growth workspace.
-          </h2>
-          <p style={{ color: "#B6BAD1", fontSize: 15, margin: "0 0 26px" }}>
-            No measurable growth in 90 days — every dollar back. Cancel anytime.
-          </p>
-          <a href="/grow" className="lp-cta" style={{ fontSize: 16, padding: "17px 34px" }}>
-            Start with a free growth audit →
-          </a>
-        </div>
-      </section>
+        </section>
 
-      {/* ---------- FOOTER ---------- */}
-      <footer
-        style={{ borderTop: `1px solid ${LINE}`, padding: "26px 20px", fontSize: 13, color: MUTED }}
-      >
-        <div
-          className="lp-sec"
-          style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}
-        >
-          <span>© {new Date().getFullYear()} MentionMyApp · Chicago, IL</span>
-          <span style={{ display: "flex", gap: 18 }}>
-            <a href="/grow" style={{ color: "inherit" }}>
-              Free audit
-            </a>
-            <a href="/auth" style={{ color: "inherit" }}>
-              Sign in
-            </a>
-            <a href="/terms" style={{ color: "inherit" }}>
-              Guarantee terms
-            </a>
-          </span>
-        </div>
-      </footer>
-    </div>
-  );
-}
+        {/* ---------- PRICING ---------- */}
+        <section id="pricing" style={{ padding: "88px 0", borderTop: `1px solid ${INKD}` }}>
+          <div className="wrap">
+            <h2
+              style={{
+                fontSize: "clamp(32px, 4.4vw, 54px)",
+                fontWeight: 700,
+                margin: "0 0 40px",
+                textAlign: "center",
+              }}
+            >
+              INVEST IN GROWTH
+            </h2>
+            <div
+              className="box grid3"
+              style={{ gap: 0, borderRight: 0, background: "#fff" }}
+            >
+              {[
+                {
+                  name: "Core",
+                  price: "$49",
+                  suffix: "/mo",
+                  items: ["1 website", "Daily SEO page", "Automatic directory backlinks"],
+                  cta: "Start free audit",
+                  featured: false,
+                },
+                {
+                  name: "Growth",
+                  price: "$149",
+                  suffix: "/mo",
+                  items: [
+                    "Up to 5 websites",
+                    "Search Console + Semrush sync",
+                    "Priority publishing queue",
+                  ],
+                  cta: "Go pro",
+                  featured: true,
+                },
+                {
+                  name: "Agency",
+                  price: "Custom",
+                  suffix: "",
+                  items: ["Unlimited websites", "Client report links", "Dedicated strategist"],
+                  cta: "Contact us",
+                  featured: false,
+                },
+              ].map((p) => (
+                <div
+                  key={p.name}
+                  style={{
+                    padding: 40,
+                    borderRight: `1px solid ${INKD}`,
+                    background: p.featured ? PAPER : "#fff",
+                    position: "relative",
+                  }}
+                >
+                  {p.featured && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        background: VIOLET,
+                        color: "#fff",
+                        fontSize: 10,
+                        fontWeight: 700,
+                        letterSpacing: "0.12em",
+                        padding: "4px 10px",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Best value
+                    </span>
+                  )}
+                  <span
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      color: p.featured ? VIOLET : INKD,
+                    }}
+                  >
+                    {p.name}
+                  </span>
+                  <div className="grotesk" style={{ fontSize: 46, fontWeight: 700, margin: "20px 0" }}>
+                    {p.price}
+                    <span style={{ fontSize: 16, fontWeight: 500 }}>{p.suffix}</span>
+                  </div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 30px" }}>
+                    {p.items.map((it) => (
+                      <li
+                        key={it}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          fontSize: 14.5,
+                          marginBottom: 12,
+                        }}
+                      >
+                        <span
+                          style={{ width: 6, height: 6, background: VIOLET, display: "inline-block" }}
+                        />
+                        {it}
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="/grow"
+                    className={`btn ${p.featured ? "" : "btn-ghost"}`}
+                    style={{ width: "100%", boxSizing: "border-box" }}
+                  >
+                    {p.cta.toUpperCase()}
+                  </a>
+                </div>
+              ))}
+            </div>
+            <p style={{ textAlign: "center", color: MUTEDW, marginTop: 20, fontSize: 14.5 }}>
+              No measurable growth in 90 days — every dollar back. Cancel anytime.
+            </p>
+          </div>
+        </section>
 
-// ---------- Small pieces ----------
-function MiniCard({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ background: "#F6F6FB", borderRadius: 18, padding: "22px 24px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <span
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: "50%",
-            background: "#6366F1",
-            color: "#fff",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 12,
-            fontWeight: 800,
-          }}
-        >
-          {n}
-        </span>
-        <span
-          style={{
-            fontWeight: 800,
-            fontSize: 13,
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "#6B7280",
-          }}
-        >
-          {title}
-        </span>
+        {/* ---------- FOOTER ---------- */}
+        <footer style={{ background: INKD, color: PAPER, padding: "72px 0 40px" }}>
+          <div className="wrap">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 40,
+                borderBottom: `1px solid ${MUTEDW}33`,
+                paddingBottom: 40,
+                marginBottom: 32,
+              }}
+            >
+              <div style={{ maxWidth: 320 }}>
+                <div className="grotesk" style={{ fontSize: 26, fontWeight: 700, marginBottom: 14 }}>
+                  MENTIONMYAPP
+                </div>
+                <p style={{ margin: 0, opacity: 0.7, fontSize: 14.5, lineHeight: 1.6 }}>
+                  Verified SEO growth on autopilot — audits, published pages, real backlinks, and
+                  Search Console proof.
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: 56, flexWrap: "wrap" }}>
+                <div>
+                  <h5
+                    style={{
+                      color: VIOLET,
+                      fontSize: 11,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    Product
+                  </h5>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="#features" style={{ color: "inherit", textDecoration: "none" }}>
+                        Features
+                      </a>
+                    </li>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="#pricing" style={{ color: "inherit", textDecoration: "none" }}>
+                        Pricing
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/how-it-works" style={{ color: "inherit", textDecoration: "none" }}>
+                        How it works
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h5
+                    style={{
+                      color: VIOLET,
+                      fontSize: 11,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    Company
+                  </h5>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="/about" style={{ color: "inherit", textDecoration: "none" }}>
+                        About
+                      </a>
+                    </li>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="/contact" style={{ color: "inherit", textDecoration: "none" }}>
+                        Contact
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/privacy" style={{ color: "inherit", textDecoration: "none" }}>
+                        Privacy
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <h5
+                    style={{
+                      color: VIOLET,
+                      fontSize: 11,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      margin: "0 0 14px",
+                    }}
+                  >
+                    Start
+                  </h5>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="/grow" style={{ color: "inherit", textDecoration: "none" }}>
+                        Free audit
+                      </a>
+                    </li>
+                    <li style={{ marginBottom: 8 }}>
+                      <a href="/auth" style={{ color: "inherit", textDecoration: "none" }}>
+                        Sign in
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/terms" style={{ color: "inherit", textDecoration: "none" }}>
+                        Guarantee terms
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 12,
+                fontSize: 11.5,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                opacity: 0.45,
+              }}
+            >
+              <span>© {new Date().getFullYear()} MentionMyApp · Chicago, IL</span>
+              <span>Verified growth reporting</span>
+            </div>
+          </div>
+        </footer>
       </div>
-      {children}
     </div>
   );
 }
