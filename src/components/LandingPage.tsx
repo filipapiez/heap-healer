@@ -276,7 +276,7 @@ export default function LandingPage() {
                   { value: "+312%", label: "Search impressions" },
                   { value: "+187%", label: "Organic clicks" },
                   { value: "+64%", label: "Qualified signups" },
-                  { value: "90 days", label: "Average time to results" },
+                  { value: "90 days", label: "Money-back guarantee" },
                 ].map((stat) => (
                   <div
                     key={stat.label}
