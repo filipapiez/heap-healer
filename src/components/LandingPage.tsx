@@ -416,8 +416,11 @@ export default function LandingPage() {
                 <div
                   style={{
                     display: "flex",
-                    border: `1px solid ${INKD}`,
-                    background: PAPER,
+                    border: `1px solid rgba(12,14,26,0.10)`,
+                    borderRadius: 999,
+                    background: "#fff",
+                    padding: 5,
+                    boxShadow: "0 14px 34px -22px rgba(12,14,26,0.6)",
                     marginBottom: 20,
                   }}
                 >
