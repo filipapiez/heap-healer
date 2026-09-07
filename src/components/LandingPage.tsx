@@ -76,51 +76,43 @@ const FEATURES = [
   {
     t: "Technical SEO Audit",
     d: "Crawls your site and records actionable checks for crawlability, metadata, schema, and internal links.",
-    icon: "🔧",
     wide: true,
     status: "Available",
   },
   {
     t: "Search Console Reporting",
     d: "Imports verified clicks and impressions, saves a comparable day-one baseline, and syncs performance daily.",
-    icon: "📈",
     wide: true,
     status: "Available",
   },
   {
     t: "Approved Publishing",
     d: "Queues approved pages for WordPress, Shopify, or a selected GitHub repository, with draft and review modes where supported.",
-    icon: "🚀",
     status: "Available",
   },
   {
     t: "Verified Backlink Workflow",
     d: "Schedules directory opportunities and counts a placement live only after the public page links back to your site.",
-    icon: "🔗",
     status: "Available",
   },
   {
     t: "AI Visibility Workspace",
     d: "Tracks whether ChatGPT, Gemini, Claude, and Perplexity mention your brand when people ask about your category.",
-    icon: "👁",
     status: "Available",
   },
   {
     t: "Authority Snapshot",
     d: "Shows your authority score, referring domains, backlinks, and keyword estimates in one place.",
-    icon: "📊",
     status: "Available",
   },
   {
     t: "Tracked Content Plan",
     d: "Records approved and published pages, target keywords, and indexing status without inventing work that has not happened.",
-    icon: "🗓",
     status: "Available",
   },
   {
     t: "Connection Status",
     d: "Keeps website, repository, store, and Search Console states aligned so connected services are marked correctly.",
-    icon: "🔌",
     status: "Available",
   },
 ];
