@@ -609,6 +609,8 @@ export default function LandingPage() {
               ))}
             </div>
 
+            <GrowthCharts />
+
             <div className="bento" style={{ marginTop: 20 }}>
               {FEATURES.map((f, i) => {
                 const dark = i === 3;
