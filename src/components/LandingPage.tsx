@@ -480,30 +480,54 @@ export default function LandingPage() {
                 }}
               >
                 {[
-                  ["Technical checks", "Crawlability"],
-                  ["Backlink workflow", "Verified only"],
-                  ["Search Console", "Real data"],
+                  [
+                    "Full technical audit",
+                    "We crawl every page and flag what's blocking you from ranking.",
+                  ],
+                  [
+                    "Backlinks that actually stick",
+                    "Submitted daily, then confirmed live — nothing counted until it is.",
+                  ],
+                  [
+                    "Numbers straight from Google",
+                    "Clicks, impressions and positions pulled from your own Search Console.",
+                  ],
                 ].map(([label, value]) => (
                   <div
                     key={label}
                     style={{
                       display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-end",
-                      gap: 12,
+                      gap: 14,
+                      alignItems: "flex-start",
                       borderBottom: `1px solid ${MUTEDW}33`,
-                      paddingBottom: 10,
+                      paddingBottom: 18,
                     }}
                   >
-                    <span className="grotesk" style={{ fontSize: 20 }}>
-                      {label}
-                    </span>
                     <span
-                      className="grotesk"
-                      style={{ color: VIOLET, fontWeight: 700, fontSize: 20 }}
-                    >
-                      {value}
-                    </span>
+                      style={{
+                        marginTop: 7,
+                        width: 8,
+                        height: 8,
+                        borderRadius: 999,
+                        background: VIOLET,
+                        flex: "0 0 auto",
+                      }}
+                    />
+                    <div>
+                      <div className="grotesk" style={{ fontSize: 19, fontWeight: 600 }}>
+                        {label}
+                      </div>
+                      <div
+                        style={{
+                          marginTop: 6,
+                          fontSize: 14.5,
+                          lineHeight: 1.55,
+                          color: MUTEDW,
+                        }}
+                      >
+                        {value}
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
