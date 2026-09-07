@@ -576,8 +576,10 @@ export default function LandingPage() {
                         <span
                           key={c}
                           style={{
-                            border: `1px solid ${i === 1 ? "#fff" : INKD}`,
-                            padding: "5px 10px",
+                            border: `1px solid ${i === 1 ? "rgba(255,255,255,0.45)" : "rgba(12,14,26,0.12)"}`,
+                            borderRadius: 999,
+                            background: i === 1 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)",
+                            padding: "5px 12px",
                             fontSize: 11.5,
                             fontWeight: 500,
                           }}
