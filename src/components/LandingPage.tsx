@@ -355,9 +355,17 @@ export default function LandingPage() {
           .brut .box {
             border: 1px solid rgba(12,14,26,0.07) !important;
             border-radius: 28px !important;
-            overflow: hidden;
             box-shadow: 0 18px 44px -24px rgba(12,14,26,0.35);
-            backdrop-filter: blur(6px);
+          }
+          /* split / column layouts become separate rounded cards instead of hard-divided panels */
+          .brut .split.box, .brut .grid3.box, .brut .bento.box {
+            border: 0 !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important;
+            gap: 22px;
+          }
+          .brut .split.box > *, .brut .grid3.box > *, .brut .bento.box > * {
+            border: 1px solid rgba(12,14,26,0.07) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 18px 44px -24px rgba(12,14,26,0.35);
           }
           .brut .box > * { border-right-color: rgba(12,14,26,0.07) !important; border-bottom-color: rgba(12,14,26,0.07) !important; border-left-color: rgba(12,14,26,0.07) !important; }
           .brut .lift { transition: box-shadow 260ms cubic-bezier(.22,1,.36,1), transform 260ms cubic-bezier(.22,1,.36,1); }
@@ -408,8 +416,11 @@ export default function LandingPage() {
                 <div
                   style={{
                     display: "flex",
-                    border: `1px solid ${INKD}`,
-                    background: PAPER,
+                    border: `1px solid rgba(12,14,26,0.10)`,
+                    borderRadius: 999,
+                    background: "#fff",
+                    padding: 5,
+                    boxShadow: "0 14px 34px -22px rgba(12,14,26,0.6)",
                     marginBottom: 20,
                   }}
                 >
@@ -431,7 +442,7 @@ export default function LandingPage() {
                   <a
                     href={`/grow?site=${encodeURIComponent(auditUrl)}`}
                     className="btn"
-                    style={{ borderTop: 0, borderRight: 0, borderBottom: 0, whiteSpace: "nowrap" }}
+                    style={{ whiteSpace: "nowrap", padding: "13px 26px" }}
                   >
                     ANALYZE
                   </a>
@@ -444,7 +455,8 @@ export default function LandingPage() {
                         display: "inline-flex",
                         alignItems: "center",
                         gap: 6,
-                        border: `1px solid ${INKD}`,
+                        border: `1px solid rgba(12,14,26,0.10)`,
+                        borderRadius: 999,
                         padding: "7px 14px",
                         fontSize: 13,
                         fontWeight: 500,
@@ -564,8 +576,10 @@ export default function LandingPage() {
                         <span
                           key={c}
                           style={{
-                            border: `1px solid ${i === 1 ? "#fff" : INKD}`,
-                            padding: "5px 10px",
+                            border: `1px solid ${i === 1 ? "rgba(255,255,255,0.45)" : "rgba(12,14,26,0.12)"}`,
+                            borderRadius: 999,
+                            background: i === 1 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)",
+                            padding: "5px 12px",
                             fontSize: 11.5,
                             fontWeight: 500,
                           }}
@@ -721,8 +735,10 @@ export default function LandingPage() {
                       <span
                         key={t}
                         style={{
-                          border: `1px solid ${INKD}`,
-                          padding: "6px 12px",
+                          border: `1px solid rgba(12,14,26,0.12)`,
+                          borderRadius: 999,
+                          background: "rgba(255,255,255,0.75)",
+                          padding: "6px 14px",
                           fontSize: 12.5,
                         }}
                       >
