@@ -32,6 +32,12 @@ const BG = "#FFFFFF";
 const PANEL = "#F6F6FB";
 const POS = "#22C55E";
 
+// ---------- Editorial paper palette (below-hero sections) ----------
+const PAPER = "#F5F2EC";
+const INKD = "#0B0B0F";
+const VIOLET = "#6C5CE7";
+const MUTEDW = "#8A857C";
+
 // ---------- Configurable proof (REAL data only; empty = hidden) ----------
 const CLIENTS: string[] = []; // e.g. ["Acme Dental", "Riverside Law", ...]
 const CASES: {
