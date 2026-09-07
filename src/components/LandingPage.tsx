@@ -25,12 +25,9 @@ import WorldMap from "@/components/WorldMap";
 const ACCENT = "#6366F1";
 const ACCENT_DARK = "#4F46E5";
 const INK = "#171A2B";
-const NAVY = "#141830";
 const MUTED = "#6B7280";
 const LINE = "#E5E7EB";
 const BG = "#FFFFFF";
-const PANEL = "#F6F6FB";
-const POS = "#22C55E";
 
 // ---------- Editorial paper palette (below-hero sections) ----------
 const PAPER = "#F5F2EC";
@@ -306,7 +303,6 @@ export default function LandingPage() {
                 Average change across managed sites in their first 90 days.
               </div>
 
-
               {/* Client logo strip — hidden until CLIENTS has real entries */}
               {CLIENTS.length > 0 && (
                 <div
@@ -374,10 +370,7 @@ export default function LandingPage() {
         {/* ---------- FREE AUDIT ---------- */}
         <section style={{ padding: "88px 0", borderBottom: `1px solid ${INKD}` }}>
           <div className="wrap">
-            <div
-              className="split box"
-              style={{ display: "grid", gridTemplateColumns: "7fr 5fr" }}
-            >
+            <div className="split box" style={{ display: "grid", gridTemplateColumns: "7fr 5fr" }}>
               <div style={{ padding: 48, borderRight: `1px solid ${INKD}`, background: "#fff" }}>
                 <div className="eyebrow" style={{ marginBottom: 18 }}>
                   Free SEO · AEO · GEO readiness audit
@@ -734,7 +727,11 @@ export default function LandingPage() {
               </h2>
               <div className="grid3">
                 {CASES.map((c) => (
-                  <div key={c.company} className="box lift" style={{ padding: 30, background: "#fff" }}>
+                  <div
+                    key={c.company}
+                    className="box lift"
+                    style={{ padding: 30, background: "#fff" }}
+                  >
                     <h3 style={{ fontSize: 20, fontWeight: 700, margin: "0 0 18px" }}>
                       {c.headline}
                     </h3>
@@ -885,10 +882,7 @@ export default function LandingPage() {
             >
               INVEST IN GROWTH
             </h2>
-            <div
-              className="box grid3"
-              style={{ gap: 0, borderRight: 0, background: "#fff" }}
-            >
+            <div className="box grid3" style={{ gap: 0, borderRight: 0, background: "#fff" }}>
               {[
                 {
                   name: "Core",
@@ -957,7 +951,10 @@ export default function LandingPage() {
                   >
                     {p.name}
                   </span>
-                  <div className="grotesk" style={{ fontSize: 46, fontWeight: 700, margin: "20px 0" }}>
+                  <div
+                    className="grotesk"
+                    style={{ fontSize: 46, fontWeight: 700, margin: "20px 0" }}
+                  >
                     {p.price}
                     <span style={{ fontSize: 16, fontWeight: 500 }}>{p.suffix}</span>
                   </div>
@@ -974,7 +971,12 @@ export default function LandingPage() {
                         }}
                       >
                         <span
-                          style={{ width: 6, height: 6, background: VIOLET, display: "inline-block" }}
+                          style={{
+                            width: 6,
+                            height: 6,
+                            background: VIOLET,
+                            display: "inline-block",
+                          }}
                         />
                         {it}
                       </li>
@@ -1011,7 +1013,10 @@ export default function LandingPage() {
               }}
             >
               <div style={{ maxWidth: 320 }}>
-                <div className="grotesk" style={{ fontSize: 26, fontWeight: 700, marginBottom: 14 }}>
+                <div
+                  className="grotesk"
+                  style={{ fontSize: 26, fontWeight: 700, marginBottom: 14 }}
+                >
                   MENTIONMYAPP
                 </div>
                 <p style={{ margin: 0, opacity: 0.7, fontSize: 14.5, lineHeight: 1.6 }}>
@@ -1032,7 +1037,9 @@ export default function LandingPage() {
                   >
                     Product
                   </h5>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                  <ul
+                    style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}
+                  >
                     <li style={{ marginBottom: 8 }}>
                       <a href="#features" style={{ color: "inherit", textDecoration: "none" }}>
                         Features
@@ -1062,7 +1069,9 @@ export default function LandingPage() {
                   >
                     Company
                   </h5>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                  <ul
+                    style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}
+                  >
                     <li style={{ marginBottom: 8 }}>
                       <a href="/about" style={{ color: "inherit", textDecoration: "none" }}>
                         About
@@ -1092,7 +1101,9 @@ export default function LandingPage() {
                   >
                     Start
                   </h5>
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}>
+                  <ul
+                    style={{ listStyle: "none", padding: 0, margin: 0, fontSize: 14, opacity: 0.7 }}
+                  >
                     <li style={{ marginBottom: 8 }}>
                       <a href="/grow" style={{ color: "inherit", textDecoration: "none" }}>
                         Free audit
