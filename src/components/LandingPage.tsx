@@ -30,10 +30,10 @@ const LINE = "#E5E7EB";
 const BG = "#FFFFFF";
 
 // ---------- Editorial paper palette (below-hero sections) ----------
-const PAPER = "#F5F2EC";
-const INKD = "#0B0B0F";
+const PAPER = "#F4F5FB";
+const INKD = "#0C0E1A";
 const VIOLET = "#6C5CE7";
-const MUTEDW = "#8A857C";
+const MUTEDW = "#6B7086";
 
 // ---------- Configurable proof (REAL data only; empty = hidden) ----------
 const CLIENTS: string[] = []; // e.g. ["Acme Dental", "Riverside Law", ...]
@@ -343,24 +343,43 @@ export default function LandingPage() {
       {/* ================= EDITORIAL PAPER SECTIONS ================= */}
       <div className="brut">
         <style>{`
-          .brut { background: ${PAPER}; color: ${INKD}; font-family: 'DM Sans', system-ui, sans-serif; }
+          .brut { position: relative; background:
+              radial-gradient(900px 480px at 12% -8%, rgba(108,92,231,0.13), transparent 62%),
+              radial-gradient(760px 420px at 92% 12%, rgba(56,189,248,0.12), transparent 60%),
+              ${PAPER};
+            color: ${INKD}; font-family: 'DM Sans', system-ui, sans-serif; }
           .brut .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-          .brut h2, .brut h3, .brut h4, .brut .grotesk { font-family: 'Space Grotesk', 'DM Sans', sans-serif; letter-spacing: -0.03em; }
-          .brut .rule { border-top: 1px solid ${INKD}; }
-          .brut .box { border: 1px solid ${INKD}; }
-          .brut .lift { transition: box-shadow 140ms ease, transform 140ms ease; }
-          .brut .lift:hover { box-shadow: 8px 8px 0 0 ${VIOLET}; transform: translate(-2px, -2px); }
-          .brut .lift-ink:hover { box-shadow: 8px 8px 0 0 ${INKD}; transform: translate(-2px, -2px); }
-          .brut .eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: ${VIOLET}; }
-          .brut .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid ${INKD}; background: ${VIOLET}; color: #fff; font-weight: 700; font-family: 'Space Grotesk', sans-serif; padding: 14px 28px; text-decoration: none; cursor: pointer; transition: background 140ms, box-shadow 140ms, transform 140ms; }
-          .brut .btn:hover { background: ${INKD}; box-shadow: 6px 6px 0 0 ${VIOLET}; transform: translate(-2px,-2px); }
-          .brut .btn-ghost { background: transparent; color: ${INKD}; }
-          .brut .btn-ghost:hover { background: ${INKD}; color: ${PAPER}; }
-          .brut .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
-          .brut .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
-          .brut .bento { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 20px; }
-          .brut .num { font-family: 'Space Grotesk', sans-serif; font-size: 68px; font-weight: 700; line-height: 1; opacity: 0.12; }
-          .brut input { font-family: inherit; }
+          .brut h2, .brut h3, .brut h4, .brut .grotesk { font-family: 'Space Grotesk', 'DM Sans', sans-serif; letter-spacing: -0.02em; }
+          .brut section { border-color: rgba(12,14,26,0.07) !important; }
+          .brut .rule { border-top: 1px solid rgba(12,14,26,0.08); }
+          .brut .box {
+            border: 1px solid rgba(12,14,26,0.07) !important;
+            border-radius: 28px !important;
+            overflow: hidden;
+            box-shadow: 0 18px 44px -24px rgba(12,14,26,0.35);
+            backdrop-filter: blur(6px);
+          }
+          .brut .box > * { border-right-color: rgba(12,14,26,0.07) !important; border-bottom-color: rgba(12,14,26,0.07) !important; border-left-color: rgba(12,14,26,0.07) !important; }
+          .brut .lift { transition: box-shadow 260ms cubic-bezier(.22,1,.36,1), transform 260ms cubic-bezier(.22,1,.36,1); }
+          .brut .lift:hover, .brut .lift-ink:hover { box-shadow: 0 28px 60px -28px rgba(108,92,231,0.65) !important; transform: translateY(-6px) !important; }
+          .brut .eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: ${VIOLET}; }
+          .brut .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            border: 1px solid transparent !important; border-radius: 999px !important;
+            background: linear-gradient(135deg, #8B7BFF 0%, #5A46F5 60%, #4130D6 100%);
+            color: #fff; font-weight: 600; font-family: 'Space Grotesk', sans-serif; padding: 15px 30px;
+            text-decoration: none; cursor: pointer; letter-spacing: -0.01em;
+            box-shadow: 0 14px 30px -12px rgba(108,92,231,0.75);
+            transition: transform 220ms cubic-bezier(.22,1,.36,1), box-shadow 220ms, filter 220ms; }
+          .brut .btn:hover { transform: translateY(-3px); filter: brightness(1.07); box-shadow: 0 22px 44px -14px rgba(108,92,231,0.85); }
+          .brut .btn-ghost { background: rgba(255,255,255,0.7) !important; color: ${INKD}; border: 1px solid rgba(12,14,26,0.12) !important; box-shadow: none; }
+          .brut .btn-ghost:hover { background: #fff !important; box-shadow: 0 14px 30px -18px rgba(12,14,26,0.6); }
+          .brut .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 22px; }
+          .brut .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px; }
+          .brut .bento { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 22px; }
+          .brut .num { font-family: 'Space Grotesk', sans-serif; font-size: 68px; font-weight: 700; line-height: 1; opacity: 0.14; }
+          .brut input, .brut select, .brut textarea { font-family: inherit; border-radius: 999px !important; }
+          .brut input:not([type="checkbox"]) { padding-left: 18px !important; padding-right: 18px !important; }
+          .brut svg, .brut img { border-radius: 18px; }
           @media (max-width: 900px) {
             .brut .grid3, .brut .grid2, .brut .bento, .brut .split { grid-template-columns: 1fr !important; }
             .brut .span2, .brut .span3 { grid-column: auto !important; }
