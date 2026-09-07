@@ -355,9 +355,17 @@ export default function LandingPage() {
           .brut .box {
             border: 1px solid rgba(12,14,26,0.07) !important;
             border-radius: 28px !important;
-            overflow: hidden;
             box-shadow: 0 18px 44px -24px rgba(12,14,26,0.35);
-            backdrop-filter: blur(6px);
+          }
+          /* split / column layouts become separate rounded cards instead of hard-divided panels */
+          .brut .split.box, .brut .grid3.box, .brut .bento.box {
+            border: 0 !important; box-shadow: none !important; border-radius: 0 !important; background: transparent !important;
+            gap: 22px;
+          }
+          .brut .split.box > *, .brut .grid3.box > *, .brut .bento.box > * {
+            border: 1px solid rgba(12,14,26,0.07) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 18px 44px -24px rgba(12,14,26,0.35);
           }
           .brut .box > * { border-right-color: rgba(12,14,26,0.07) !important; border-bottom-color: rgba(12,14,26,0.07) !important; border-left-color: rgba(12,14,26,0.07) !important; }
           .brut .lift { transition: box-shadow 260ms cubic-bezier(.22,1,.36,1), transform 260ms cubic-bezier(.22,1,.36,1); }
