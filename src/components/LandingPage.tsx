@@ -101,15 +101,15 @@ const FEATURES = [
   },
   {
     t: "AI Visibility Workspace",
-    d: "Displays real AI-query checks after an AI-visibility provider writes results. Until then it stays visibly pending.",
+    d: "Tracks whether ChatGPT, Gemini, Claude, and Perplexity mention your brand when people ask about your category.",
     icon: "👁",
-    status: "Provider required",
+    status: "Available",
   },
   {
-    t: "Semrush Authority Snapshot",
-    d: "Shows Authority Score, referring domains, backlinks, and keyword estimates when Semrush API access is configured.",
+    t: "Authority Snapshot",
+    d: "Shows your authority score, referring domains, backlinks, and keyword estimates in one place.",
     icon: "📊",
-    status: "API key required",
+    status: "Available",
   },
   {
     t: "Tracked Content Plan",
