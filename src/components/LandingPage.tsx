@@ -19,6 +19,7 @@ import EngineRotator from "@/components/EngineRotator";
 import EngineIcon, { type EngineName } from "@/components/engineIcons";
 import HeroBackground from "@/components/HeroBackground";
 import PressMarquee from "@/components/PressMarquee";
+import GrowthCharts from "@/components/GrowthCharts";
 import WorldMap from "@/components/WorldMap";
 
 // ---------- Brand ----------
@@ -608,6 +609,8 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
+
+            <GrowthCharts />
 
             <div className="bento" style={{ marginTop: 20 }}>
               {FEATURES.map((f, i) => {
