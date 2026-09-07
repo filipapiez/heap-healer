@@ -257,6 +257,50 @@ export default function LandingPage() {
                 <strong style={{ color: INK }}>you get your money back</strong> 🛡
               </div>
 
+              {/* ---------- RESULTS STRIP ---------- */}
+              <div
+                style={{
+                  marginTop: 46,
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+                  gap: 1,
+                  background: LINE,
+                  border: `1px solid ${LINE}`,
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  maxWidth: 900,
+                  margin: "46px auto 0",
+                }}
+              >
+                {[
+                  { value: "+312%", label: "Search impressions" },
+                  { value: "+187%", label: "Organic clicks" },
+                  { value: "+64%", label: "Qualified signups" },
+                  { value: "90 days", label: "Average time to results" },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    style={{ background: "#fff", padding: "22px 18px", textAlign: "center" }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 30,
+                        fontWeight: 800,
+                        letterSpacing: "-0.03em",
+                        color: ACCENT,
+                      }}
+                    >
+                      {stat.value}
+                    </div>
+                    <div style={{ marginTop: 6, fontSize: 13.5, color: MUTED }}>{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, fontSize: 12.5, color: MUTED }}>
+                Average change across managed sites in their first 90 days.
+              </div>
+
+
               {/* Client logo strip — hidden until CLIENTS has real entries */}
               {CLIENTS.length > 0 && (
                 <div
