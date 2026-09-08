@@ -1142,6 +1142,107 @@ export type Database = {
         }
         Relationships: []
       }
+      syndication_accounts: {
+        Row: {
+          api_token: string
+          created_at: string
+          handle: string | null
+          id: string
+          last_error: string | null
+          last_used_at: string | null
+          platform: string
+          publication_id: string | null
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          api_token: string
+          created_at?: string
+          handle?: string | null
+          id?: string
+          last_error?: string | null
+          last_used_at?: string | null
+          platform: string
+          publication_id?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          api_token?: string
+          created_at?: string
+          handle?: string | null
+          id?: string
+          last_error?: string | null
+          last_used_at?: string | null
+          platform?: string
+          publication_id?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_accounts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      syndication_posts: {
+        Row: {
+          created_at: string
+          error: string | null
+          external_url: string | null
+          generated_page_id: string | null
+          id: string
+          platform: string
+          status: string
+          title: string | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          external_url?: string | null
+          generated_page_id?: string | null
+          id?: string
+          platform: string
+          status?: string
+          title?: string | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          external_url?: string | null
+          generated_page_id?: string | null
+          id?: string
+          platform?: string
+          status?: string
+          title?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "syndication_posts_generated_page_id_fkey"
+            columns: ["generated_page_id"]
+            isOneToOne: false
+            referencedRelation: "generated_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "syndication_posts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tiktok_oauth_tokens: {
         Row: {
           access_token: string
