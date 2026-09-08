@@ -5,8 +5,10 @@ type MaintenanceResult = {
   websiteJobs: unknown;
   directoryQueue: unknown;
   dailyPages: unknown;
+  aiVisibility: unknown;
   errors: Array<{ task: string; message: string }>;
 };
+
 
 export async function runScheduledMaintenance(_now = new Date()): Promise<MaintenanceResult> {
   const tasks: Array<[string, Promise<unknown>]> = [
@@ -36,7 +38,14 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
         queueWeeklyDirectories(),
       ),
     ],
+    [
+      "aiVisibility",
+      import("./lib/ai-visibility.server").then(({ runAiVisibilityChecks }) =>
+        runAiVisibilityChecks(),
+      ),
+    ],
   ];
+
 
   const settled = await Promise.allSettled(tasks.map(([, task]) => task));
   const output: MaintenanceResult = {
@@ -46,6 +55,7 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
     websiteJobs: null,
     directoryQueue: null,
     dailyPages: null,
+    aiVisibility: null,
     errors: [],
   };
   settled.forEach((result, index) => {
@@ -54,7 +64,9 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
       | "semrush"
       | "websiteJobs"
       | "directoryQueue"
-      | "dailyPages";
+      | "dailyPages"
+      | "aiVisibility";
+
     if (result.status === "fulfilled") {
       output[task] = result.value;
     } else {
