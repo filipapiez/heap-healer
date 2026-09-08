@@ -94,7 +94,7 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
         .eq("client_id", clientRow.id),
       supabaseAdmin
         .from("seo_audit_runs" as never)
-        .select("score,checks_passed,checks_failed,created_at")
+        .select("score,checks_passed,checks_failed,created_at,result")
         .eq("workspace_id", profile.current_workspace_id)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -143,7 +143,22 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
       checks_passed: number;
       checks_failed: number;
       created_at: string;
+      result: { categories?: Array<{ name: string; good?: string[]; bad?: string[] }> } | null;
     } | null;
+
+    const auditCategories = (auditRow?.result?.categories ?? [])
+      .map((category) => {
+        const passed = category.good?.length ?? 0;
+        const failed = category.bad?.length ?? 0;
+        const total = passed + failed;
+        return {
+          name: category.name,
+          passed,
+          failed,
+          score: total ? Math.round((passed / total) * 100) : null,
+        };
+      })
+      .filter((category) => category.passed + category.failed > 0);
 
     return {
       connected: Boolean(connectionRow?.active),
@@ -166,6 +181,7 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
               passed: auditRow.checks_passed,
               failed: auditRow.checks_failed,
               ranAt: auditRow.created_at,
+              categories: auditCategories,
             }
           : null,
         pages: {

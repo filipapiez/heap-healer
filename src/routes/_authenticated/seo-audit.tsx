@@ -153,27 +153,22 @@ function TechnicalAuditPage() {
               </p>
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-4">
-              <CoverageCard
-                icon={ShieldCheck}
-                title="Technical SEO"
-                detail="Hosts, HTTPS, speed and crawlability"
-              />
-              <CoverageCard
-                icon={SearchCheck}
-                title="Indexability"
-                detail="Robots, sitemaps, canonicals and indexing"
-              />
-              <CoverageCard
-                icon={FileSearch}
-                title="On-page"
-                detail="Titles, descriptions, headings and links"
-              />
-              <CoverageCard
-                icon={Bot}
-                title="AEO & GEO"
-                detail="Schema, trust pages and AI discovery files"
-              />
+              {COVERAGE.map((area) => {
+                const match = (audit.categories ?? []).find((c) => area.keys.includes(c.name));
+                return (
+                  <CoverageCard
+                    key={area.title}
+                    icon={area.icon}
+                    title={area.title}
+                    detail={area.detail}
+                    score={match?.score ?? null}
+                    passed={match?.passed ?? 0}
+                    failed={match?.failed ?? 0}
+                  />
+                );
+              })}
             </div>
+
           </section>
         </>
       ) : (
@@ -261,20 +256,85 @@ function AuditFact({ label, value }: { label: string; value: string }) {
   );
 }
 
+const COVERAGE: Array<{
+  icon: typeof ShieldCheck;
+  title: string;
+  detail: string;
+  keys: string[];
+}> = [
+  {
+    icon: ShieldCheck,
+    title: "Technical SEO",
+    detail: "Hosts, HTTPS, speed and crawlability",
+    keys: ["Technical"],
+  },
+  {
+    icon: SearchCheck,
+    title: "Indexability",
+    detail: "Robots, sitemaps, canonicals and indexing",
+    keys: ["Indexability"],
+  },
+  {
+    icon: FileSearch,
+    title: "On-page",
+    detail: "Titles, descriptions, headings and links",
+    keys: ["On-page"],
+  },
+  {
+    icon: Bot,
+    title: "AEO & GEO",
+    detail: "Schema, trust pages and AI discovery files",
+    keys: ["AEO/GEO"],
+  },
+];
+
+function toneFor(score: number | null) {
+  if (score == null)
+    return { border: "border-[#e4e3e7]", bg: "bg-[#fafafb]", icon: "text-[#9b97a3]", text: "text-[#57535d]", sub: "text-[#8b8794]" };
+  if (score >= 85)
+    return { border: "border-[#dcefe3]", bg: "bg-[#f7fff9]", icon: "text-[#3b8b59]", text: "text-[#315c42]", sub: "text-[#66816f]" };
+  if (score >= 60)
+    return { border: "border-[#f2e4cf]", bg: "bg-[#fffaf2]", icon: "text-[#c4772b]", text: "text-[#7c5a2c]", sub: "text-[#8f7752]" };
+  return { border: "border-[#f3dada]", bg: "bg-[#fff8f7]", icon: "text-[#c0523f]", text: "text-[#8c3d2f]", sub: "text-[#a06a5f]" };
+}
+
 function CoverageCard({
   icon: Icon,
   title,
   detail,
+  score,
+  passed,
+  failed,
 }: {
   icon: typeof ShieldCheck;
   title: string;
   detail: string;
+  score: number | null;
+  passed: number;
+  failed: number;
 }) {
+  const tone = toneFor(score);
   return (
-    <div className="rounded-xl border border-[#dcefe3] bg-[#f7fff9] p-4 text-left">
-      <Icon className="h-5 w-5 text-[#3b8b59]" />
-      <strong className="mt-3 block text-sm text-[#315c42]">{title}</strong>
-      <p className="mt-1 text-[11px] leading-5 text-[#66816f]">{detail}</p>
+    <div className={`rounded-xl border ${tone.border} ${tone.bg} p-4 text-left`}>
+      <div className="flex items-start justify-between gap-2">
+        <Icon className={`h-5 w-5 ${tone.icon}`} />
+        <span className={`font-display text-xl font-semibold ${tone.text}`}>
+          {score == null ? "—" : `${score}`}
+          {score != null && <span className="text-[11px] font-medium opacity-60">/100</span>}
+        </span>
+      </div>
+      <strong className={`mt-3 block text-sm ${tone.text}`}>{title}</strong>
+      <p className={`mt-1 text-[11px] leading-5 ${tone.sub}`}>{detail}</p>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/5">
+        <div
+          className={`h-full rounded-full ${score == null ? "bg-[#c8c5cf]" : score >= 85 ? "bg-[#3b8b59]" : score >= 60 ? "bg-[#c4772b]" : "bg-[#c0523f]"}`}
+          style={{ width: `${score ?? 0}%` }}
+        />
+      </div>
+      <p className={`mt-2 text-[11px] ${tone.sub}`}>
+        {score == null ? "No checks in the last audit" : `${passed} passing · ${failed} to fix`}
+      </p>
     </div>
   );
 }
+
