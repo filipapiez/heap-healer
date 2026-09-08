@@ -153,27 +153,22 @@ function TechnicalAuditPage() {
               </p>
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-4">
-              <CoverageCard
-                icon={ShieldCheck}
-                title="Technical SEO"
-                detail="Hosts, HTTPS, speed and crawlability"
-              />
-              <CoverageCard
-                icon={SearchCheck}
-                title="Indexability"
-                detail="Robots, sitemaps, canonicals and indexing"
-              />
-              <CoverageCard
-                icon={FileSearch}
-                title="On-page"
-                detail="Titles, descriptions, headings and links"
-              />
-              <CoverageCard
-                icon={Bot}
-                title="AEO & GEO"
-                detail="Schema, trust pages and AI discovery files"
-              />
+              {COVERAGE.map((area) => {
+                const match = (audit.categories ?? []).find((c) => area.keys.includes(c.name));
+                return (
+                  <CoverageCard
+                    key={area.title}
+                    icon={area.icon}
+                    title={area.title}
+                    detail={area.detail}
+                    score={match?.score ?? null}
+                    passed={match?.passed ?? 0}
+                    failed={match?.failed ?? 0}
+                  />
+                );
+              })}
             </div>
+
           </section>
         </>
       ) : (
