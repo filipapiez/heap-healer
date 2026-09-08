@@ -210,11 +210,11 @@ function ContentPlanPage() {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 className="font-display text-lg font-semibold text-[#302d34]">
-                Send an approved page
+                Automatic daily publishing
               </h2>
               <p className="mt-1 text-xs leading-5 text-[#85818b]">
-                MentionMyApp sends exactly the HTML you approve. GitHub uses a review branch and
-                pull request; WordPress and Shopify can save a draft or publish.
+                MentionMyApp writes one new SEO page per day for each connected website, checks its
+                quality, and publishes it for you. Nothing to approve by hand.
               </p>
             </div>
             <Link to="/accounts" className="text-xs font-semibold text-[#5b5bd6]">
@@ -222,128 +222,33 @@ function ContentPlanPage() {
             </Link>
           </div>
           {deliveryConnections.length ? (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d]">
-                Destination
-                <select
-                  value={page.connectionId}
-                  onChange={(event) =>
-                    setPage((current) => ({ ...current, connectionId: event.target.value }))
-                  }
-                  className="rounded-xl border border-[#dedde2] bg-white px-3 py-2.5 text-sm"
+            <div className="mt-4 grid gap-2">
+              {deliveryConnections.map((connection) => (
+                <div
+                  key={connection.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[#ebeaf0] px-3 py-3 text-sm"
                 >
-                  <option value="">Choose a connection…</option>
-                  {deliveryConnections.map((connection) => (
-                    <option key={connection.id} value={connection.id}>
-                      {connection.platform} · {connection.display_name || connection.external_id}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d]">
-                Delivery mode
-                {selectedConnection?.platform === "github" ? (
-                  <input
-                    value="Review branch + pull request"
-                    disabled
-                    className="rounded-xl border border-[#dedde2] bg-[#f7f7f8] px-3 py-2.5 text-sm"
-                  />
-                ) : (
-                  <select
-                    value={page.publishMode}
-                    onChange={(event) =>
-                      setPage((current) => ({
-                        ...current,
-                        publishMode: event.target.value as "draft" | "publish",
-                      }))
-                    }
-                    className="rounded-xl border border-[#dedde2] bg-white px-3 py-2.5 text-sm"
-                  >
-                    <option value="draft">Save as draft</option>
-                    <option value="publish">Publish now</option>
-                  </select>
-                )}
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d]">
-                Page title
-                <input
-                  value={page.title}
-                  onChange={(event) =>
-                    setPage((current) => ({ ...current, title: event.target.value }))
-                  }
-                  className="rounded-xl border border-[#dedde2] px-3 py-2.5 text-sm"
-                  placeholder="Approved page title"
-                />
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d]">
-                URL slug
-                <input
-                  value={page.slug}
-                  onChange={(event) =>
-                    setPage((current) => ({
-                      ...current,
-                      slug: event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-                    }))
-                  }
-                  className="rounded-xl border border-[#dedde2] px-3 py-2.5 text-sm"
-                  placeholder="approved-page-slug"
-                />
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d] sm:col-span-2">
-                Excerpt (optional)
-                <input
-                  value={page.excerpt}
-                  onChange={(event) =>
-                    setPage((current) => ({ ...current, excerpt: event.target.value }))
-                  }
-                  className="rounded-xl border border-[#dedde2] px-3 py-2.5 text-sm"
-                  placeholder="Short description"
-                />
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d] sm:col-span-2">
-                Target keyword (optional)
-                <input
-                  value={page.keyword}
-                  onChange={(event) =>
-                    setPage((current) => ({ ...current, keyword: event.target.value }))
-                  }
-                  className="rounded-xl border border-[#dedde2] px-3 py-2.5 text-sm"
-                  placeholder="Primary query this page answers"
-                />
-              </label>
-              <label className="grid gap-1 text-xs font-semibold text-[#57535d] sm:col-span-2">
-                Approved HTML
-                <textarea
-                  value={page.html}
-                  onChange={(event) =>
-                    setPage((current) => ({ ...current, html: event.target.value }))
-                  }
-                  rows={8}
-                  className="rounded-xl border border-[#dedde2] px-3 py-2.5 font-mono text-xs"
-                  placeholder="<article>…approved page content…</article>"
-                />
-              </label>
-              <button
-                type="button"
-                disabled={
-                  queuePage.isPending ||
-                  !page.connectionId ||
-                  !page.title.trim() ||
-                  !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(page.slug) ||
-                  !page.html.trim()
-                }
-                onClick={() => queuePage.mutate()}
-                className="rounded-xl bg-[#18161b] px-4 py-3 text-sm font-semibold text-white disabled:opacity-40 sm:col-span-2"
-              >
-                {queuePage.isPending ? "Queueing approved page…" : "Queue approved page"}
-              </button>
+                  <span className="min-w-0 truncate text-[#302d34]">
+                    {connection.display_name || connection.external_id}
+                    <span className="ml-2 text-xs text-[#a09ca8]">{connection.platform}</span>
+                  </span>
+                  <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+                    publishing daily
+                  </span>
+                </div>
+              ))}
+              <p className="mt-1 text-xs text-[#85818b]">
+                Next page is scheduled automatically — new pages appear in the calendar and delivery
+                list below.
+              </p>
             </div>
           ) : (
             <div className="mt-4 rounded-xl border border-dashed border-[#d8d7dc] p-5 text-sm text-[#77737e]">
-              Connect WordPress, Shopify, or a GitHub delivery repository before queueing a page.
+              Connect WordPress, Shopify, or a GitHub repository so daily pages can be published.
             </div>
           )}
         </div>
+
 
         <div className="rounded-2xl border border-[#e4e3e7] bg-white p-5">
           <h2 className="font-display text-lg font-semibold text-[#302d34]">
