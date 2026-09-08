@@ -81,15 +81,6 @@ function pageLabel(page: SeoPage) {
 function ContentPlanPage() {
   const queryClient = useQueryClient();
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
-  const [page, setPage] = useState({
-    connectionId: "",
-    title: "",
-    slug: "",
-    excerpt: "",
-    keyword: "",
-    html: "",
-    publishMode: "draft" as "draft" | "publish",
-  });
   const planQuery = useQuery({
     queryKey: ["seo-content-plan"],
     queryFn: () => getContentPlanData(),
