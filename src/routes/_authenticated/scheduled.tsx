@@ -112,6 +112,13 @@ function ContentPlanPage() {
   const selectedConnection = deliveryConnections.find(
     (connection) => connection.id === page.connectionId,
   );
+  useEffect(() => {
+    if (!page.connectionId && deliveryConnections.length) {
+      setPage((current) =>
+        current.connectionId ? current : { ...current, connectionId: deliveryConnections[0].id },
+      );
+    }
+  }, [page.connectionId, deliveryConnections]);
   const queuePage = useMutation({
     mutationFn: () =>
       queueWebsitePage({
