@@ -201,33 +201,17 @@ export async function queueWeeklyDirectories(opts?: {
       }
 
       for (const directory of pool) {
-        let status = "submitted";
-        let autoResult: SubmitResult | null = null;
-        let notes: string | null = "Queued — submission attempted automatically";
-        let submittedAt: string | null = new Date().toISOString();
-
-        if (
-          (directory.submission_method === "api" || directory.submission_method === "form") &&
-          directory.auto_submit_config
-        ) {
-          autoResult = await attemptAutoSubmit(directory, profile);
-          if (autoResult.ok) {
-            status = "auto_submitted";
-            submissionsAuto += 1;
-            notes = autoResult.note ?? null;
-          } else {
-            notes = autoResult.error;
-          }
-        }
+        const attempt = await attemptSubmission(directory, profile);
+        if (attempt.status === "auto_submitted") submissionsAuto += 1;
 
         const { error: insertError } = await supabaseAdmin.from("directory_submissions").insert({
           workspace_id: workspace.id,
           directory_id: directory.id,
-          status,
+          status: attempt.status,
           scheduled_for: new Date().toISOString().slice(0, 10),
-          auto_result: autoResult,
-          notes,
-          submitted_at: submittedAt,
+          auto_result: attempt.result,
+          notes: attempt.notes,
+          submitted_at: attempt.submittedAt,
         });
         if (insertError) {
           errors.push({
@@ -239,6 +223,7 @@ export async function queueWeeklyDirectories(opts?: {
           submissionsQueued += 1;
         }
       }
+
     } catch (error) {
       errors.push({
         workspace: workspace.id,
