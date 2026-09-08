@@ -100,51 +100,6 @@ function ContentPlanPage() {
       connection.status === "connected" &&
       ["github", "wordpress", "shopify"].includes(connection.platform),
   ) as DeliveryConnection[];
-  const selectedConnection = deliveryConnections.find(
-    (connection) => connection.id === page.connectionId,
-  );
-  useEffect(() => {
-    if (!page.connectionId && deliveryConnections.length) {
-      setPage((current) =>
-        current.connectionId ? current : { ...current, connectionId: deliveryConnections[0].id },
-      );
-    }
-  }, [page.connectionId, deliveryConnections]);
-  const queuePage = useMutation({
-    mutationFn: () =>
-      queueWebsitePage({
-        data: {
-          connectionId: page.connectionId,
-          title: page.title,
-          slug: page.slug,
-          html: page.html,
-          excerpt: page.excerpt || undefined,
-          keyword: page.keyword || undefined,
-          publishMode:
-            selectedConnection?.platform === "github" ? "pull_request" : page.publishMode,
-        },
-      }),
-    onSuccess: async ({ id, status, error_message: errorMessage }) => {
-      if (status === "failed") {
-        toast.error(errorMessage ?? "Website delivery failed");
-      } else {
-        toast.success(`Approved page delivered (${id.slice(0, 8)})`);
-        setPage((current) => ({
-          ...current,
-          title: "",
-          slug: "",
-          excerpt: "",
-          keyword: "",
-          html: "",
-        }));
-      }
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["website-publish-jobs"] }),
-        queryClient.invalidateQueries({ queryKey: ["seo-content-plan"] }),
-      ]);
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
   const retryJob = useMutation({
     mutationFn: (jobId: string) => retryWebsitePublishJob({ data: { jobId } }),
     onSuccess: async (result) => {
