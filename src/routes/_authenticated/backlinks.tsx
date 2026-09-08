@@ -220,7 +220,7 @@ function QueueList({ rows }: { rows: Submission[] }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
-        Nothing queued yet. Fill your profile and the daily job (9am UTC) will submit for you.
+        Nothing waiting. Fill your profile and the daily job (9am UTC) picks up the next batch.
       </div>
     );
   }
@@ -268,7 +268,7 @@ function HistoryTable({ rows }: { rows: Submission[] }) {
   if (rows.length === 0)
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
-        Nothing submitted yet.
+        Nothing has actually been sent yet.
       </div>
     );
   return (
