@@ -44,6 +44,12 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
         runAiVisibilityChecks(),
       ),
     ],
+    [
+      "backlinkVerify",
+      import("./lib/backlink-verify.server").then(({ verifyDirectoryBacklinks }) =>
+        verifyDirectoryBacklinks(),
+      ),
+    ],
   ];
 
 
