@@ -11,6 +11,8 @@ import {
   seedDirectories,
 } from "@/lib/directories.functions";
 import { LogoUploader } from "@/components/LogoUploader";
+import { SyndicationPanel } from "@/components/SyndicationPanel";
+
 
 export const Route = createFileRoute("/_authenticated/backlinks")({
   head: () => ({ meta: [{ title: "Backlink builder — MentionMyApp" }] }),
