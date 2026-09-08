@@ -38,7 +38,14 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
         queueWeeklyDirectories(),
       ),
     ],
+    [
+      "aiVisibility",
+      import("./lib/ai-visibility.server").then(({ runAiVisibilityChecks }) =>
+        runAiVisibilityChecks(),
+      ),
+    ],
   ];
+
 
   const settled = await Promise.allSettled(tasks.map(([, task]) => task));
   const output: MaintenanceResult = {
