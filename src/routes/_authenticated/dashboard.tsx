@@ -373,24 +373,52 @@ function GrowthDashboard() {
             complete={(growth?.aiMentions ?? 0) > 0}
             icon={Bot}
             title="AI visibility"
+            progress={{ value: growth?.aiMentions ?? 0, total: growth?.aiChecks ?? 0 }}
             detail={
               (growth?.aiChecks ?? 0) > 0
                 ? `${growth?.aiMentions ?? 0} of ${growth?.aiChecks ?? 0} tracked checks mention your brand`
-                : "AI visibility tracking is not connected yet"
+                : "Daily AI checks start once your website and Search Console are connected"
+            }
+            action={
+              (growth?.aiChecks ?? 0) > 0 ? (
+                <Link to="/analytics">See AI checks →</Link>
+              ) : (
+                <Link to="/accounts">Connect website →</Link>
+              )
             }
           />
           <PhaseMilestone
             complete={(growth?.workPlan?.placements.live ?? 0) > 0}
             icon={Link2}
             title="Distribution"
+            progress={{
+              value: growth?.workPlan?.placements.live ?? 0,
+              total: growth?.workPlan?.placements.queued ?? 0,
+            }}
             detail={`${growth?.workPlan?.placements.live ?? 0} of ${growth?.workPlan?.placements.queued ?? 0} tracked placements live`}
+            action={<Link to="/backlinks">View backlinks →</Link>}
           />
           <PhaseMilestone
             complete={connected && publishingConnected}
             icon={TrendingUp}
             title="Closed-loop measurement"
-            detail="Connect publishing output to verified search performance"
+            progress={{ value: (connected ? 1 : 0) + (publishingConnected ? 1 : 0), total: 2 }}
+            detail={
+              connected && publishingConnected
+                ? "Published pages are matched to Search Console performance"
+                : connected
+                  ? "Connect a website so published pages can be measured"
+                  : "Connect Search Console to measure what publishing earns"
+            }
+            action={
+              connected && publishingConnected ? (
+                <Link to="/analytics">View performance →</Link>
+              ) : (
+                <Link to="/accounts">Finish setup →</Link>
+              )
+            }
           />
+
         </PhaseCard>
       </div>
     </div>
