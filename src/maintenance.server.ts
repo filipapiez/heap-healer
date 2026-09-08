@@ -5,8 +5,10 @@ type MaintenanceResult = {
   websiteJobs: unknown;
   directoryQueue: unknown;
   dailyPages: unknown;
+  aiVisibility: unknown;
   errors: Array<{ task: string; message: string }>;
 };
+
 
 export async function runScheduledMaintenance(_now = new Date()): Promise<MaintenanceResult> {
   const tasks: Array<[string, Promise<unknown>]> = [
