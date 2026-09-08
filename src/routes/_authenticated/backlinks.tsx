@@ -223,7 +223,7 @@ function TabBtn({
   );
 }
 
-function QueueList({ rows }: { rows: Submission[] }) {
+function QueueList({ rows, profile }: { rows: Submission[]; profile: DirectoryProfile | null }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
@@ -234,14 +234,74 @@ function QueueList({ rows }: { rows: Submission[] }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {rows.map((s) => (
-        <SubmissionCard key={s.id} sub={s} />
+        <SubmissionCard key={s.id} sub={s} profile={profile} />
       ))}
     </div>
   );
 }
 
-function SubmissionCard({ sub }: { sub: Submission }) {
+function CopyRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-2 py-1">
+      <span className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+        {label}
+      </span>
+      <span className="flex-1 break-words text-xs text-slate-700">{value}</span>
+      <button
+        type="button"
+        onClick={() => {
+          void navigator.clipboard.writeText(value);
+          toast.success(`${label} copied`);
+        }}
+        className="shrink-0 rounded-md border border-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        Copy
+      </button>
+    </div>
+  );
+}
+
+function SubmissionCard({
+  sub,
+  profile,
+}: {
+  sub: Submission;
+  profile: DirectoryProfile | null;
+}) {
   const style = STATUS_STYLE[sub.status] ?? STATUS_STYLE.queued;
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [liveUrl, setLiveUrl] = useState("");
+
+  const mut = useMutation({
+    mutationFn: (status: "submitted" | "skipped") =>
+      updateSubmission({
+        data: {
+          submissionId: sub.id,
+          status,
+          live_url: status === "submitted" && liveUrl.trim() ? liveUrl.trim() : undefined,
+        },
+      }),
+    onSuccess: (_r, status) => {
+      toast.success(status === "submitted" ? "Marked as submitted" : "Skipped");
+      qc.invalidateQueries({ queryKey: ["backlink-queue"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const fields: Array<[string, string | null | undefined]> = [
+    ["Name", profile?.product_name],
+    ["Website", profile?.website_url],
+    ["Tagline", profile?.tagline],
+    ["Short", profile?.short_description],
+    ["Full", profile?.long_description],
+    ["Category", profile?.category],
+    ["Email", profile?.contact_email],
+    ["Pricing", profile?.pricing_model],
+    ["Founder", profile?.founder_name],
+    ["Logo", profile?.logo_url],
+  ];
+  const filled = fields.filter((f) => f[1] && String(f[1]).trim()) as Array<[string, string]>;
 
   return (
     <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-4">
@@ -267,9 +327,69 @@ function SubmissionCard({ sub }: { sub: Submission }) {
       {sub.directory.notes && (
         <div className="mt-2 text-xs text-slate-500">{sub.directory.notes}</div>
       )}
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <a
+          href={sub.directory.submit_url}
+          target="_blank"
+          rel="noopener"
+          onClick={() => setOpen(true)}
+          className="rounded-lg bg-[#5b5bd6] px-3 py-1.5 text-xs font-semibold text-white"
+        >
+          Open form
+        </a>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600"
+        >
+          {open ? "Hide details" : "Show details"}
+        </button>
+        <button
+          type="button"
+          disabled={mut.isPending}
+          onClick={() => mut.mutate("submitted")}
+          className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+        >
+          I submitted it
+        </button>
+        <button
+          type="button"
+          disabled={mut.isPending}
+          onClick={() => mut.mutate("skipped")}
+          className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-500 disabled:opacity-50"
+        >
+          Skip
+        </button>
+      </div>
+
+      {open && (
+        <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50/70 p-3">
+          {filled.length === 0 ? (
+            <p className="text-xs text-slate-500">
+              Fill in your business profile first — those details get copied here.
+            </p>
+          ) : (
+            <>
+              <div className="divide-y divide-slate-200/70">
+                {filled.map(([label, value]) => (
+                  <CopyRow key={label} label={label} value={value} />
+                ))}
+              </div>
+              <input
+                value={liveUrl}
+                onChange={(e) => setLiveUrl(e.target.value)}
+                placeholder="Listing URL (optional)"
+                className="mt-3 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs"
+              />
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
 
 function HistoryTable({ rows }: { rows: Submission[] }) {
   if (rows.length === 0)
