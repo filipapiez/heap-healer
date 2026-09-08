@@ -55,6 +55,7 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
     websiteJobs: null,
     directoryQueue: null,
     dailyPages: null,
+    aiVisibility: null,
     errors: [],
   };
   settled.forEach((result, index) => {
@@ -63,7 +64,9 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
       | "semrush"
       | "websiteJobs"
       | "directoryQueue"
-      | "dailyPages";
+      | "dailyPages"
+      | "aiVisibility";
+
     if (result.status === "fulfilled") {
       output[task] = result.value;
     } else {
