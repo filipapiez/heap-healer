@@ -53,8 +53,8 @@ type DirectoryProfile = {
 };
 
 const STATUS_STYLE: Record<string, { label: string; className: string }> = {
-  queued: { label: "Submitting…", className: "bg-slate-100 text-slate-700" },
-  pending_action: { label: "Submitting…", className: "bg-slate-100 text-slate-700" },
+  queued: { label: "Not sent yet", className: "bg-slate-100 text-slate-700" },
+  pending_action: { label: "Not sent yet", className: "bg-slate-100 text-slate-700" },
   auto_submitted: { label: "Submitted", className: "bg-indigo-100 text-indigo-800" },
   submitted: { label: "Submitted", className: "bg-indigo-100 text-indigo-800" },
   live: { label: "Live", className: "bg-emerald-100 text-emerald-800" },
@@ -83,10 +83,12 @@ function BacklinksPage() {
 
   const data = queueQuery.data!;
   const submissions = (data.submissions ?? []) as Submission[];
-  const active = submissions.filter((s) =>
-    ["queued", "pending_action", "auto_submitted", "submitted"].includes(s.status),
+  // "This queue" = still waiting to be sent. "History" = anything that has actually
+  // left the building (sent, live, rejected or skipped) so the two tabs never disagree.
+  const active = submissions.filter((s) => ["queued", "pending_action"].includes(s.status));
+  const history = submissions.filter((s) =>
+    ["submitted", "auto_submitted", "live", "rejected", "skipped"].includes(s.status),
   );
-  const history = submissions.filter((s) => ["live", "rejected", "skipped"].includes(s.status));
 
   return (
     <div className="mx-auto max-w-[1120px]">
@@ -218,7 +220,7 @@ function QueueList({ rows }: { rows: Submission[] }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
-        Nothing queued yet. Fill your profile and the daily job (9am UTC) will submit for you.
+        Nothing waiting. Fill your profile and the daily job (9am UTC) picks up the next batch.
       </div>
     );
   }
@@ -266,7 +268,7 @@ function HistoryTable({ rows }: { rows: Submission[] }) {
   if (rows.length === 0)
     return (
       <div className="rounded-xl border border-dashed border-slate-300 p-10 text-center text-sm text-slate-500">
-        Nothing submitted yet.
+        Nothing has actually been sent yet.
       </div>
     );
   return (
