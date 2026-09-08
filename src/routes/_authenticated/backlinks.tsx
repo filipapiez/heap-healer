@@ -9,6 +9,7 @@ import {
   listBacklinkQueue,
   saveDirectoryProfile,
   seedDirectories,
+  updateSubmission,
 } from "@/lib/directories.functions";
 import { LogoUploader } from "@/components/LogoUploader";
 import { SyndicationPanel } from "@/components/SyndicationPanel";
@@ -181,7 +182,7 @@ function BacklinksPage() {
         </TabBtn>
       </div>
 
-      {tab === "queue" && <QueueList rows={active} />}
+      {tab === "queue" && <QueueList rows={active} profile={data.profile} />}
       {tab === "history" && <HistoryTable rows={history} />}
       {tab === "syndication" && <SyndicationPanel workspaceId={data.workspaceId} />}
       {tab === "profile" && <ProfileForm initial={data.profile} />}
