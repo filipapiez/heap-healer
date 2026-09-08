@@ -11,6 +11,8 @@ import {
   seedDirectories,
 } from "@/lib/directories.functions";
 import { LogoUploader } from "@/components/LogoUploader";
+import { SyndicationPanel } from "@/components/SyndicationPanel";
+
 
 export const Route = createFileRoute("/_authenticated/backlinks")({
   head: () => ({ meta: [{ title: "Backlink builder — MentionMyApp" }] }),
@@ -64,7 +66,7 @@ const STATUS_STYLE: Record<string, { label: string; className: string }> = {
 
 function BacklinksPage() {
   const qc = useQueryClient();
-  const [tab, setTab] = useState<"queue" | "history" | "profile">("queue");
+  const [tab, setTab] = useState<"queue" | "history" | "profile" | "syndication">("queue");
 
   const queueQuery = useQuery({ queryKey: ["backlink-queue"], queryFn: () => listBacklinkQueue() });
 
@@ -171,6 +173,9 @@ function BacklinksPage() {
         <TabBtn on={tab === "history"} onClick={() => setTab("history")}>
           History ({history.length})
         </TabBtn>
+        <TabBtn on={tab === "syndication"} onClick={() => setTab("syndication")}>
+          Article syndication
+        </TabBtn>
         <TabBtn on={tab === "profile"} onClick={() => setTab("profile")}>
           Profile
         </TabBtn>
@@ -178,10 +183,12 @@ function BacklinksPage() {
 
       {tab === "queue" && <QueueList rows={active} />}
       {tab === "history" && <HistoryTable rows={history} />}
+      {tab === "syndication" && <SyndicationPanel workspaceId={data.workspaceId} />}
       {tab === "profile" && <ProfileForm initial={data.profile} />}
     </div>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (

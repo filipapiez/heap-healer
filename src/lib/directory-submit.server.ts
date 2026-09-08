@@ -201,33 +201,17 @@ export async function queueWeeklyDirectories(opts?: {
       }
 
       for (const directory of pool) {
-        let status = "submitted";
-        let autoResult: SubmitResult | null = null;
-        let notes: string | null = "Queued — submission attempted automatically";
-        let submittedAt: string | null = new Date().toISOString();
-
-        if (
-          (directory.submission_method === "api" || directory.submission_method === "form") &&
-          directory.auto_submit_config
-        ) {
-          autoResult = await attemptAutoSubmit(directory, profile);
-          if (autoResult.ok) {
-            status = "auto_submitted";
-            submissionsAuto += 1;
-            notes = autoResult.note ?? null;
-          } else {
-            notes = autoResult.error;
-          }
-        }
+        const attempt = await attemptSubmission(directory, profile);
+        if (attempt.status === "auto_submitted") submissionsAuto += 1;
 
         const { error: insertError } = await supabaseAdmin.from("directory_submissions").insert({
           workspace_id: workspace.id,
           directory_id: directory.id,
-          status,
+          status: attempt.status,
           scheduled_for: new Date().toISOString().slice(0, 10),
-          auto_result: autoResult,
-          notes,
-          submitted_at: submittedAt,
+          auto_result: attempt.result,
+          notes: attempt.notes,
+          submitted_at: attempt.submittedAt,
         });
         if (insertError) {
           errors.push({
@@ -239,6 +223,7 @@ export async function queueWeeklyDirectories(opts?: {
           submissionsQueued += 1;
         }
       }
+
     } catch (error) {
       errors.push({
         workspace: workspace.id,
@@ -277,32 +262,88 @@ async function retryPendingSubmissions(
     .select("id, directory:directories(slug,name,submit_url,submission_method,auto_submit_config)")
     .eq("workspace_id", workspaceId)
     .in("status", ["queued", "pending_action"]);
+  let attempts = 0;
   for (const row of rows ?? []) {
     const dir = row.directory as unknown as AutoSubmitDirectory | null;
     if (!dir) continue;
-    let autoResult: SubmitResult | null = null;
-    let status: "submitted" | "auto_submitted" = "submitted";
-    let notes: string | null = "Queued — submission attempted automatically";
-    if (
-      (dir.submission_method === "api" || dir.submission_method === "form") &&
-      dir.auto_submit_config
-    ) {
-      autoResult = await attemptAutoSubmit(dir, profile);
-      if (autoResult.ok) {
-        status = "auto_submitted";
-        notes = autoResult.note ?? null;
-      } else {
-        notes = autoResult.error;
-      }
-    }
+    if (attempts >= 25) break;
+    attempts += 1;
+    const attempt = await attemptSubmission(dir, profile);
+    // Only record progress when something genuinely went out; otherwise leave
+    // the row waiting so the numbers stay honest.
+    if (attempt.status === "pending_action" && !attempt.notes) continue;
     await supabaseAdmin
       .from("directory_submissions")
       .update({
-        status,
-        submitted_at: new Date().toISOString(),
-        auto_result: autoResult,
-        notes,
+        status: attempt.status,
+        submitted_at: attempt.submittedAt,
+        auto_result: attempt.result,
+        notes: attempt.notes,
       })
       .eq("id", row.id);
   }
 }
+
+type AttemptOutcome = {
+  status: "auto_submitted" | "pending_action";
+  notes: string | null;
+  result: SubmitResult | null;
+  submittedAt: string | null;
+};
+
+/** Try every automated route for one directory: a configured API/form POST
+ *  first, then robot form filling through the browser service. Anything that
+ *  does not genuinely go out stays "pending_action". */
+async function attemptSubmission(
+  directory: AutoSubmitDirectory,
+  profile: DirectorySubmissionProfile,
+): Promise<AttemptOutcome> {
+  const now = new Date().toISOString();
+
+  if (
+    (directory.submission_method === "api" || directory.submission_method === "form") &&
+    directory.auto_submit_config
+  ) {
+    const result = await attemptAutoSubmit(directory, profile);
+    if (result.ok) {
+      return {
+        status: "auto_submitted",
+        notes: result.note ?? "Submitted automatically",
+        result,
+        submittedAt: now,
+      };
+    }
+  }
+
+  if (directory.submission_method === "form" && directory.submit_url) {
+    const { submitDirectoryForm, browserAutomationEnabled } = await import("./form-submit.server");
+    if (browserAutomationEnabled()) {
+      const outcome = await submitDirectoryForm(directory.submit_url, profile);
+      if (outcome.ok) {
+        return {
+          status: "auto_submitted",
+          notes: outcome.note,
+          result: { ok: true, note: outcome.note },
+          submittedAt: now,
+        };
+      }
+      return {
+        status: "pending_action",
+        notes: outcome.error,
+        result: { ok: false, error: outcome.error, needs_manual: true },
+        submittedAt: null,
+      };
+    }
+  }
+
+  return {
+    status: "pending_action",
+    notes:
+      directory.submission_method === "manual"
+        ? "Needs a person — this directory reviews submissions manually"
+        : "Waiting for automated submission",
+    result: null,
+    submittedAt: null,
+  };
+}
+
