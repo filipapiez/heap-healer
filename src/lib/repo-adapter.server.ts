@@ -251,6 +251,60 @@ export default function ${name}() {
 `;
 }
 
+/** Files that may hold a React Router <Routes> table, in lookup order. */
+export const REACT_ROUTER_TABLE_CANDIDATES = [
+  "src/App.tsx",
+  "src/App.jsx",
+  "src/routes.tsx",
+  "src/router.tsx",
+  "src/main.tsx",
+];
+
+/**
+ * React Router has no file-based routing: a page file in src/pages is invisible
+ * until it is imported and given a <Route>. Registers every slug that is missing.
+ * Returns the updated source, or null when nothing changed / no table found.
+ */
+export function registerReactRouterRoutes(
+  source: string,
+  tablePath: string,
+  pagesDir: string,
+  slugs: string[],
+): string | null {
+  const closing = source.lastIndexOf("</Routes>");
+  if (closing === -1) return null;
+
+  const tableDir = tablePath.split("/").slice(0, -1).join("/");
+  let rel = pagesDir.startsWith(`${tableDir}/`) ? `./${pagesDir.slice(tableDir.length + 1)}` : null;
+  if (!rel) {
+    const up = tableDir.split("/").filter(Boolean).map(() => "..").join("/");
+    rel = `${up}/${pagesDir}`;
+  }
+
+  let out = source;
+  const imports: string[] = [];
+  const routes: string[] = [];
+  for (const slug of [...new Set(slugs)]) {
+    if (new RegExp(`path=["']/${slug.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")}["']`).test(out)) continue;
+    const name = `Mma${componentName(slug)}`;
+    imports.push(`import ${name} from "${rel}/${slug}";`);
+    routes.push(`<Route path="/${slug}" element={<${name} />} />`);
+  }
+  if (!routes.length) return null;
+
+  // Insert routes before a catch-all route if present, else before </Routes>.
+  const catchAll = out.search(/<Route\s+path=["']\*["']/);
+  const insertAt = catchAll !== -1 && catchAll < out.lastIndexOf("</Routes>") ? catchAll : out.lastIndexOf("</Routes>");
+  out = `${out.slice(0, insertAt)}${routes.join("\n          ")}\n          ${out.slice(insertAt)}`;
+
+  // Insert imports after the last top-level import statement.
+  const importRe = /^import[\s\S]*?from\s+["'][^"']+["'];?\s*$/gm;
+  let lastEnd = 0;
+  for (const match of out.matchAll(importRe)) lastEnd = (match.index ?? 0) + match[0].length;
+  out = `${out.slice(0, lastEnd)}\n${imports.join("\n")}${out.slice(lastEnd)}`;
+  return out;
+}
+
 /** Adds the canonical URL to an existing XML sitemap without touching other lastmods. */
 export function upsertSitemapEntry(xml: string, loc: string, lastmod: string): string | null {
   if (xml.includes(`<loc>${loc}</loc>`)) return null;
