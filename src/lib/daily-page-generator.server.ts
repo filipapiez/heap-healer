@@ -4,6 +4,8 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
   detectPublishingConfig,
+  REACT_ROUTER_TABLE_CANDIDATES,
+  registerReactRouterRoutes,
   renderPageFile,
   resolvePagePath,
   upsertSitemapEntry,
@@ -351,6 +353,37 @@ canonicalUrl must be exactly ${origin}/<slug>. cta.buttonUrl and breadcrumb URLs
       } as never)
       .eq("id", generatedPageId);
     return { ...base, status: "failed", stage: "render_failed", slug: page.slug };
+  }
+
+  // React Router sites need the page imported and given a <Route>, or it 404s.
+  // Also backfills any earlier pages that were committed without a route.
+  if (config.framework === "react-router") {
+    try {
+      const { data: prior } = await supabaseAdmin
+        .from("generated_pages" as never)
+        .select("slug")
+        .eq("workspace_id", connection.workspace_id)
+        .eq("status", "published");
+      const slugs = [
+        ...((prior ?? []) as { slug: string | null }[]).map((row) => row.slug).filter(Boolean),
+        page.slug,
+      ] as string[];
+      const pagesDir = config.publish_path.split("/{slug}")[0];
+      for (const tablePath of REACT_ROUTER_TABLE_CANDIDATES) {
+        const source = await readRepositoryFile(
+          installationId,
+          connection.external_id,
+          tablePath,
+          repo.defaultBranch,
+        );
+        if (!source || !source.includes("</Routes>")) continue;
+        const updated = registerReactRouterRoutes(source, tablePath, pagesDir, slugs);
+        if (updated) files.push({ path: tablePath, content: updated });
+        break;
+      }
+    } catch (error) {
+      console.error("[daily-page-generator] route registration skipped", error);
+    }
   }
 
   if (config.sitemap_path?.endsWith(".xml")) {
