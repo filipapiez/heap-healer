@@ -8,6 +8,8 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  isAfter,
+  startOfDay,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -150,6 +152,114 @@ function ContentPlanPage() {
         </div>
       </header>
 
+      <section className="overflow-hidden mb-6 rounded-2xl border border-[#e4e3e7] bg-white">
+        <div className="flex items-center justify-between border-b border-[#e7e6ea] px-4 py-3">
+          <button
+            type="button"
+            onClick={() => setMonth((value) => new Date(value.getFullYear(), value.getMonth() - 1))}
+            className="grid h-8 w-8 place-items-center rounded-lg border border-[#e4e3e7] text-[#65616b]"
+            aria-label="Previous month"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <strong className="font-display text-sm font-semibold text-[#302d34]">
+            {format(month, "MMMM yyyy")}
+          </strong>
+          <button
+            type="button"
+            onClick={() => setMonth((value) => new Date(value.getFullYear(), value.getMonth() + 1))}
+            className="grid h-8 w-8 place-items-center rounded-lg border border-[#e4e3e7] text-[#65616b]"
+            aria-label="Next month"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 border-b border-[#e7e6ea] px-4 py-2.5 text-[11px] text-[#65616b]">
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Indexed on Google</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-[#a09ca8]" /> Published, waiting for Google</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border border-dashed border-[#6366e8] bg-[#eef0ff]" /> Scheduled</span>
+        </div>
+        {planQuery.isLoading ? (
+          <div className="grid min-h-[420px] place-items-center text-sm text-[#85818b]">
+            Loading website content…
+          </div>
+        ) : planQuery.error ? (
+          <div className="grid min-h-[420px] place-items-center p-8 text-center text-sm text-[#a54343]">
+            The website content plan could not load.
+          </div>
+        ) : (
+          <>
+            <div className="hidden grid-cols-7 border-b border-[#eceaed] text-center text-[10px] font-semibold uppercase tracking-[.06em] text-[#77737e] md:grid">
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
+                <div key={day} className="px-2 py-3">
+                  {day}
+                </div>
+              ))}
+            </div>
+            <div className="hidden grid-cols-7 md:grid">
+              {days.map((day) => {
+                const dayPages = pages.filter((page) =>
+                  isSameDay(new Date(page.published_at), day),
+                );
+                const today = startOfDay(new Date());
+                const isToday = isSameDay(day, today);
+                const scheduled =
+                  deliveryConnections.length > 0 &&
+                  (isAfter(day, today) || (isToday && dayPages.length === 0));
+                return (
+                  <div
+                    key={day.toISOString()}
+                    className={`min-h-[122px] border-b border-r border-[#efedf1] p-2 last:border-r-0 ${isToday ? "bg-[#f7f7ff]" : ""}`}
+                  >
+                    <span
+                      className={`text-[11px] ${isToday ? "rounded-full bg-[#6366e8] px-1.5 py-0.5 font-semibold text-white" : isSameMonth(day, month) ? "text-[#57535d]" : "text-[#bbb8bf]"}`}
+                    >
+                      {format(day, "d")}
+                    </span>
+                    <div className="mt-2 space-y-1.5">
+                      {dayPages.slice(0, 2).map((page) => (
+                        <PageChip key={page.id} page={page} />
+                      ))}
+                      {scheduled && (
+                        <div className="rounded-lg border border-dashed border-[#c7c9f5] bg-[#f5f6ff] px-2.5 py-2">
+                          <span className="text-[10px] font-semibold text-[#5b5bd6]">Scheduled</span>
+                          <strong className="mt-1 block truncate text-[10px] text-[#302d34]">
+                            {deliveryConnections.length} new page{deliveryConnections.length > 1 ? "s" : ""}
+                          </strong>
+                        </div>
+                      )}
+                      {dayPages.length > 2 && (
+                        <span className="text-[10px] text-[#85818b]">
+                          +{dayPages.length - 2} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="divide-y divide-[#efedf1] md:hidden">
+              {visiblePages.length ? (
+                visiblePages.map((page) => (
+                  <div key={page.id} className="p-4">
+                    <PageChip page={page} expanded />
+                  </div>
+                ))
+              ) : (
+                <EmptyMonth />
+              )}
+            </div>
+            {visiblePages.length === 0 && !deliveryConnections.length && (
+              <div className="hidden md:block">
+                <EmptyMonth />
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
       <section className="mb-6 grid gap-4 lg:grid-cols-[1.35fr_.65fr]">
         <div className="rounded-2xl border border-[#e4e3e7] bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -284,95 +394,6 @@ function ContentPlanPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-[#e4e3e7] bg-white">
-        <div className="flex items-center justify-between border-b border-[#e7e6ea] px-4 py-3">
-          <button
-            type="button"
-            onClick={() => setMonth((value) => new Date(value.getFullYear(), value.getMonth() - 1))}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-[#e4e3e7] text-[#65616b]"
-            aria-label="Previous month"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <strong className="font-display text-sm font-semibold text-[#302d34]">
-            {format(month, "MMMM yyyy")}
-          </strong>
-          <button
-            type="button"
-            onClick={() => setMonth((value) => new Date(value.getFullYear(), value.getMonth() + 1))}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-[#e4e3e7] text-[#65616b]"
-            aria-label="Next month"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        {planQuery.isLoading ? (
-          <div className="grid min-h-[420px] place-items-center text-sm text-[#85818b]">
-            Loading website content…
-          </div>
-        ) : planQuery.error ? (
-          <div className="grid min-h-[420px] place-items-center p-8 text-center text-sm text-[#a54343]">
-            The website content plan could not load.
-          </div>
-        ) : (
-          <>
-            <div className="hidden grid-cols-7 border-b border-[#eceaed] text-center text-[10px] font-semibold uppercase tracking-[.06em] text-[#77737e] md:grid">
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                <div key={day} className="px-2 py-3">
-                  {day}
-                </div>
-              ))}
-            </div>
-            <div className="hidden grid-cols-7 md:grid">
-              {days.map((day) => {
-                const dayPages = pages.filter((page) =>
-                  isSameDay(new Date(page.published_at), day),
-                );
-                return (
-                  <div
-                    key={day.toISOString()}
-                    className="min-h-[122px] border-b border-r border-[#efedf1] p-2 last:border-r-0"
-                  >
-                    <span
-                      className={`text-[11px] ${isSameMonth(day, month) ? "text-[#57535d]" : "text-[#bbb8bf]"}`}
-                    >
-                      {format(day, "d")}
-                    </span>
-                    <div className="mt-2 space-y-1.5">
-                      {dayPages.slice(0, 2).map((page) => (
-                        <PageChip key={page.id} page={page} />
-                      ))}
-                      {dayPages.length > 2 && (
-                        <span className="text-[10px] text-[#85818b]">
-                          +{dayPages.length - 2} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="divide-y divide-[#efedf1] md:hidden">
-              {visiblePages.length ? (
-                visiblePages.map((page) => (
-                  <div key={page.id} className="p-4">
-                    <PageChip page={page} expanded />
-                  </div>
-                ))
-              ) : (
-                <EmptyMonth />
-              )}
-            </div>
-            {visiblePages.length === 0 && (
-              <div className="hidden md:block">
-                <EmptyMonth />
-              </div>
-            )}
-          </>
-        )}
-      </section>
     </div>
   );
 }
@@ -420,7 +441,7 @@ function EmptyMonth() {
           No website pages published this month
         </strong>
         <p className="mt-1 text-xs text-[#85818b]">
-          Queue an approved page above. Published results appear here once delivery succeeds.
+          New pages appear here automatically once they go live.
         </p>
       </div>
     </div>
