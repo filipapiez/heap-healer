@@ -771,6 +771,7 @@ export const runSeoAudit = createServerFn({ method: "POST" })
           score,
           checks_passed: good.length,
           checks_failed: issues.length,
+          result: { categories: categoryList },
         } as never);
         if (persistError) throw persistError;
       }

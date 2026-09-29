@@ -99,7 +99,8 @@ function ContentPlanPage() {
   const deliveryConnections = allDeliveryConnections.filter(
     (connection) =>
       connection.status === "connected" &&
-      ["github", "wordpress", "shopify"].includes(connection.platform),
+      // Only GitHub repositories are processed by the automatic daily writer.
+      connection.platform === "github",
   ) as DeliveryConnection[];
   const retryJob = useMutation({
     mutationFn: (jobId: string) => retryWebsitePublishJob({ data: { jobId } }),
