@@ -41,7 +41,7 @@ function buildScript(p: NonNullable<Profile>): string {
 function hint(el){var t=[el.name,el.id,el.placeholder,el.getAttribute('aria-label'),el.getAttribute('autocomplete')];
 if(el.id){var l=document.querySelector('label[for="'+CSS.escape(el.id)+'"]');if(l)t.push(l.innerText)}
 var p=el.closest('label');if(p)t.push(p.innerText);
-if(!p&&el.parentElement)t.push((el.parentElement.innerText||'').slice(0,80));
+if(!p&&el.parentElement&&el.parentElement.querySelectorAll('input,textarea,select').length===1)t.push((el.parentElement.innerText||'').slice(0,80));
 return t.filter(Boolean).join(' ').toLowerCase()}
 function set(el,v){var pr=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:el.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;
 Object.getOwnPropertyDescriptor(pr,'value').set.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}
