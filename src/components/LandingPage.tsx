@@ -626,28 +626,33 @@ export default function LandingPage() {
                       minHeight: 200,
                       display: "flex",
                       flexDirection: "column",
-                      justifyContent: "space-between",
+                      justifyContent: "flex-start",
                       background: dark ? INKD : PAPER,
                       color: dark ? PAPER : INKD,
                     }}
                   >
-                    <span
-                      aria-hidden
-                      style={{
-                        display: "block",
-                        width: 30,
-                        height: 2,
-                        borderRadius: 999,
-                        background: dark ? VIOLET : "rgba(12,14,26,0.18)",
-                      }}
-                    />
+                    <FeatureVisual index={i} dark={dark} />
                     <div>
-                      <h3
+                      <div
                         style={{
-                          fontSize: wide ? 28 : 20,
-                          fontWeight: 700,
-                          margin: "22px 0 10px",
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: "0.12em",
                           textTransform: "uppercase",
+                          color: dark ? "#A99CFF" : VIOLET,
+                          marginTop: 22,
+                        }}
+                      >
+                        {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <h3
+                        className="grotesk"
+                        style={{
+                          fontSize: wide ? 24 : 19,
+                          fontWeight: 600,
+                          letterSpacing: "-0.02em",
+                          margin: "6px 0 8px",
+                          lineHeight: 1.2,
                         }}
                       >
                         {f.t}
@@ -657,7 +662,8 @@ export default function LandingPage() {
                           margin: 0,
                           fontSize: 14,
                           lineHeight: 1.6,
-                          opacity: dark ? 0.75 : 0.7,
+                          opacity: dark ? 0.72 : 0.68,
+                          maxWidth: 460,
                         }}
                       >
                         {f.d}
@@ -1182,4 +1188,126 @@ export default function LandingPage() {
       </div>
     </div>
   );
+}
+
+/* ---------- Feature card mini-previews ---------- */
+function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
+  const line = dark ? "rgba(244,245,251,0.12)" : "rgba(12,14,26,0.08)";
+  const card: React.CSSProperties = {
+    background: dark ? "rgba(255,255,255,0.05)" : "#fff",
+    border: `1px solid ${line}`,
+    borderRadius: 14,
+    padding: 14,
+    fontSize: 12,
+    minHeight: 120,
+    color: dark ? "#F4F5FB" : "#0C0E1A",
+  };
+  const muted = dark ? "rgba(244,245,251,0.55)" : "#6B7086";
+  const pill = (t: string, c: string, bg: string) => (
+    <span style={{ fontSize: 10.5, fontWeight: 600, color: c, background: bg, borderRadius: 999, padding: "2px 8px" }}>{t}</span>
+  );
+  const ok = pill("Pass", "#1F7A4D", "#E4F5EB");
+  const warn = pill("Fix", "#9A5B00", "#FFF1D6");
+
+  switch (index) {
+    case 0:
+      return (
+        <div style={{ ...card, display: "grid", gridTemplateColumns: "96px 1fr", gap: 18, alignItems: "center" }}>
+          <div style={{ position: "relative", width: 96, height: 96 }}>
+            <svg viewBox="0 0 36 36" width="96" height="96">
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke={line} strokeWidth="3" />
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="#6C5CE7" strokeWidth="3" strokeDasharray="84 100" strokeLinecap="round" transform="rotate(-90 18 18)" />
+            </svg>
+            <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", fontWeight: 700, fontSize: 22 }} className="grotesk">86</div>
+          </div>
+          <div style={{ display: "grid", gap: 8 }}>
+            {[["Crawlability", ok], ["Meta descriptions", warn], ["Schema markup", ok], ["Internal links", warn]].map(([t, p]) => (
+              <div key={t as string} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `1px solid ${line}`, paddingBottom: 6 }}>
+                <span>{t as string}</span>{p}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    case 1: {
+      const pts = [8, 12, 10, 16, 15, 22, 20, 28, 30, 38];
+      const d = pts.map((y, i) => `${i === 0 ? "M" : "L"}${i * 11} ${44 - y}`).join(" ");
+      return (
+        <div style={card}>
+          <div style={{ display: "flex", justifyContent: "space-between", color: muted }}>
+            <span>Clicks · 28 days</span><span style={{ color: "#1F7A4D", fontWeight: 600 }}>▲ vs baseline</span>
+          </div>
+          <svg viewBox="0 0 100 46" width="100%" height="72" preserveAspectRatio="none" style={{ marginTop: 8 }}>
+            <path d={`${d} L99 46 L0 46 Z`} fill="rgba(108,92,231,0.12)" />
+            <path d={d} fill="none" stroke="#6C5CE7" strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+            <line x1="0" x2="100" y1="36" y2="36" stroke={muted} strokeDasharray="2 2" vectorEffect="non-scaling-stroke" />
+          </svg>
+        </div>
+      );
+    }
+    case 2:
+      return (
+        <div style={{ ...card, display: "grid", gap: 8 }}>
+          {[["Best AI SEO tools", "Live"], ["How to rank in ChatGPT", "Approved"], ["SEO for Shopify", "Draft"]].map(([t, s]) => (
+            <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t}</span>
+              {s === "Live" ? pill(s, "#1F7A4D", "#E4F5EB") : s === "Approved" ? pill(s, "#6C5CE7", "#EEEBFF") : pill(s, muted, line)}
+            </div>
+          ))}
+        </div>
+      );
+    case 3:
+      return (
+        <div style={{ ...card, display: "grid", gap: 8 }}>
+          {[["Product Hunt", true], ["G2", true], ["BetaList", false]].map(([t, live]) => (
+            <div key={t as string} style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>{t as string}</span>
+              <span style={{ color: live ? "#7EE2A8" : muted, fontWeight: 600, fontSize: 11 }}>{live ? "● Link verified" : "○ Pending"}</span>
+            </div>
+          ))}
+        </div>
+      );
+    case 4:
+      return (
+        <div style={{ ...card, display: "grid", gap: 8 }}>
+          {[["ChatGPT", 72], ["Gemini", 58], ["Claude", 44], ["Perplexity", 63]].map(([t, v]) => (
+            <div key={t as string} style={{ display: "grid", gridTemplateColumns: "72px 1fr", alignItems: "center", gap: 8 }}>
+              <span>{t as string}</span>
+              <div style={{ height: 6, borderRadius: 999, background: line }}>
+                <div style={{ width: `${v}%`, height: "100%", borderRadius: 999, background: "#6C5CE7" }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    case 5:
+      return (
+        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+          {[["Authority", "34"], ["Ref. domains", "212"], ["Backlinks", "1.8k"], ["Keywords", "940"]].map(([l, v]) => (
+            <div key={l} style={{ borderRight: `1px solid ${line}`, paddingRight: 8 }}>
+              <div style={{ color: muted, fontSize: 11 }}>{l}</div>
+              <div className="grotesk" style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{v}</div>
+            </div>
+          ))}
+        </div>
+      );
+    case 6:
+      return (
+        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 5 }}>
+          {Array.from({ length: 21 }, (_, i) => (
+            <div key={i} style={{ aspectRatio: "1", borderRadius: 5, background: i < 13 ? (i % 4 === 0 ? "#D6F0E0" : "#EEEBFF") : "transparent", border: i >= 13 ? `1px dashed ${line}` : "none" }} />
+          ))}
+        </div>
+      );
+    default:
+      return (
+        <div style={{ ...card, display: "grid", gap: 8 }}>
+          {["Website", "GitHub", "Search Console"].map((t) => (
+            <div key={t} style={{ display: "flex", justifyContent: "space-between" }}>
+              <span>{t}</span>{pill("Connected", "#1F7A4D", "#E4F5EB")}
+            </div>
+          ))}
+        </div>
+      );
+  }
 }
