@@ -1195,8 +1195,6 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
   const line = dark ? "rgba(244,245,251,0.12)" : "rgba(12,14,26,0.08)";
   const card: CSSProperties = {
     background: dark ? "rgba(255,255,255,0.05)" : "#fff",
-    minWidth: 0,
-    overflow: "hidden",
     border: `1px solid ${line}`,
     borderRadius: 14,
     padding: 14,
