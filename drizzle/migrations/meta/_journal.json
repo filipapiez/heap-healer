@@ -8,6 +8,13 @@
       "when": 1790656630461,
       "tag": "0000_seo_pages_live_check",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790665994764,
+      "tag": "0001_seo_fix_jobs",
+      "breakpoints": true
     }
   ]
 }
