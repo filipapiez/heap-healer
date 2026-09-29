@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -15,7 +15,7 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight, FileText, SearchCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { getContentPlanData } from "@/lib/growth-dashboard.functions";
+import { checkMyPagesLive, getContentPlanData } from "@/lib/growth-dashboard.functions";
 import {
   getWebsiteConnectionStatus,
   listWebsitePublishJobs,
@@ -36,6 +36,10 @@ type SeoPage = {
   impressions: number;
   clicks: number;
   published_at: string;
+  live_status: string;
+  live_reason: string | null;
+  live_host: string | null;
+  live_checked_at: string | null;
 };
 
 type DeliveryConnection = {
@@ -115,6 +119,16 @@ function ContentPlanPage() {
     onError: (error: Error) => toast.error(error.message),
   });
   const pages = useMemo(() => planQuery.data?.items ?? [], [planQuery.data?.items]);
+  // Automatically re-check any page not yet confirmed live, once per visit.
+  const liveChecked = useRef(false);
+  useEffect(() => {
+    if (liveChecked.current || !pages.some((p) => p.live_status !== "live")) return;
+    liveChecked.current = true;
+    checkMyPagesLive()
+      .then(() => queryClient.invalidateQueries({ queryKey: ["seo-content-plan"] }))
+      .catch(() => undefined);
+  }, [pages, queryClient]);
+  const waitingLovable = pages.filter((p) => p.live_status === "waiting_publish").length;
   const calendarStart = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(endOfMonth(month), { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
@@ -132,6 +146,15 @@ function ContentPlanPage() {
         </span>
       </div>
 
+      {waitingLovable > 0 && (
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <strong>{waitingLovable} page{waitingLovable > 1 ? "s are" : " is"} saved but not live yet.</strong>{" "}
+          This site is built with Lovable, which only goes live after the project is re-published.
+          Open the project in Lovable and click <strong>Publish → Update</strong>. We re-check
+          automatically and mark each page Live as soon as it loads.
+        </div>
+      )}
+
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-semibold tracking-[-.03em] text-[#201d24]">
@@ -142,7 +165,7 @@ function ContentPlanPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <MetricPill value={pages.length} label="published" />
+          <MetricPill value={pages.filter((p) => p.live_status === "live").length} label="live" />
           <MetricPill value={pages.filter((page) => page.indexed).length} label="indexed" />
           <Link
             to="/grow"
@@ -408,15 +431,31 @@ function MetricPill({ value, label }: { value: number; label: string }) {
 }
 
 function PageChip({ page, expanded = false }: { page: SeoPage; expanded?: boolean }) {
+  const live = page.live_status === "live";
+  const label = page.indexed
+    ? "Indexed"
+    : live
+      ? "Live"
+      : page.live_status === "waiting_publish"
+        ? "Waiting for Lovable publish"
+        : page.live_status === "not_live"
+          ? "Not live yet"
+          : "Checking…";
+  const tone = page.indexed || live
+    ? "border-[#d9eddf] bg-[#f3fbf5]"
+    : page.live_status === "checking"
+      ? "border-[#e4e3e7] bg-[#fafafa]"
+      : "border-amber-200 bg-amber-50";
   return (
     <a
       href={page.url}
       target="_blank"
       rel="noreferrer"
-      className={`block rounded-lg border px-2.5 py-2 ${page.indexed ? "border-[#d9eddf] bg-[#f3fbf5]" : "border-[#e4e3e7] bg-[#fafafa]"}`}
+      title={page.live_reason ?? undefined}
+      className={`block rounded-lg border px-2.5 py-2 ${tone}`}
     >
       <span className="flex items-center gap-1.5 text-[10px] font-semibold text-[#57535d]">
-        <FileText className="h-3 w-3" /> {page.indexed ? "Indexed" : "Published"}
+        <FileText className="h-3 w-3" /> {label}
       </span>
       <strong
         className={`mt-1 block truncate text-[#302d34] ${expanded ? "text-sm" : "text-[10px]"}`}

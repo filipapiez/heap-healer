@@ -168,6 +168,10 @@ async function recordPublishedPage(job: Job, connection: Connection, url: string
     keyword: typeof job.metadata.keyword === "string" ? job.metadata.keyword : null,
     indexed: false,
     published_at: new Date().toISOString(),
+    title: job.title,
+    live_status: "checking",
+    live_check_attempts: 0,
+    live_reason: null,
   };
   const result = existing
     ? await supabaseAdmin

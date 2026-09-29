@@ -1052,7 +1052,13 @@ export type Database = {
           impressions: number
           indexed: boolean
           keyword: string | null
+          live_check_attempts: number
+          live_checked_at: string | null
+          live_host: string | null
+          live_reason: string | null
+          live_status: string
           published_at: string
+          title: string | null
           url: string
         }
         Insert: {
@@ -1062,7 +1068,13 @@ export type Database = {
           impressions?: number
           indexed?: boolean
           keyword?: string | null
+          live_check_attempts?: number
+          live_checked_at?: string | null
+          live_host?: string | null
+          live_reason?: string | null
+          live_status?: string
           published_at?: string
+          title?: string | null
           url: string
         }
         Update: {
@@ -1072,7 +1084,13 @@ export type Database = {
           impressions?: number
           indexed?: boolean
           keyword?: string | null
+          live_check_attempts?: number
+          live_checked_at?: string | null
+          live_host?: string | null
+          live_reason?: string | null
+          live_status?: string
           published_at?: string
+          title?: string | null
           url?: string
         }
         Relationships: [
