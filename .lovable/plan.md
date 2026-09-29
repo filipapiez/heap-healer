@@ -1,56 +1,28 @@
+# One-click "Fix" for audit problems
 
-# Directory Backlink Builder
+## What the customer sees
+- Every row in **What to fix** gets a **Fix** button and a time estimate (for example "About 25 min").
+- A **Fix all** button at the top shows the total estimate.
+- After pressing Fix, the row shows **Fixing…**, then **Fix saved, checking site…**, then disappears once a fresh audit confirms it's gone. The score goes up by itself.
+- If a fix can't be done automatically (for example "No Google Business Profile"), the row says **Needs you** with short steps instead of a Fix button. We never claim a fix that didn't happen.
+- Fixes need a connected GitHub website. Without one, the button says **Connect GitHub to fix**.
 
-Ship a system that queues 15 SaaS/startup directories per week, auto-submits to the ones with usable APIs/forms, and gives you a one-click "Open & submit" dashboard for the rest.
+## How fixing works
+1. Each problem is matched to a fix type with its own time estimate:
+   - Missing title / meta description / canonical / social preview tags: 10 min
+   - No structured data (JSON-LD): 15 min
+   - Missing or broken robots.txt / sitemap: 10 min
+   - Missing FAQ page (AEO): 25 min
+   - Missing alt text, headings, llms.txt and similar: 15-20 min
+   - Anything unknown: AI-assisted fix, 25 min
+2. We read the relevant files from the site's code, AI writes the change, and we check it's valid before saving.
+3. The change is saved straight into the site's code, the same way daily pages are (Lovable sites still need Publish -> Update, shown with the existing yellow notice).
+4. The live checker waits for the site to update, re-runs the audit, and marks the problem **Fixed** only when it's actually gone. If it's still there after a few checks, it's marked **Fix didn't take** in red.
 
-## What ships
-
-**1. Seed directory list (~200 entries)**
-- Curated JSON at `src/data/directories.ts` — name, URL, submit URL, category, tier, submission method (`api` | `form` | `email` | `manual`), auto-submit config, DA estimate.
-- Categories: SaaS, AI tools, startup, launch platforms (Product Hunt-alikes), indie hackers, no-code, tools directories.
-
-**2. Database (one migration)**
-- `directories` — the catalog, seeded from the JSON on first run.
-- `directory_submissions` — one row per (workspace, directory): status (`queued` | `auto_submitted` | `pending_action` | `submitted` | `live` | `rejected` | `skipped`), scheduled_for, submitted_at, live_url, notes.
-- `directory_submission_queue_runs` — weekly cron log.
-- All tables workspace-scoped, RLS, standard GRANTs.
-
-**3. Weekly queue job**
-- `pg_cron` → `POST /api/public/queue-directories` (Bearer `CRON_SECRET`) every Monday 9am UTC.
-- Picks the top 15 unsubmitted directories per workspace (by tier, then DA), inserts `queued` rows.
-- When seed list runs low (<30 unsubmitted remaining per workspace), flags the workspace so the UI shows a "refreshing seed list" banner and I add more manually. No AI discovery yet — you said "we're going to keep looking for new ones", so I'll drop new curated batches into `directories.ts` as we go. If you later want an AI discovery cron, we bolt it on.
-
-**4. Auto-submit path**
-- `src/lib/directory-submit.server.ts` handles the ~15-20% of directories with usable endpoints:
-  - `api` — POST to their public submission API (e.g. some indie directories accept JSON).
-  - `form` — server-side form POST with your workspace's saved profile (name, tagline, URL, logo, category, email).
-  - Failures → mark `pending_action` so it falls back to the manual queue.
-- Rate-limited per directory host.
-
-**5. Workspace directory profile**
-- New `workspace_directory_profile` row (name, tagline 60ch, description 160ch + long, logo URL, category, contact email, pricing model, launch date).
-- Filled once, reused for every submission. Auto-submit fails without it.
-
-**6. Dashboard: `/backlinks`**
-- **This week** — 15 cards, each: directory name/logo, DA, status badge, primary action.
-  - Auto-submitted → "View listing" link.
-  - Pending action → "Open & submit" (opens submit URL in new tab, pre-fills clipboard with your profile fields, then a "Mark submitted" button).
-  - Rejected → reason + retry.
-- **All time** — filterable table with live_url, submitted_at, status.
-- **Profile** — edit the shared submission profile.
-- Counters roll up into the existing SEO Growth dashboard ("Backlinks in progress" / "Live").
-
-**7. Semrush cross-check**
-- Existing daily Semrush sync already pulls referring domains. Add a matcher: when a submitted directory's root domain appears in Semrush's referring domains list, auto-flip status to `live` and store the backlink URL.
-
-## Cadence
-
-15/week × ~200 seed = ~13 weeks of runway. I'll add curated batches (target: another 100 every 6-8 weeks) as we approach the tail. If you want continuous AI discovery instead, we swap the manual refresh for a discovery cron later — one file change.
-
-## Not in this plan
-
-- HARO/Qwoted responder (separate build if you want it).
-- Broken-link outreach (separate build).
-- Captcha solving for auto-submit (out of scope — those go to the manual queue).
-
-Reply "go" and I'll ship it.
+## Technical details
+- New table `seo_fix_jobs` (workspace_id, audit_run_id, issue text, category, fix_type, estimate_minutes, status queued/fixing/saved/verified/failed/needs_user, commit_sha, error, timestamps) with GRANTs + RLS for workspace members read-only; writes via server.
+- `src/lib/seo-fix.ts`: pure issue -> fix_type + estimate classifier (shared with UI).
+- `src/lib/seo-fix.server.ts`: per fix_type, uses `readRepositoryFile` / `commitRepositoryFiles` with the connection's stored framework config; AI via Lovable AI Gateway for content (JSON-LD, FAQ, meta copy); FAQ page reuses `renderPageFile` + route registration + sitemap upsert.
+- `src/lib/seo-fix.functions.ts`: `startFix`, `startAllFixes`, `listFixJobs` (requireSupabaseAuth).
+- Verification step added to `maintenance.server.ts` and triggered after a fix: re-run audit for the site, mark jobs verified/failed.
+- `seo-audit.tsx`: Fix / Fix all buttons, estimates, per-row status.
