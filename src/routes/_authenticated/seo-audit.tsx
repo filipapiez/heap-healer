@@ -147,28 +147,53 @@ function TechnicalAuditPage() {
                   ? "No technical issues found"
                   : `${audit.failed} checks need attention`}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-[#85818b]">
-                The saved audit summary is fully verified. Run a fresh audit to view the current
-                issue-by-issue remediation plan.
-              </p>
+              {!(audit.categories ?? []).length && audit.failed > 0 && (
+                <p className="mt-2 text-sm leading-6 text-[#85818b]">
+                  This audit was saved before we kept the details. Press <strong>Run audit</strong>{" "}
+                  to see exactly which checks to fix.
+                </p>
+              )}
             </div>
             <div className="mt-7 grid gap-3 md:grid-cols-4">
               {COVERAGE.map((area) => {
-                const match = (audit.categories ?? []).find((c) => area.keys.includes(c.name));
+                const matches = (audit.categories ?? []).filter((c) => area.keys.includes(c.name));
+                const passed = matches.reduce((s, c) => s + c.passed, 0);
+                const failed = matches.reduce((s, c) => s + c.failed, 0);
+                const total = passed + failed;
                 return (
                   <CoverageCard
                     key={area.title}
                     icon={area.icon}
                     title={area.title}
                     detail={area.detail}
-                    score={match?.score ?? null}
-                    passed={match?.passed ?? 0}
-                    failed={match?.failed ?? 0}
+                    score={total ? Math.round((passed / total) * 100) : null}
+                    passed={passed}
+                    failed={failed}
                   />
                 );
               })}
             </div>
 
+            {(audit.categories ?? []).some((c) => (c.issues ?? []).length) && (
+              <div className="mt-7">
+                <h3 className="font-display text-base font-semibold text-[#27242b]">
+                  What to fix
+                </h3>
+                <ul className="mt-3 divide-y divide-[#efedf1] rounded-xl border border-[#ebe9ed]">
+                  {(audit.categories ?? []).flatMap((c) =>
+                    (c.issues ?? []).map((issue, i) => (
+                      <li key={`${c.name}-${i}`} className="flex items-start gap-3 px-4 py-3 text-sm">
+                        <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[#c4772b]" />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[#302d34]">{issue}</div>
+                          <div className="mt-0.5 text-xs text-[#85818b]">{c.name}</div>
+                        </div>
+                      </li>
+                    )),
+                  )}
+                </ul>
+              </div>
+            )}
           </section>
         </>
       ) : (
