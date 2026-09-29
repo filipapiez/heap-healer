@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { MousePointerClick } from "lucide-react";
+import { Copy, MousePointerClick } from "lucide-react";
+import { toast } from "sonner";
 
 type Profile = {
   product_name?: string | null;
@@ -66,27 +67,48 @@ export function AutofillBookmarklet({ profile }: { profile: Profile }) {
     if (ref.current && profile && ready) ref.current.setAttribute("href", buildScript(profile));
   }, [profile, ready]);
 
-  if (!ready) return null;
+  if (!ready || !profile) return null;
+  const copy = async () => {
+    await navigator.clipboard.writeText(buildScript(profile));
+    toast.success("Fill code copied — now follow the 3 steps below");
+  };
   return (
-    <div className="mb-4 flex flex-wrap items-center gap-4 rounded-xl border border-[#dcd8fb] bg-[#f6f5ff] p-4">
-      <a
-        ref={ref}
-        onClick={(e) => {
-          e.preventDefault();
-          alert("Drag this button to your bookmarks bar, then click it on a directory's form page.");
-        }}
-        className="inline-flex cursor-grab items-center gap-2 rounded-lg bg-[#6C5CE7] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
-      >
-        <MousePointerClick className="h-4 w-4" /> Fill form
-      </a>
-      <div className="min-w-0 flex-1 text-sm text-[#4b4760]">
-        <strong>One-click fill.</strong> Drag the purple button to your bookmarks bar once. On any
-        directory form, click it: your details are filled in, you check them and press Submit.
-        <span className="block text-xs text-[#85818b]">
-          Don't see a bookmarks bar? Press Ctrl+Shift+B (Cmd+Shift+B on Mac). Re-drag it if you change
-          your profile.
+    <div className="mb-4 rounded-xl border border-[#dcd8fb] bg-[#f6f5ff] p-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <a
+          ref={ref}
+          draggable
+          onClick={(e) => {
+            e.preventDefault();
+            void copy();
+          }}
+          className="inline-flex cursor-grab items-center gap-2 rounded-lg bg-[#6C5CE7] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+        >
+          <MousePointerClick className="h-4 w-4" /> Fill form
+        </a>
+        <button
+          onClick={() => void copy()}
+          className="inline-flex items-center gap-2 rounded-lg border border-[#cfc9f7] bg-white px-4 py-2.5 text-sm font-semibold text-[#4b3fc4]"
+        >
+          <Copy className="h-4 w-4" /> Copy fill code
+        </button>
+        <span className="text-sm text-[#4b4760]">
+          <strong>One-click fill</strong> — your details go into any directory form, you check and
+          press Submit.
         </span>
       </div>
+      <ol className="mt-3 list-decimal space-y-1 pl-5 text-xs leading-5 text-[#6b6780]">
+        <li>
+          <strong>Easiest:</strong> drag the purple button onto your bookmarks bar (show it with
+          Cmd+Shift+B on Mac, Ctrl+Shift+B on Windows).
+        </li>
+        <li>
+          <strong>If dragging doesn't work</strong> (common in Safari): click <em>Copy fill code</em>,
+          bookmark any page (Cmd+D), then right-click that bookmark → <em>Edit Address</em> (Safari) or{" "}
+          <em>Edit</em> (Chrome) and paste the code as the address. Name it "Fill form".
+        </li>
+        <li>On a directory's form, click that bookmark. Re-do this if you change your profile.</li>
+      </ol>
     </div>
   );
 }
