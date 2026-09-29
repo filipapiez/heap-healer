@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
 import { runSeoAudit } from "@/lib/seo-audit.functions";
+import { FixList } from "@/components/FixList";
 
 export const Route = createFileRoute("/_authenticated/seo-audit")({
   head: () => ({ meta: [{ title: "Technical audit — MentionMyApp" }] }),
@@ -30,6 +31,7 @@ function TechnicalAuditPage() {
       runSeoAudit({ data: { websiteUrl, githubUrl: "", gbpUrl: "" } }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["growth-dashboard"] });
+      await queryClient.invalidateQueries({ queryKey: ["seo-fixes"] });
     },
   });
   const growth = growthQuery.data;
