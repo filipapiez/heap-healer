@@ -129,6 +129,9 @@ function ContentPlanPage() {
       .catch(() => undefined);
   }, [pages, queryClient]);
   const waitingLovable = pages.filter((p) => p.live_status === "waiting_publish").length;
+  const failedJobs = ((jobsQuery.data?.jobs ?? []) as unknown as PublishJob[]).filter(
+    (job) => job.status === "failed",
+  );
   const calendarStart = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(endOfMonth(month), { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
@@ -201,8 +204,9 @@ function ContentPlanPage() {
 
         <div className="flex flex-wrap items-center gap-4 border-b border-[#e7e6ea] px-4 py-2.5 text-[11px] text-[#65616b]">
           <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> Indexed on Google</span>
-          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-[#a09ca8]" /> Published, waiting for Google</span>
-          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full border border-dashed border-[#6366e8] bg-[#eef0ff]" /> Scheduled</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-orange-500" /> Published &amp; live</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-red-500" /> Error / not live</span>
+          <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-blue-500" /> Planned</span>
         </div>
         {planQuery.isLoading ? (
           <div className="grid min-h-[420px] place-items-center text-sm text-[#85818b]">
@@ -245,9 +249,24 @@ function ContentPlanPage() {
                       {dayPages.slice(0, 2).map((page) => (
                         <PageChip key={page.id} page={page} />
                       ))}
+                      {failedJobs
+                        .filter((job) => isSameDay(new Date(job.created_at), day))
+                        .slice(0, 1)
+                        .map((job) => (
+                          <div
+                            key={job.id}
+                            title={job.error_message ?? undefined}
+                            className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2"
+                          >
+                            <span className="text-[10px] font-semibold text-red-700">Error</span>
+                            <strong className="mt-1 block truncate text-[10px] text-[#302d34]">
+                              {job.title}
+                            </strong>
+                          </div>
+                        ))}
                       {scheduled && (
-                        <div className="rounded-lg border border-dashed border-[#c7c9f5] bg-[#f5f6ff] px-2.5 py-2">
-                          <span className="text-[10px] font-semibold text-[#5b5bd6]">Scheduled</span>
+                        <div className="rounded-lg border border-dashed border-blue-300 bg-blue-50 px-2.5 py-2">
+                          <span className="text-[10px] font-semibold text-blue-700">Planned</span>
                           <strong className="mt-1 block truncate text-[10px] text-[#302d34]">
                             {deliveryConnections.length} new page{deliveryConnections.length > 1 ? "s" : ""}
                           </strong>
@@ -432,20 +451,23 @@ function MetricPill({ value, label }: { value: number; label: string }) {
 
 function PageChip({ page, expanded = false }: { page: SeoPage; expanded?: boolean }) {
   const live = page.live_status === "live";
+  const notLive = page.live_status === "not_live" || page.live_status === "waiting_publish";
   const label = page.indexed
     ? "Indexed"
     : live
-      ? "Live"
+      ? "Published"
       : page.live_status === "waiting_publish"
-        ? "Waiting for Lovable publish"
-        : page.live_status === "not_live"
-          ? "Not live yet"
+        ? "Not live · needs Lovable publish"
+        : notLive
+          ? "Not live"
           : "Checking…";
-  const tone = page.indexed || live
-    ? "border-[#d9eddf] bg-[#f3fbf5]"
-    : page.live_status === "checking"
-      ? "border-[#e4e3e7] bg-[#fafafa]"
-      : "border-amber-200 bg-amber-50";
+  const tone = page.indexed
+    ? "border-emerald-200 bg-emerald-50"
+    : live
+      ? "border-orange-200 bg-orange-50"
+      : notLive
+        ? "border-red-200 bg-red-50"
+        : "border-[#e4e3e7] bg-[#fafafa]";
   return (
     <a
       href={page.url}
