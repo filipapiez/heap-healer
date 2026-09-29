@@ -1250,7 +1250,7 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
     case 2:
       return (
         <div style={{ ...card, display: "grid", gap: 8 }}>
-          {[["Best AI SEO tools", "Live"], ["How to rank in ChatGPT", "Approved"], ["SEO for Shopify", "Draft"]].map(([t, s]) => (
+          {[["AI SEO tools", "Live"], ["Rank in ChatGPT", "Approved"], ["Shopify SEO", "Draft"]].map(([t, s]) => (
             <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t}</span>
               {s === "Live" ? pill(s, "#1F7A4D", "#E4F5EB") : s === "Approved" ? pill(s, "#6C5CE7", "#EEEBFF") : pill(s, muted, line)}
@@ -1295,9 +1295,9 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
       );
     case 6:
       return (
-        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(14, 1fr)", gap: 5 }}>
+        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(14, minmax(0, 1fr))", gap: 5 }}>
           {Array.from({ length: 28 }, (_, i) => (
-            <div key={i} style={{ aspectRatio: "1", borderRadius: 5, background: i < 18 ? (i % 4 === 0 ? "#D6F0E0" : "#EEEBFF") : "transparent", border: i >= 18 ? `1px dashed ${line}` : "none" }} />
+            <div key={i} style={{ height: 32, borderRadius: 5, background: i < 18 ? (i % 4 === 0 ? "#D6F0E0" : "#EEEBFF") : "transparent", border: i >= 18 ? `1px dashed ${line}` : "none" }} />
           ))}
         </div>
       );
