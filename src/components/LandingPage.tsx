@@ -1251,9 +1251,9 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
       return (
         <div style={{ ...card, display: "grid", gap: 8 }}>
           {[["AI SEO tools", "Live"], ["Rank in ChatGPT", "Approved"], ["Shopify SEO", "Draft"]].map(([t, s]) => (
-            <div key={t} style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t}</span>
-              {s === "Live" ? pill(s, "#1F7A4D", "#E4F5EB") : s === "Approved" ? pill(s, "#6C5CE7", "#EEEBFF") : pill(s, muted, line)}
+            <div key={t} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, minWidth: 0 }}>
+              <span style={{ flex: "1 1 auto", minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t}</span>
+              <span style={{ flexShrink: 0 }}>{s === "Live" ? pill(s, "#1F7A4D", "#E4F5EB") : s === "Approved" ? pill(s, "#6C5CE7", "#EEEBFF") : pill(s, muted, line)}</span>
             </div>
           ))}
         </div>
