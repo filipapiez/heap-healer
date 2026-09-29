@@ -615,7 +615,7 @@ export default function LandingPage() {
             <div className="bento" style={{ marginTop: 20 }}>
               {FEATURES.map((f, i) => {
                 const dark = i === 3;
-                const wide = i === 0 || i === 5;
+                const wide = i === 0 || i === 5 || i === 6 || i === 7;
                 return (
                   <div
                     key={f.t}
@@ -1200,11 +1200,13 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
     padding: 14,
     fontSize: 12,
     minHeight: 120,
+    minWidth: 0,
+    overflow: "hidden",
     color: dark ? "#F4F5FB" : "#0C0E1A",
   };
   const muted = dark ? "rgba(244,245,251,0.55)" : "#6B7086";
   const pill = (t: string, c: string, bg: string) => (
-    <span style={{ fontSize: 10.5, fontWeight: 600, color: c, background: bg, borderRadius: 999, padding: "2px 8px" }}>{t}</span>
+    <span style={{ fontSize: 10.5, fontWeight: 600, color: c, background: bg, borderRadius: 999, padding: "2px 8px", whiteSpace: "nowrap", flexShrink: 0 }}>{t}</span>
   );
   const ok = pill("Pass", "#1F7A4D", "#E4F5EB");
   const warn = pill("Fix", "#9A5B00", "#FFF1D6");
@@ -1235,7 +1237,7 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
       return (
         <div style={card}>
           <div style={{ display: "flex", justifyContent: "space-between", color: muted }}>
-            <span>Clicks · 28 days</span><span style={{ color: "#1F7A4D", fontWeight: 600 }}>▲ vs baseline</span>
+            <span>Clicks</span><span style={{ color: "#1F7A4D", fontWeight: 600 }}>▲ +38%</span>
           </div>
           <svg viewBox="0 0 100 46" width="100%" height="72" preserveAspectRatio="none" style={{ marginTop: 8 }}>
             <path d={`${d} L99 46 L0 46 Z`} fill="rgba(108,92,231,0.12)" />
@@ -1293,9 +1295,9 @@ function FeatureVisual({ index, dark }: { index: number; dark: boolean }) {
       );
     case 6:
       return (
-        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 5 }}>
-          {Array.from({ length: 21 }, (_, i) => (
-            <div key={i} style={{ aspectRatio: "1", borderRadius: 5, background: i < 13 ? (i % 4 === 0 ? "#D6F0E0" : "#EEEBFF") : "transparent", border: i >= 13 ? `1px dashed ${line}` : "none" }} />
+        <div style={{ ...card, display: "grid", gridTemplateColumns: "repeat(14, 1fr)", gap: 5 }}>
+          {Array.from({ length: 28 }, (_, i) => (
+            <div key={i} style={{ aspectRatio: "1", borderRadius: 5, background: i < 18 ? (i % 4 === 0 ? "#D6F0E0" : "#EEEBFF") : "transparent", border: i >= 18 ? `1px dashed ${line}` : "none" }} />
           ))}
         </div>
       );
