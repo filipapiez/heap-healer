@@ -69,8 +69,9 @@ export async function checkPageLive(url: string, slug: string, title?: string | 
       const js = await get(src);
       if (needles.some((n) => js.text.includes(n))) return { status: "live", reason: null, host };
       // Follow lazily-loaded route chunks.
-      for (const m of js.text.matchAll(/["'`](\.?\.?\/?assets\/[\w.-]+\.js)["'`]/g)) {
-        const next = new URL(m[1].replace(/^\.\//, "/assets/".slice(0, 0) + ""), src).toString();
+      for (const m of js.text.matchAll(/["'`]((?:\.\/|\/assets\/|assets\/)[\w.-]+\.js)["'`]/g)) {
+        const path = m[1].startsWith("assets/") ? `/${m[1]}` : m[1];
+        const next = new URL(path, src).toString();
         if (next.startsWith(origin) && !seen.has(next)) queue.push(next);
       }
     } catch {
