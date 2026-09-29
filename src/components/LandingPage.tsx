@@ -166,9 +166,11 @@ export default function LandingPage() {
             Mention<span style={{ color: ACCENT }}>My</span>App
           </a>
           <div style={{ display: "flex", gap: 22, fontSize: 14, color: MUTED }}>
-            <a href="#stories" style={{ color: "inherit", textDecoration: "none" }}>
-              Success stories
-            </a>
+            {CASES.length > 0 && (
+              <a href="#stories" style={{ color: "inherit", textDecoration: "none" }}>
+                Success stories
+              </a>
+            )}
             <a href="#features" style={{ color: "inherit", textDecoration: "none" }}>
               Features
             </a>
