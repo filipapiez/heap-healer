@@ -13,6 +13,7 @@ import {
 } from "@/lib/directories.functions";
 import { LogoUploader } from "@/components/LogoUploader";
 import { SyndicationPanel } from "@/components/SyndicationPanel";
+import { AutofillBookmarklet } from "@/components/AutofillBookmarklet";
 
 
 export const Route = createFileRoute("/_authenticated/backlinks")({
@@ -182,7 +183,12 @@ function BacklinksPage() {
         </TabBtn>
       </div>
 
-      {tab === "queue" && <QueueList rows={active} profile={data.profile} />}
+      {tab === "queue" && (
+        <>
+          <AutofillBookmarklet profile={data.profile} />
+          <QueueList rows={active} profile={data.profile} />
+        </>
+      )}
       {tab === "history" && <HistoryTable rows={history} />}
       {tab === "syndication" && <SyndicationPanel workspaceId={data.workspaceId} />}
       {tab === "profile" && <ProfileForm initial={data.profile} />}
