@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getGrowthDashboardData } from "@/lib/growth-dashboard.functions";
 import { runSeoAudit } from "@/lib/seo-audit.functions";
+import { FixList } from "@/components/FixList";
 
 export const Route = createFileRoute("/_authenticated/seo-audit")({
   head: () => ({ meta: [{ title: "Technical audit — MentionMyApp" }] }),
@@ -30,6 +31,7 @@ function TechnicalAuditPage() {
       runSeoAudit({ data: { websiteUrl, githubUrl: "", gbpUrl: "" } }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["growth-dashboard"] });
+      await queryClient.invalidateQueries({ queryKey: ["seo-fixes"] });
     },
   });
   const growth = growthQuery.data;
@@ -175,24 +177,11 @@ function TechnicalAuditPage() {
             </div>
 
             {(audit.categories ?? []).some((c) => (c.issues ?? []).length) && (
-              <div className="mt-7">
-                <h3 className="font-display text-base font-semibold text-[#27242b]">
-                  What to fix
-                </h3>
-                <ul className="mt-3 divide-y divide-[#efedf1] rounded-xl border border-[#ebe9ed]">
-                  {(audit.categories ?? []).flatMap((c) =>
-                    (c.issues ?? []).map((issue, i) => (
-                      <li key={`${c.name}-${i}`} className="flex items-start gap-3 px-4 py-3 text-sm">
-                        <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[#c4772b]" />
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[#302d34]">{issue}</div>
-                          <div className="mt-0.5 text-xs text-[#85818b]">{c.name}</div>
-                        </div>
-                      </li>
-                    )),
-                  )}
-                </ul>
-              </div>
+              <FixList
+                categories={audit.categories ?? []}
+                onReaudit={() => growth?.website && auditMutation.mutate(growth.website)}
+                reauditing={auditMutation.isPending}
+              />
             )}
           </section>
         </>

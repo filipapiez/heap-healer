@@ -873,6 +873,72 @@ export type Database = {
           },
         ]
       }
+      seo_fix_jobs: {
+        Row: {
+          category: string
+          commit_sha: string | null
+          connection_id: string | null
+          created_at: string
+          error: string | null
+          estimate_minutes: number
+          files_changed: string[]
+          fix_type: string
+          id: string
+          issue: string
+          saved_at: string | null
+          status: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          category: string
+          commit_sha?: string | null
+          connection_id?: string | null
+          created_at?: string
+          error?: string | null
+          estimate_minutes?: number
+          files_changed?: string[]
+          fix_type: string
+          id?: string
+          issue: string
+          saved_at?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          category?: string
+          commit_sha?: string | null
+          connection_id?: string | null
+          created_at?: string
+          error?: string | null
+          estimate_minutes?: number
+          files_changed?: string[]
+          fix_type?: string
+          id?: string
+          issue?: string
+          saved_at?: string | null
+          status?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_fix_jobs_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "website_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_fix_jobs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_geo_checks: {
         Row: {
           checked_at: string
