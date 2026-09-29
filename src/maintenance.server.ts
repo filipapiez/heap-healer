@@ -8,6 +8,7 @@ type MaintenanceResult = {
   aiVisibility: unknown;
   backlinkVerify: unknown;
   syndication: unknown;
+  liveCheck: unknown;
   errors: Array<{ task: string; message: string }>;
 };
 
@@ -51,6 +52,10 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
       import("./lib/syndication.server").then(({ runDailySyndication }) => runDailySyndication()),
     ],
     [
+      "liveCheck",
+      import("./lib/live-check.server").then(({ runLiveChecks }) => runLiveChecks()),
+    ],
+    [
       "backlinkVerify",
       import("./lib/backlink-verify.server").then(({ verifyDirectoryBacklinks }) =>
         verifyDirectoryBacklinks(),
@@ -70,6 +75,7 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
     aiVisibility: null,
     backlinkVerify: null,
     syndication: null,
+    liveCheck: null,
     errors: [],
   };
   settled.forEach((result, index) => {
@@ -81,7 +87,8 @@ export async function runScheduledMaintenance(_now = new Date()): Promise<Mainte
       | "dailyPages"
       | "aiVisibility"
       | "backlinkVerify"
-      | "syndication";
+      | "syndication"
+      | "liveCheck";
 
     if (result.status === "fulfilled") {
       output[task] = result.value;

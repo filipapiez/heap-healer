@@ -219,7 +219,7 @@ export const getContentPlanData = createServerFn({ method: "GET" })
 
     const { data: pages, error: pagesError } = await supabaseAdmin
       .from("seo_pages" as never)
-      .select("id,url,keyword,indexed,impressions,clicks,published_at")
+      .select("id,url,keyword,indexed,impressions,clicks,published_at,live_status,live_reason,live_host,live_checked_at")
       .eq("client_id", clientRow.id)
       .order("published_at", { ascending: false });
     if (pagesError) throw pagesError;
@@ -234,8 +234,34 @@ export const getContentPlanData = createServerFn({ method: "GET" })
         impressions: number;
         clicks: number;
         published_at: string;
+        live_status: string;
+        live_reason: string | null;
+        live_host: string | null;
+        live_checked_at: string | null;
       }>,
     };
+  });
+
+/** Re-check that the caller's published pages really load on their live site. */
+export const checkMyPagesLive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("current_workspace_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (!profile?.current_workspace_id) return { checked: 0, live: 0, pending: 0 };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: client } = await supabaseAdmin
+      .from("seo_clients" as never)
+      .select("id")
+      .eq("workspace_id", profile.current_workspace_id)
+      .maybeSingle();
+    const clientId = (client as unknown as { id?: string } | null)?.id;
+    if (!clientId) return { checked: 0, live: 0, pending: 0 };
+    const { runLiveChecks } = await import("@/lib/live-check.server");
+    return runLiveChecks({ clientId, limit: 15 });
   });
 
 /** Manually trigger a Semrush snapshot for the caller's active workspace. */
