@@ -155,6 +155,7 @@ export const getGrowthDashboardData = createServerFn({ method: "GET" })
           name: category.name,
           passed,
           failed,
+          issues: (category.bad ?? []).slice(0, 20),
           score: total ? Math.round((passed / total) * 100) : null,
         };
       })
