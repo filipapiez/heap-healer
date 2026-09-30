@@ -386,6 +386,25 @@ canonicalUrl must be exactly ${origin}/<slug>. cta.buttonUrl and breadcrumb URLs
     }
   }
 
+  // Single-page apps hosted on Vercel/Netlify/Cloudflare need a fallback rule,
+  // otherwise opening /some-page directly returns the host's 404.
+  if (config.framework === "react-router") {
+    try {
+      const vercel = await readRepositoryFile(installationId, connection.external_id, "vercel.json", repo.defaultBranch);
+      if (!vercel) {
+        files.push({
+          path: "vercel.json",
+          content: `${JSON.stringify({ rewrites: [{ source: "/(.*)", destination: "/index.html" }] }, null, 2)}\n`,
+        });
+      }
+      const redirects = await readRepositoryFile(installationId, connection.external_id, "public/_redirects", repo.defaultBranch);
+      if (!redirects) files.push({ path: "public/_redirects", content: "/*    /index.html   200\n" });
+    } catch (error) {
+      console.error("[daily-page-generator] SPA fallback skipped", error);
+    }
+  }
+
+
   if (config.sitemap_path?.endsWith(".xml")) {
     try {
       const xml = await readRepositoryFile(
