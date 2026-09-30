@@ -60,7 +60,9 @@ export const Route = createFileRoute("/api/public/oauth/github/callback")({
           return finish(
             row.redirect_origin,
             "error",
-            error instanceof Error ? error.message : "connection_failed",
+            error instanceof Error
+              ? error.message
+              : (error as { message?: string })?.message ?? "connection_failed",
           );
         }
       },

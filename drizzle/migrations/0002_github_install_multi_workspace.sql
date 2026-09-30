@@ -1,0 +1,1 @@
+ALTER TABLE public.github_app_installations DROP CONSTRAINT IF EXISTS github_app_installations_installation_id_key;
