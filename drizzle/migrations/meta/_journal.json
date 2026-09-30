@@ -15,6 +15,13 @@
       "when": 1790665994764,
       "tag": "0001_seo_fix_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790747522710,
+      "tag": "0002_github_install_multi_workspace",
+      "breakpoints": true
     }
   ]
 }
