@@ -93,16 +93,18 @@ export function FixList({
           const status = busy ? "fixing" : job?.status;
           return (
             <li key={`${category}-${i}`} className="flex items-start gap-3 px-4 py-3 text-sm">
-              {status === "verified" ? (
+              {plan.auto && (status === "verified" || status === "saved") ? (
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               ) : (
                 <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-[#c4772b]" />
               )}
               <div className="min-w-0 flex-1">
-                <div className={status === "verified" ? "text-[#85818b] line-through" : "text-[#302d34]"}>{issue}</div>
+                <div className={plan.auto && status === "verified" ? "text-[#85818b] line-through" : "text-[#302d34]"}>{issue}</div>
                 <div className="mt-0.5 text-xs text-[#85818b]">
                   {category}
                   {plan.auto && !status && ` · ${formatMinutes(plan.minutes)}`}
+                  {plan.auto && status === "saved" && " · Saved to your site, confirming once it updates"}
+                  {plan.auto && status === "verified" && " · Confirmed on your live site"}
                 </div>
                 {!plan.auto && <div className="mt-1 text-xs text-[#6b6770]">Needs you: {plan.steps}</div>}
                 {(status === "failed" || status === "didnt_take") && job?.error && (
@@ -116,10 +118,10 @@ export function FixList({
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#efefff] px-2.5 py-1 text-xs font-medium text-[#5b5bd6]">
                     <RefreshCw className="h-3 w-3 animate-spin" /> Fixing…
                   </span>
-                ) : status === "saved" ? (
-                  <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">Fix saved, checking site</span>
-                ) : status === "verified" ? (
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">Fixed</span>
+                ) : status === "saved" || status === "verified" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <Check className="h-3 w-3" /> Fixed
+                  </span>
                 ) : gh ? (
                   <button
                     type="button"

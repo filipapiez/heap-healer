@@ -5,7 +5,7 @@ import { planFix } from "@/lib/seo-fix";
 const MODEL = "google/gemini-3.1-pro-preview";
 const BLOCKED = /(^|\/)(node_modules|\.git|\.github|dist|build)\/|(^|\/)\.env|lock|\.gen\./i;
 
-async function ai(system: string, user: string): Promise<Record<string, unknown>> {
+async function ai(system: string, user: string, retry = 1): Promise<Record<string, unknown>> {
   const key = process.env.LOVABLE_API_KEY;
   if (!key) throw new Error("AI is not configured");
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -22,7 +22,8 @@ async function ai(system: string, user: string): Promise<Record<string, unknown>
   });
   if (res.status === 429) throw new Error("Too many requests right now — try again in a minute");
   if (res.status === 402) throw new Error("AI credits are used up");
-  if (!res.ok) throw new Error(`AI request failed (${res.status})`);
+  if (res.status >= 500 && retry > 0) return ai(system, user, retry - 1);
+  if (!res.ok) throw new Error(res.status >= 500 ? "The AI took too long — press Try again" : `AI request failed (${res.status})`);
   const payload = (await res.json()) as { choices?: { message?: { content?: string } }[] };
   const text = (payload.choices?.[0]?.message?.content ?? "").replace(/^```(json)?|```$/g, "").trim();
   return JSON.parse(text);
