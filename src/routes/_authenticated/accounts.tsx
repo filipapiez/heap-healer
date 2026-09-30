@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
+import { AutoHostingSetup } from "@/components/AutoHostingSetup";
 import { PlatformLogo, type PlatformLogoName } from "@/components/PlatformLogo";
 import { summarizeWebsiteConnections, WEBSITE_CONNECTION_QUERY_KEY } from "@/connection-status";
 import {
@@ -459,6 +460,9 @@ function WebsiteConnections() {
           </button>
         </section>
       )}
+
+      <AutoHostingSetup repositories={[...selectedGithubRepositories].filter(Boolean) as string[]} />
+
 
       <div className="mb-4">
         <h2 className="font-display text-xl font-bold">Choose your website platform or workflow</h2>
