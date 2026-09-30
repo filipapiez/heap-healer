@@ -169,7 +169,7 @@ function ContentPlanPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <MetricPill value={pages.filter((p) => p.live_status === "live").length} label="live" />
-          <MetricPill value={pages.filter((page) => page.indexed).length} label="indexed" />
+          <MetricPill value={pages.filter((page) => page.indexed && page.live_status === "live").length} label="indexed" />
           <Link
             to="/grow"
             className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#18161b] px-4 text-xs font-semibold text-white shadow-sm"
@@ -452,16 +452,18 @@ function MetricPill({ value, label }: { value: number; label: string }) {
 function PageChip({ page, expanded = false }: { page: SeoPage; expanded?: boolean }) {
   const live = page.live_status === "live";
   const notLive = page.live_status === "not_live" || page.live_status === "waiting_publish";
-  const label = page.indexed
+  // Google may have indexed a URL that now shows 404 — only green when it really loads.
+  const indexed = page.indexed && live;
+  const label = indexed
     ? "Indexed"
     : live
       ? "Published"
       : page.live_status === "waiting_publish"
-        ? "Not live · needs Lovable publish"
+        ? page.indexed ? "Indexed but 404 · needs Lovable publish" : "Not live · needs Lovable publish"
         : notLive
-          ? "Not live"
+          ? page.indexed ? "Indexed but 404" : "Not live"
           : "Checking…";
-  const tone = page.indexed
+  const tone = indexed
     ? "border-emerald-200 bg-emerald-50"
     : live
       ? "border-orange-200 bg-orange-50"
