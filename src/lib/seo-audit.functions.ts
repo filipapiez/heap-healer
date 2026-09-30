@@ -509,9 +509,14 @@ function githubFindings(
   baseUrl: string,
   categories: Map<CategoryName, Category>,
   weights: number[],
+  connectedRepo: string | null = null,
 ) {
   if (!github) {
     addBad(categories, weights, "GitHub source", "No GitHub repository URL provided for source/entity indexing", 0.4);
+    return;
+  }
+  if (!github.reachable && connectedRepo) {
+    addGood(categories, "GitHub source", `GitHub repository connected: ${connectedRepo}`);
     return;
   }
   if (!github.reachable) {
@@ -545,10 +550,7 @@ function googleBusinessFindings(
     addGood(categories, "Google Business", "Google Business Profile URL was provided");
   } else if (trimmed) {
     addBad(categories, weights, "Google Business", "GBP URL was provided, but it does not look like a Google Business/Maps profile", 0.4);
-  } else {
-    addBad(categories, weights, "Google Business", "No Google Business Profile URL provided", 0.5);
   }
-  addBad(categories, weights, "Google Business", "GBP views, calls, directions, reviews, comments, and posts require a connected Google Business account", 0.3);
   return {
     input: trimmed,
     provided: Boolean(trimmed),
@@ -600,7 +602,30 @@ export const runSeoAudit = createServerFn({ method: "POST" })
     const sitemapPages = sitemapList.filter((url) => !new URL(url, baseUrl).pathname.endsWith(".xml"));
     const sampleUrls = sitemapPages.slice(0, SITEMAP_SAMPLE_SIZE);
     const sampleResults = await Promise.all(sampleUrls.map((url) => fetchWithTimeout(url, 90_000)));
-    const github = await auditGithub(data.githubUrl);
+    let connectedRepo: string | null = null;
+    try {
+      const { data: prof } = await context.supabase
+        .from("profiles" as never)
+        .select("current_workspace_id")
+        .eq("id", context.userId)
+        .maybeSingle();
+      const wsId = (prof as { current_workspace_id?: string } | null)?.current_workspace_id;
+      if (wsId) {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { data: conn } = await supabaseAdmin
+          .from("website_connections" as never)
+          .select("external_id")
+          .eq("workspace_id", wsId)
+          .eq("platform", "github")
+          .eq("status", "connected")
+          .limit(1)
+          .maybeSingle();
+        connectedRepo = (conn as { external_id?: string } | null)?.external_id ?? null;
+      }
+    } catch (e) {
+      console.error("[seo-audit] github lookup failed", e);
+    }
+    const github = data.githubUrl || connectedRepo ? await auditGithub(data.githubUrl || `https://github.com/${connectedRepo}`) : null;
     const gbp = googleBusinessFindings(data.gbpUrl, categories, weights);
 
     if (isOk(home.status)) addGood(categories, "Technical", `Homepage returns ${home.status} at ${baseUrl}`);
@@ -728,7 +753,7 @@ export const runSeoAudit = createServerFn({ method: "POST" })
     if (presentContent.length) addGood(categories, "Content/trust", `Content/support pages found: ${presentContent.join(", ")}`);
     if (missingContent.length >= 2) addBad(categories, weights, "Content/trust", `Thin SEO surface: missing ${missingContent.join(", ")}`, 0.8);
 
-    githubFindings(github, baseUrl, categories, weights);
+    githubFindings(github, baseUrl, categories, weights, connectedRepo);
 
     if (sampleUrls.length) {
       addGood(categories, "Sitemap sample", `Sampled ${sampleUrls.length} sitemap URLs`);
