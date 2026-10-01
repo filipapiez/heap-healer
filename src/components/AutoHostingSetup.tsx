@@ -26,10 +26,11 @@ const HOSTS: Record<Host, { name: string; url: (repo: string) => string; domainH
 /** Guides a customer to host their GitHub repo somewhere that re-deploys on every commit. */
 export function AutoHostingSetup({ repositories }: { repositories: string[] }) {
   const [host, setHost] = useState<Host>("vercel");
-  const [repo, setRepo] = useState(repositories[0] ?? "");
+  const [picked, setRepo] = useState("");
   const [checking, setChecking] = useState(false);
   const check = useServerFn(checkMyPagesLive);
   if (!repositories.length) return null;
+  const repo = picked && repositories.includes(picked) ? picked : repositories[0];
   const h = HOSTS[host];
 
   const steps = [
