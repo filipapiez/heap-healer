@@ -498,7 +498,19 @@ export async function runDailyPageGeneration() {
   if (error) throw error;
 
   const results: WebsiteResult[] = [];
-  for (const raw of (data ?? []) as unknown as Connection[]) {
+  const rows = (data ?? []) as unknown as Connection[];
+  for (const raw of rows) {
+    // Never write two different websites' pages into the same repository.
+    const shared = rows.some((o) => o.external_id === raw.external_id && o.workspace_id !== raw.workspace_id);
+    if (shared) {
+      results.push({
+        workspaceId: raw.workspace_id,
+        connectionId: raw.id,
+        status: "skipped",
+        message: `Repository ${raw.external_id} is linked to more than one website — pick the right one on the Accounts page`,
+      });
+      continue;
+    }
     try {
       results.push(await generateForConnection(raw));
     } catch (failure) {
