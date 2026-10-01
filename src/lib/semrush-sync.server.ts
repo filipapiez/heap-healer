@@ -33,6 +33,10 @@ async function callSemrush(path: string, params: Record<string, string>) {
   });
   const body = await res.text();
   const preview = body.slice(0, 400);
+  if (/^\s*<!doctype html|<title>\s*semrush oauth/i.test(body)) {
+    console.error("[semrush-sync] Semrush authorization expired", { endpoint: path, status: res.status });
+    throw new Error("Semrush needs to be reconnected (authorization expired or missing).");
+  }
   if (!res.ok) {
     console.error("[semrush-sync] gateway error", { endpoint: path, params, status: res.status, body: preview });
     throw new Error(`Semrush ${path} failed [${res.status}]: ${preview}`);
