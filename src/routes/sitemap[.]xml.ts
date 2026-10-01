@@ -9,6 +9,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const urls = [
           { loc: SITE_URL, priority: "1.0" },
           { loc: `${SITE_URL}/resources`, priority: "0.9" },
+          { loc: `${SITE_URL}/faq`, priority: "0.8" },
           ...TRUST_PAGE_REFS.map((page) => ({ loc: page.absoluteUrl, priority: "0.6" })),
           ...seoPages.map((page) => ({ loc: page.canonicalUrl, priority: "0.7" })),
         ];
