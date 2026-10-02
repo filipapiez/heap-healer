@@ -9,86 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as ResourcesRouteImport } from './routes/resources'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as HowItWorksRouteImport } from './routes/how-it-works'
-import { Route as GrowRouteImport } from './routes/grow'
-import { Route as DataDeletionRouteImport } from './routes/data-deletion'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ResourcesSlugRouteImport } from './routes/resources/$slug'
-import { Route as ReportTokenRouteImport } from './routes/report/$token'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
-import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
-import { Route as AuthenticatedMediaRouteImport } from './routes/_authenticated/media'
-import { Route as AuthenticatedEngagementRouteImport } from './routes/_authenticated/engagement'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedBacklinksRouteImport } from './routes/_authenticated/backlinks'
-import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DataDeletionRouteImport } from './routes/data-deletion'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as GrowRouteImport } from './routes/grow'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as WebApplicationDatabaseArchitectureRouteImport } from './routes/web-application-database-architecture'
 import { Route as AuthenticatedAccountsRouteImport } from './routes/_authenticated/accounts'
-import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
-import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
-import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
+import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
+import { Route as AuthenticatedBacklinksRouteImport } from './routes/_authenticated/backlinks'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedEngagementRouteImport } from './routes/_authenticated/engagement'
+import { Route as AuthenticatedMediaRouteImport } from './routes/_authenticated/media'
+import { Route as AuthenticatedScheduledRouteImport } from './routes/_authenticated/scheduled'
+import { Route as AuthenticatedSeoAuditRouteImport } from './routes/_authenticated/seo-audit'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as ReportTokenRouteImport } from './routes/report/$token'
+import { Route as ResourcesSlugRouteImport } from './routes/resources/$slug'
 import { Route as ApiPublicQueueDirectoriesRouteImport } from './routes/api/public/queue-directories'
-import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/public/oauth/shopify/callback'
-import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
+import { Route as ApiPublicRunScheduledRouteImport } from './routes/api/public/run-scheduled'
+import { Route as ApiPublicSyncGscRouteImport } from './routes/api/public/sync-gsc'
+import { Route as ApiPublicSyncSemrushRouteImport } from './routes/api/public/sync-semrush'
 import { Route as ApiPublicOauthGithubCallbackRouteImport } from './routes/api/public/oauth/github/callback'
+import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
+import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/public/oauth/shopify/callback'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HowItWorksRoute = HowItWorksRouteImport.update({
-  id: '/how-it-works',
-  path: '/how-it-works',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GrowRoute = GrowRouteImport.update({
-  id: '/grow',
-  path: '/grow',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DataDeletionRoute = DataDeletionRouteImport.update({
-  id: '/data-deletion',
-  path: '/data-deletion',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -96,58 +57,70 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ResourcesRoute,
-} as any)
-const ReportTokenRoute = ReportTokenRouteImport.update({
-  id: '/report/$token',
-  path: '/report/$token',
+const DataDeletionRoute = DataDeletionRouteImport.update({
+  id: '/data-deletion',
+  path: '/data-deletion',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedSeoAuditRoute = AuthenticatedSeoAuditRouteImport.update({
-  id: '/seo-audit',
-  path: '/seo-audit',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const GrowRoute = GrowRouteImport.update({
+  id: '/grow',
+  path: '/grow',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedScheduledRoute = AuthenticatedScheduledRouteImport.update({
-  id: '/scheduled',
-  path: '/scheduled',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedMediaRoute = AuthenticatedMediaRouteImport.update({
-  id: '/media',
-  path: '/media',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedEngagementRoute = AuthenticatedEngagementRouteImport.update({
-  id: '/engagement',
-  path: '/engagement',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const ResourcesRoute = ResourcesRouteImport.update({
+  id: '/resources',
+  path: '/resources',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedBacklinksRoute = AuthenticatedBacklinksRouteImport.update({
-  id: '/backlinks',
-  path: '/backlinks',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebApplicationDatabaseArchitectureRoute =
+  WebApplicationDatabaseArchitectureRouteImport.update({
+    id: '/web-application-database-architecture',
+    path: '/web-application-database-architecture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
@@ -155,25 +128,50 @@ const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAccountsRoute = AuthenticatedAccountsRouteImport.update({
-  id: '/accounts',
-  path: '/accounts',
+const AuthenticatedBacklinksRoute = AuthenticatedBacklinksRouteImport.update({
+  id: '/backlinks',
+  path: '/backlinks',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiPublicSyncSemrushRoute = ApiPublicSyncSemrushRouteImport.update({
-  id: '/api/public/sync-semrush',
-  path: '/api/public/sync-semrush',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEngagementRoute = AuthenticatedEngagementRouteImport.update({
+  id: '/engagement',
+  path: '/engagement',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMediaRoute = AuthenticatedMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedScheduledRoute = AuthenticatedScheduledRouteImport.update({
+  id: '/scheduled',
+  path: '/scheduled',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSeoAuditRoute = AuthenticatedSeoAuditRouteImport.update({
+  id: '/seo-audit',
+  path: '/seo-audit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ReportTokenRoute = ReportTokenRouteImport.update({
+  id: '/report/$token',
+  path: '/report/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicSyncGscRoute = ApiPublicSyncGscRouteImport.update({
-  id: '/api/public/sync-gsc',
-  path: '/api/public/sync-gsc',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
-  id: '/api/public/run-scheduled',
-  path: '/api/public/run-scheduled',
-  getParentRoute: () => rootRouteImport,
+const ResourcesSlugRoute = ResourcesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ResourcesRoute,
 } as any)
 const ApiPublicQueueDirectoriesRoute =
   ApiPublicQueueDirectoriesRouteImport.update({
@@ -181,10 +179,25 @@ const ApiPublicQueueDirectoriesRoute =
     path: '/api/public/queue-directories',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicOauthShopifyCallbackRoute =
-  ApiPublicOauthShopifyCallbackRouteImport.update({
-    id: '/api/public/oauth/shopify/callback',
-    path: '/api/public/oauth/shopify/callback',
+const ApiPublicRunScheduledRoute = ApiPublicRunScheduledRouteImport.update({
+  id: '/api/public/run-scheduled',
+  path: '/api/public/run-scheduled',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSyncGscRoute = ApiPublicSyncGscRouteImport.update({
+  id: '/api/public/sync-gsc',
+  path: '/api/public/sync-gsc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSyncSemrushRoute = ApiPublicSyncSemrushRouteImport.update({
+  id: '/api/public/sync-semrush',
+  path: '/api/public/sync-semrush',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicOauthGithubCallbackRoute =
+  ApiPublicOauthGithubCallbackRouteImport.update({
+    id: '/api/public/oauth/github/callback',
+    path: '/api/public/oauth/github/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicOauthGscCallbackRoute =
@@ -193,10 +206,10 @@ const ApiPublicOauthGscCallbackRoute =
     path: '/api/public/oauth/gsc/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicOauthGithubCallbackRoute =
-  ApiPublicOauthGithubCallbackRouteImport.update({
-    id: '/api/public/oauth/github/callback',
-    path: '/api/public/oauth/github/callback',
+const ApiPublicOauthShopifyCallbackRoute =
+  ApiPublicOauthShopifyCallbackRouteImport.update({
+    id: '/api/public/oauth/shopify/callback',
+    path: '/api/public/oauth/shopify/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -206,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -213,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -238,6 +253,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -245,6 +261,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -272,6 +289,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -279,6 +297,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
@@ -306,6 +325,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -313,6 +333,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -338,6 +359,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -345,6 +367,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -371,6 +394,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -378,6 +402,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/_authenticated/accounts'
     | '/_authenticated/analytics'
     | '/_authenticated/backlinks'
@@ -405,6 +430,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   DataDeletionRoute: typeof DataDeletionRoute
+  FaqRoute: typeof FaqRoute
   GrowRoute: typeof GrowRoute
   HowItWorksRoute: typeof HowItWorksRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -412,6 +438,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  WebApplicationDatabaseArchitectureRoute: typeof WebApplicationDatabaseArchitectureRoute
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicQueueDirectoriesRoute: typeof ApiPublicQueueDirectoriesRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
@@ -424,81 +451,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/how-it-works': {
-      id: '/how-it-works'
-      path: '/how-it-works'
-      fullPath: '/how-it-works'
-      preLoaderRoute: typeof HowItWorksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/grow': {
-      id: '/grow'
-      path: '/grow'
-      fullPath: '/grow'
-      preLoaderRoute: typeof GrowRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/data-deletion': {
-      id: '/data-deletion'
-      path: '/data-deletion'
-      fullPath: '/data-deletion'
-      preLoaderRoute: typeof DataDeletionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -508,74 +465,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/resources/$slug': {
-      id: '/resources/$slug'
-      path: '/$slug'
-      fullPath: '/resources/$slug'
-      preLoaderRoute: typeof ResourcesSlugRouteImport
-      parentRoute: typeof ResourcesRoute
-    }
-    '/report/$token': {
-      id: '/report/$token'
-      path: '/report/$token'
-      fullPath: '/report/$token'
-      preLoaderRoute: typeof ReportTokenRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/seo-audit': {
-      id: '/_authenticated/seo-audit'
-      path: '/seo-audit'
-      fullPath: '/seo-audit'
-      preLoaderRoute: typeof AuthenticatedSeoAuditRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/data-deletion': {
+      id: '/data-deletion'
+      path: '/data-deletion'
+      fullPath: '/data-deletion'
+      preLoaderRoute: typeof DataDeletionRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/scheduled': {
-      id: '/_authenticated/scheduled'
-      path: '/scheduled'
-      fullPath: '/scheduled'
-      preLoaderRoute: typeof AuthenticatedScheduledRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/media': {
-      id: '/_authenticated/media'
-      path: '/media'
-      fullPath: '/media'
-      preLoaderRoute: typeof AuthenticatedMediaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/grow': {
+      id: '/grow'
+      path: '/grow'
+      fullPath: '/grow'
+      preLoaderRoute: typeof GrowRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/engagement': {
-      id: '/_authenticated/engagement'
-      path: '/engagement'
-      fullPath: '/engagement'
-      preLoaderRoute: typeof AuthenticatedEngagementRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/backlinks': {
-      id: '/_authenticated/backlinks'
-      path: '/backlinks'
-      fullPath: '/backlinks'
-      preLoaderRoute: typeof AuthenticatedBacklinksRouteImport
+    '/resources': {
+      id: '/resources'
+      path: '/resources'
+      fullPath: '/resources'
+      preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/web-application-database-architecture': {
+      id: '/web-application-database-architecture'
+      path: '/web-application-database-architecture'
+      fullPath: '/web-application-database-architecture'
+      preLoaderRoute: typeof WebApplicationDatabaseArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/accounts': {
+      id: '/_authenticated/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AuthenticatedAccountsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/analytics': {
@@ -585,25 +570,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/accounts': {
-      id: '/_authenticated/accounts'
-      path: '/accounts'
-      fullPath: '/accounts'
-      preLoaderRoute: typeof AuthenticatedAccountsRouteImport
+    '/_authenticated/backlinks': {
+      id: '/_authenticated/backlinks'
+      path: '/backlinks'
+      fullPath: '/backlinks'
+      preLoaderRoute: typeof AuthenticatedBacklinksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/sync-semrush': {
-      id: '/api/public/sync-semrush'
-      path: '/api/public/sync-semrush'
-      fullPath: '/api/public/sync-semrush'
-      preLoaderRoute: typeof ApiPublicSyncSemrushRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/engagement': {
+      id: '/_authenticated/engagement'
+      path: '/engagement'
+      fullPath: '/engagement'
+      preLoaderRoute: typeof AuthenticatedEngagementRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/media': {
+      id: '/_authenticated/media'
+      path: '/media'
+      fullPath: '/media'
+      preLoaderRoute: typeof AuthenticatedMediaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/scheduled': {
+      id: '/_authenticated/scheduled'
+      path: '/scheduled'
+      fullPath: '/scheduled'
+      preLoaderRoute: typeof AuthenticatedScheduledRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/seo-audit': {
+      id: '/_authenticated/seo-audit'
+      path: '/seo-audit'
+      fullPath: '/seo-audit'
+      preLoaderRoute: typeof AuthenticatedSeoAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/report/$token': {
+      id: '/report/$token'
+      path: '/report/$token'
+      fullPath: '/report/$token'
+      preLoaderRoute: typeof ReportTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/sync-gsc': {
-      id: '/api/public/sync-gsc'
-      path: '/api/public/sync-gsc'
-      fullPath: '/api/public/sync-gsc'
-      preLoaderRoute: typeof ApiPublicSyncGscRouteImport
+    '/resources/$slug': {
+      id: '/resources/$slug'
+      path: '/$slug'
+      fullPath: '/resources/$slug'
+      preLoaderRoute: typeof ResourcesSlugRouteImport
+      parentRoute: typeof ResourcesRoute
+    }
+    '/api/public/queue-directories': {
+      id: '/api/public/queue-directories'
+      path: '/api/public/queue-directories'
+      fullPath: '/api/public/queue-directories'
+      preLoaderRoute: typeof ApiPublicQueueDirectoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/run-scheduled': {
@@ -613,18 +647,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRunScheduledRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/queue-directories': {
-      id: '/api/public/queue-directories'
-      path: '/api/public/queue-directories'
-      fullPath: '/api/public/queue-directories'
-      preLoaderRoute: typeof ApiPublicQueueDirectoriesRouteImport
+    '/api/public/sync-gsc': {
+      id: '/api/public/sync-gsc'
+      path: '/api/public/sync-gsc'
+      fullPath: '/api/public/sync-gsc'
+      preLoaderRoute: typeof ApiPublicSyncGscRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/oauth/shopify/callback': {
-      id: '/api/public/oauth/shopify/callback'
-      path: '/api/public/oauth/shopify/callback'
-      fullPath: '/api/public/oauth/shopify/callback'
-      preLoaderRoute: typeof ApiPublicOauthShopifyCallbackRouteImport
+    '/api/public/sync-semrush': {
+      id: '/api/public/sync-semrush'
+      path: '/api/public/sync-semrush'
+      fullPath: '/api/public/sync-semrush'
+      preLoaderRoute: typeof ApiPublicSyncSemrushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/oauth/github/callback': {
+      id: '/api/public/oauth/github/callback'
+      path: '/api/public/oauth/github/callback'
+      fullPath: '/api/public/oauth/github/callback'
+      preLoaderRoute: typeof ApiPublicOauthGithubCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/oauth/gsc/callback': {
@@ -634,11 +675,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOauthGscCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/oauth/github/callback': {
-      id: '/api/public/oauth/github/callback'
-      path: '/api/public/oauth/github/callback'
-      fullPath: '/api/public/oauth/github/callback'
-      preLoaderRoute: typeof ApiPublicOauthGithubCallbackRouteImport
+    '/api/public/oauth/shopify/callback': {
+      id: '/api/public/oauth/shopify/callback'
+      path: '/api/public/oauth/shopify/callback'
+      fullPath: '/api/public/oauth/shopify/callback'
+      preLoaderRoute: typeof ApiPublicOauthShopifyCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -690,6 +731,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   DataDeletionRoute: DataDeletionRoute,
+  FaqRoute: FaqRoute,
   GrowRoute: GrowRoute,
   HowItWorksRoute: HowItWorksRoute,
   PrivacyRoute: PrivacyRoute,
@@ -697,6 +739,8 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  WebApplicationDatabaseArchitectureRoute:
+    WebApplicationDatabaseArchitectureRoute,
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicQueueDirectoriesRoute: ApiPublicQueueDirectoriesRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
