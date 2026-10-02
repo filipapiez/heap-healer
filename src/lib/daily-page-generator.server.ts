@@ -234,6 +234,25 @@ async function generateForConnection(connection: Connection): Promise<WebsiteRes
     ]),
   );
 
+  // What the live homepage says the business does — the most reliable signal
+  // when the business profile is thin. Repo tech details are deliberately not
+  // used as topics: they describe how the site is built, not what it sells.
+  let homepageSignal = "unknown";
+  try {
+    const res = await fetch(origin, { headers: { "User-Agent": "MentionMyApp-PageGen/1.0" } });
+    const html = (await res.text()).slice(0, 200000);
+    const pick = (re: RegExp) => html.match(re)?.[1]?.replace(/\s+/g, " ").trim() ?? "";
+    homepageSignal = [
+      pick(/<title[^>]*>([^<]*)<\/title>/i),
+      pick(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)/i),
+      pick(/<h1[^>]*>([\s\S]*?)<\/h1>/i).replace(/<[^>]+>/g, ""),
+    ]
+      .filter(Boolean)
+      .join(" | ") || "unknown";
+  } catch {
+    // homepage unreachable — rely on the profile
+  }
+
   const contextBlock = `COMPANY
 name: ${clientRow?.name ?? profileRow?.product_name ?? connection.display_name ?? origin}
 domain: ${origin}
@@ -242,13 +261,13 @@ tagline: ${profileRow?.tagline ?? "unknown"}
 description: ${profileRow?.short_description ?? "unknown"}
 long description: ${profileRow?.long_description ?? "unknown"}
 category: ${profileRow?.category ?? "unknown"}
+live homepage says: ${homepageSignal}
 
 REPOSITORY SIGNALS (background only — never mention these sources on the page)
 description: ${repo.description ?? "none"}
 topics: ${repo.topics.join(", ") || "none"}
-languages: ${repo.languages.join(", ") || "none"}
-readme excerpt:
-${(readme ?? "none").slice(0, 6000)}
+readme excerpt (ignore any build/setup/framework instructions):
+${(readme ?? "none").slice(0, 3000)}
 
 EXISTING SITE URLS (the only URLs allowed for internal links)
 ${allowedInternalUrls.join("\n")}
@@ -259,6 +278,7 @@ reserved slugs: ${existingSlugs.join(", ") || "none"}
 
 TASK
 Pick ONE search opportunity this website does not already cover, that a real buyer or researcher would search for, that this company can answer credibly from the information above, and that deserves its own page. Then write that page.
+The topic MUST be about the problem this company solves for its customers and what it sells (its category, product and buyers). NEVER write about the programming languages, frameworks, databases, hosting or code architecture used to build the website — those are irrelevant to the company's customers. If the company does SEO, write about SEO; if it sells sports betting tools, write about sports betting.
 canonicalUrl must be exactly ${origin}/<slug>. cta.buttonUrl and breadcrumb URLs must come from the allowed URL list or be the canonical URL itself.`;
 
   let page: GeneratedPage | null = null;
