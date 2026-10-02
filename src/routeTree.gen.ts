@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WebApplicationDatabaseArchitectureRouteImport } from './routes/web-application-database-architecture'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
@@ -16,6 +17,7 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as GrowRouteImport } from './routes/grow'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DataDeletionRouteImport } from './routes/data-deletion'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -41,6 +43,12 @@ import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/
 import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
 import { Route as ApiPublicOauthGithubCallbackRouteImport } from './routes/api/public/oauth/github/callback'
 
+const WebApplicationDatabaseArchitectureRoute =
+  WebApplicationDatabaseArchitectureRouteImport.update({
+    id: '/web-application-database-architecture',
+    path: '/web-application-database-architecture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -74,6 +82,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const GrowRoute = GrowRouteImport.update({
   id: '/grow',
   path: '/grow',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataDeletionRoute = DataDeletionRouteImport.update({
@@ -206,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -213,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -238,6 +253,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -245,6 +261,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -272,6 +289,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/data-deletion': typeof DataDeletionRoute
+  '/faq': typeof FaqRoute
   '/grow': typeof GrowRoute
   '/how-it-works': typeof HowItWorksRoute
   '/privacy': typeof PrivacyRoute
@@ -279,6 +297,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
@@ -306,6 +325,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -313,6 +333,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -338,6 +359,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -345,6 +367,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -371,6 +394,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/data-deletion'
+    | '/faq'
     | '/grow'
     | '/how-it-works'
     | '/privacy'
@@ -378,6 +402,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/_authenticated/accounts'
     | '/_authenticated/analytics'
     | '/_authenticated/backlinks'
@@ -405,6 +430,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   DataDeletionRoute: typeof DataDeletionRoute
+  FaqRoute: typeof FaqRoute
   GrowRoute: typeof GrowRoute
   HowItWorksRoute: typeof HowItWorksRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -412,6 +438,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  WebApplicationDatabaseArchitectureRoute: typeof WebApplicationDatabaseArchitectureRoute
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicQueueDirectoriesRoute: typeof ApiPublicQueueDirectoriesRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
@@ -424,6 +451,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/web-application-database-architecture': {
+      id: '/web-application-database-architecture'
+      path: '/web-application-database-architecture'
+      fullPath: '/web-application-database-architecture'
+      preLoaderRoute: typeof WebApplicationDatabaseArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -471,6 +505,13 @@ declare module '@tanstack/react-router' {
       path: '/grow'
       fullPath: '/grow'
       preLoaderRoute: typeof GrowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-deletion': {
@@ -690,6 +731,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   DataDeletionRoute: DataDeletionRoute,
+  FaqRoute: FaqRoute,
   GrowRoute: GrowRoute,
   HowItWorksRoute: HowItWorksRoute,
   PrivacyRoute: PrivacyRoute,
@@ -697,6 +739,8 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  WebApplicationDatabaseArchitectureRoute:
+    WebApplicationDatabaseArchitectureRoute,
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicQueueDirectoriesRoute: ApiPublicQueueDirectoriesRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,

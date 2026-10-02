@@ -52,7 +52,7 @@ export function renderPageHtml(page: GeneratedPage): string {
         .join("")}<li aria-current="page">${escapeHtml(page.h1)}</li></ol></nav>`
     : "";
 
-  return `<article>
+  return `<style>${ARTICLE_CSS}</style><article class="mm-article">
 ${crumbs}
   <header>
     ${page.hero.eyebrow ? `<p>${escapeHtml(page.hero.eyebrow)}</p>` : ""}
@@ -222,3 +222,30 @@ export function scoreGeneratedPage(
 
   return { score: Math.max(0, Math.min(100, Math.round(score))), issues };
 }
+
+// Self-contained styling shipped with every generated page so it matches the
+// MentionMyApp look on any site, without depending on the host's CSS.
+export const ARTICLE_CSS = `.mm-article{--ink:#0C0E1A;--paper:#F4F5FB;--violet:#6C5CE7;--muted:#6B7086;--line:#E3E5F0;background:var(--paper);color:var(--ink);font-family:"DM Sans",ui-sans-serif,system-ui,sans-serif;font-size:17px;line-height:1.7;padding:48px 20px 80px;min-height:100vh}
+.mm-article>*{max-width:880px;margin-left:auto;margin-right:auto}
+.mm-article h1,.mm-article h2,.mm-article h3{font-family:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em;line-height:1.15;margin:0 0 14px}
+.mm-article a{color:var(--violet)}
+.mm-article nav ol{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:0 auto 28px;font-size:13px;color:var(--muted)}
+.mm-article nav li+li:before{content:"/";margin-right:8px;color:var(--line)}
+.mm-article nav a{color:var(--muted);text-decoration:none}
+.mm-article>header{background:var(--ink);color:#fff;border-radius:28px;padding:56px 48px;margin-bottom:24px}
+.mm-article>header>p:first-child{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#C9C3FF;background:rgba(108,92,231,.25);border-radius:999px;padding:6px 14px;margin:0 0 20px}
+.mm-article>header h1{font-size:clamp(34px,5vw,56px);color:#fff}
+.mm-article>header p{color:#C8CBDA;font-size:19px;max-width:640px}
+.mm-article>header a,.mm-article>section:last-child a{display:inline-block;background:var(--violet);color:#fff;text-decoration:none;font-weight:600;border-radius:12px;padding:12px 22px;margin-top:8px}
+.mm-article>section{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px 36px;margin-bottom:16px}
+.mm-article>section h2{font-size:26px}
+.mm-article>section p{margin:0 0 12px;color:#2A2D3E}
+.mm-article>section ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.mm-article>section li{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--muted);font-size:15px}
+.mm-article>section li strong{display:block;color:var(--ink);font-family:"Space Grotesk",sans-serif;font-size:17px;margin-bottom:4px}
+.mm-article>section h3{font-size:18px;margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
+.mm-article>section h2+h3{margin-top:0;padding-top:0;border-top:0}
+.mm-article>section:last-child{background:var(--violet);border:0;color:#fff;text-align:center;padding:48px 36px}
+.mm-article>section:last-child h2,.mm-article>section:last-child p{color:#fff}
+.mm-article>section:last-child a{background:#fff;color:var(--ink)}
+@media(max-width:640px){.mm-article>header{padding:36px 24px}.mm-article>section{padding:24px 20px}}`;
