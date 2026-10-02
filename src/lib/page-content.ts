@@ -79,7 +79,7 @@ ${
 ${page.features
   .map(
     (feature) =>
-      `      <li><strong>${escapeHtml(feature.name)}</strong> — ${escapeHtml(feature.description)}</li>`,
+      `      <li><strong>${escapeHtml(feature.name)}</strong> ${escapeHtml(feature.description)}</li>`,
   )
   .join("\n")}
     </ul>

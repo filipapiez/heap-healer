@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WebApplicationDatabaseArchitectureRouteImport } from './routes/web-application-database-architecture'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as StartupDirectoryBacklinksRouteImport } from './routes/startup-directory-backlinks'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as ResourcesRouteImport } from './routes/resources'
@@ -42,11 +44,23 @@ import { Route as ApiPublicOauthShopifyCallbackRouteImport } from './routes/api/
 import { Route as ApiPublicOauthGscCallbackRouteImport } from './routes/api/public/oauth/gsc/callback'
 import { Route as ApiPublicOauthGithubCallbackRouteImport } from './routes/api/public/oauth/github/callback'
 
+const WebApplicationDatabaseArchitectureRoute =
+  WebApplicationDatabaseArchitectureRouteImport.update({
+    id: '/web-application-database-architecture',
+    path: '/web-application-database-architecture',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StartupDirectoryBacklinksRoute =
+  StartupDirectoryBacklinksRouteImport.update({
+    id: '/startup-directory-backlinks',
+    path: '/startup-directory-backlinks',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -219,7 +233,9 @@ export interface FileRoutesByFullPath {
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/startup-directory-backlinks': typeof StartupDirectoryBacklinksRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -252,7 +268,9 @@ export interface FileRoutesByTo {
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/startup-directory-backlinks': typeof StartupDirectoryBacklinksRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/accounts': typeof AuthenticatedAccountsRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/backlinks': typeof AuthenticatedBacklinksRoute
@@ -287,7 +305,9 @@ export interface FileRoutesById {
   '/resources': typeof ResourcesRouteWithChildren
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/startup-directory-backlinks': typeof StartupDirectoryBacklinksRoute
   '/terms': typeof TermsRoute
+  '/web-application-database-architecture': typeof WebApplicationDatabaseArchitectureRoute
   '/_authenticated/accounts': typeof AuthenticatedAccountsRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/backlinks': typeof AuthenticatedBacklinksRoute
@@ -322,7 +342,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/startup-directory-backlinks'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -355,7 +377,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/startup-directory-backlinks'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/accounts'
     | '/analytics'
     | '/backlinks'
@@ -389,7 +413,9 @@ export interface FileRouteTypes {
     | '/resources'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/startup-directory-backlinks'
     | '/terms'
+    | '/web-application-database-architecture'
     | '/_authenticated/accounts'
     | '/_authenticated/analytics'
     | '/_authenticated/backlinks'
@@ -424,7 +450,9 @@ export interface RootRouteChildren {
   ResourcesRoute: typeof ResourcesRouteWithChildren
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StartupDirectoryBacklinksRoute: typeof StartupDirectoryBacklinksRoute
   TermsRoute: typeof TermsRoute
+  WebApplicationDatabaseArchitectureRoute: typeof WebApplicationDatabaseArchitectureRoute
   ReportTokenRoute: typeof ReportTokenRoute
   ApiPublicQueueDirectoriesRoute: typeof ApiPublicQueueDirectoriesRoute
   ApiPublicRunScheduledRoute: typeof ApiPublicRunScheduledRoute
@@ -437,11 +465,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/web-application-database-architecture': {
+      id: '/web-application-database-architecture'
+      path: '/web-application-database-architecture'
+      fullPath: '/web-application-database-architecture'
+      preLoaderRoute: typeof WebApplicationDatabaseArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/startup-directory-backlinks': {
+      id: '/startup-directory-backlinks'
+      path: '/startup-directory-backlinks'
+      fullPath: '/startup-directory-backlinks'
+      preLoaderRoute: typeof StartupDirectoryBacklinksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -717,7 +759,10 @@ const rootRouteChildren: RootRouteChildren = {
   ResourcesRoute: ResourcesRouteWithChildren,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StartupDirectoryBacklinksRoute: StartupDirectoryBacklinksRoute,
   TermsRoute: TermsRoute,
+  WebApplicationDatabaseArchitectureRoute:
+    WebApplicationDatabaseArchitectureRoute,
   ReportTokenRoute: ReportTokenRoute,
   ApiPublicQueueDirectoriesRoute: ApiPublicQueueDirectoriesRoute,
   ApiPublicRunScheduledRoute: ApiPublicRunScheduledRoute,
